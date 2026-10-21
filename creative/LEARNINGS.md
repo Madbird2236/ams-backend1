@@ -18,3 +18,5 @@ Read before every new concept. Add an entry after every decision by Adriano.
 | 2026-10-21 | Carousel v2 | **Approved for publication prep** | Hands difference accepted; don't spend credits on invisible details — prioritise legibility and brand finish. |
 | 2026-10-21 | «Offerte innert 48 Stunden» in B2B | **Forbidden** | Claim valid only for B2C residential with information available. Removed from carousel v2 slide 5 and B2B scripts. |
 | 2026-10-21 | Brand codes from website | Provisional only | Never treat found codes as full official identity. |
+| 2026-10-21 | B2B CTAs | **Decided** | Retail: «Rollout-Gespräch vereinbaren.» · Architects/Verwaltungen: «Projektbesprechung vereinbaren.» |
+| 2026-10-21 | Systems | **Decided** | AMS OS only; Bexio discontinued. |

@@ -41,7 +41,9 @@ Is the first moment interesting? Does the story progress? Is there a real surpri
 A project is not complete because prompts or images exist. Paid assets only after the user approves script and storyboard.
 
 ## AMS claims register (authorised only)
-- «Offerte innert 48 Stunden» — authorised **only for B2C** residential campaigns where the information needed for the offer is already available (Jarvis operations). **Forbidden in all B2B** (retail fit-out, rollouts, commercial projects, complex corporate contracts). B2B CTA until Adriano defines one: «Rollout-Gespräch vereinbaren» / «Projekt besprechen», with no time promise.
+- «Offerte innert 48 Stunden» — authorised **only for B2C** residential campaigns where the information needed for the offer is already available (Jarvis operations). **Forbidden in all B2B** (retail fit-out, rollouts, commercial projects, complex corporate contracts). B2B CTAs (decided 2026-10-21): retail / rollouts / expansion → «Rollout-Gespräch vereinbaren.»; architects, property managements and other corporate clients → «Projektbesprechung vereinbaren.» No time promise in B2B.
+- Systems: **AMS OS is the only business system** (CRM, offers, Jarvis). Bexio is discontinued — never propose it.
+- Sinfonie VO (hypothesis B): «Wir spielen unseren Part. Auf den Takt genau.»
 - **Scope (decided 2026-10-21, hypothesis B):** AMS executes the services under its own responsibility and works in coordination with the other trades involved. Allowed: «Wir spielen unseren Part auf den Takt genau – abgestimmt mit allen anderen Gewerken.» **Forbidden until a specific contractual scope is confirmed:** «Alle Gewerke aus einer Hand», «Wir koordinieren alle Gewerke», «Generalunternehmer», naming trades AMS does not execute (e.g. Elektriker), deadline guarantees («garantiert»).
 - Watch metaphors too: a visual (e.g. a conductor) can imply a bigger scope than the copy says — the copy must re-anchor it.
 - Pending: define contracting/coordination models for full retail fit-out projects with Adriano.

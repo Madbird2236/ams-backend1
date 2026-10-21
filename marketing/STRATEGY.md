@@ -48,3 +48,7 @@ Creativity stays conceptual for every objective. Lead and cash campaigns add a c
 - **Premium pricing must survive B2C promotion.** Use urgency and convenience (dates, fast start, clean work), not discounts that cheapen the brand.
 - **The schedule is the truth.** Marketing intensity follows booked utilisation: when the order book for the next 6–8 weeks is thin, residential lead campaigns go up; when a B2B opportunity needs capacity, residential volume is throttled for that window. This is a dynamic decision, not a fixed quota.
 - **Track every campaign** against its KPI; stop what doesn't produce enquiries or meetings within its expected window.
+
+## Systems
+- **AMS OS is the single business system** (CRM, offers, Jarvis). Bexio is discontinued.
+- Lead flow and launch: see `LEAD-FLOW-PROPOSAL.md` and `LAUNCH-PLAN.md`.
