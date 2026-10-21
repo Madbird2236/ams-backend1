@@ -1,0 +1,17 @@
+{
+  "format": "16:9",
+  "fps": 30,
+  "brand": "../brand/ams.json",
+  "transition": 0.5,
+  "scenes": [
+    { "type": "title", "duration": 4, "kicker": "AMS · Execution Partner", "title": "Retail. Commercial.\nArchitectural.", "subtitle": "Multi-trade fit-out delivered across Switzerland and Europe." },
+    { "type": "stats", "duration": 4, "title": "Track record (placeholder numbers)", "items": [
+      { "value": 120, "suffix": "+", "label": "Projects" },
+      { "value": 6, "label": "Countries" },
+      { "value": 98, "suffix": "%", "label": "On-time handover" } ] },
+    { "type": "list", "duration": 5, "title": "One partner. Every trade.", "items": ["Painting & architectural finishing", "Drywall & interior construction", "Store rollouts & retail fit-out", "Maintenance programmes"] },
+    { "type": "beforeAfter", "duration": 5, "caption": "Flagship store, Zürich", "beforeLabel": "Vorher", "afterLabel": "Nachher" },
+    { "type": "quote", "duration": 4, "text": "Placeholder testimonial — replace with a real, approved client quote.", "author": "Client name, Role" },
+    { "type": "outro", "duration": 4, "cta": "Your next rollout, delivered.", "contact": "ams-example.ch · +41 00 000 00 00" }
+  ]
+}

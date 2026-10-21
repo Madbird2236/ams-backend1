@@ -1,0 +1,86 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<style>
+  html,body{margin:0;padding:0;overflow:hidden;background:#000}
+  #stage{position:relative;overflow:hidden;background:var(--bg);color:var(--text);font-family:var(--font)}
+  .scene{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;padding:var(--pad);box-sizing:border-box;opacity:0}
+  .kicker{font-size:calc(var(--u)*2.2);letter-spacing:.32em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:calc(var(--u)*2)}
+  .title{font-size:calc(var(--u)*7.5);font-weight:800;line-height:1.02;letter-spacing:-.02em;margin:0}
+  .subtitle{font-size:calc(var(--u)*2.8);color:var(--muted);margin-top:calc(var(--u)*2.5);font-weight:400;max-width:85%}
+  .rule{height:calc(var(--u)*.35);width:calc(var(--u)*12);background:var(--accent);margin:calc(var(--u)*3) 0;transform-origin:left}
+  .line{display:block;overflow:hidden}.line>span{display:inline-block}
+  .stats{display:flex;gap:calc(var(--u)*5);flex-wrap:wrap}
+  .stat .v{font-size:calc(var(--u)*9);font-weight:800;color:var(--accent);line-height:1}
+  .stat .l{font-size:calc(var(--u)*2.2);color:var(--muted);margin-top:calc(var(--u)*1);text-transform:uppercase;letter-spacing:.15em}
+  .list{list-style:none;padding:0;margin:calc(var(--u)*3) 0 0}
+  .list li{font-size:calc(var(--u)*3.4);padding:calc(var(--u)*1.4) 0;border-bottom:1px solid rgba(255,255,255,.12);display:flex;gap:calc(var(--u)*2)}
+  .list li b{color:var(--accent);font-weight:700;min-width:calc(var(--u)*5)}
+  .ba{position:absolute;inset:0}
+  .ba .img{position:absolute;inset:0;background-size:cover;background-position:center}
+  .ba .after{clip-path:inset(0 100% 0 0)}
+  .ba .tag{position:absolute;top:var(--pad);font-size:calc(var(--u)*2);letter-spacing:.3em;text-transform:uppercase;background:rgba(0,0,0,.55);padding:calc(var(--u)*.8) calc(var(--u)*1.6)}
+  .ba .divider{position:absolute;top:0;bottom:0;width:calc(var(--u)*.35);background:var(--accent);left:0}
+  .ba .cap{position:absolute;left:var(--pad);bottom:var(--pad);font-size:calc(var(--u)*4);font-weight:800;text-shadow:0 2px 20px rgba(0,0,0,.6)}
+  .quote{font-size:calc(var(--u)*5);font-weight:600;line-height:1.2;letter-spacing:-.01em}
+  .quote::before{content:"“";color:var(--accent);display:block;font-size:2em;line-height:.6}
+  .by{color:var(--muted);font-size:calc(var(--u)*2.4);margin-top:calc(var(--u)*3)}
+  .logo{font-size:calc(var(--u)*14);font-weight:900;letter-spacing:.06em;color:var(--accent)}
+  .cta{font-size:calc(var(--u)*3.2);margin-top:calc(var(--u)*2)}
+  .contact{font-size:calc(var(--u)*2.2);color:var(--muted);margin-top:calc(var(--u)*1.5)}
+  .center{align-items:center;text-align:center}
+  .bar{position:absolute;left:0;bottom:0;height:calc(var(--u)*.4);background:var(--accent);width:0}
+</style></head>
+<body><div id="stage"></div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script>
+const FORMATS={"16:9":[1920,1080],"9:16":[1080,1920],"1:1":[1080,1080],"4:5":[1080,1350]};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const lines=s=>esc(s).split("\n").map(l=>`<span class="line"><span>${l}</span></span>`).join("");
+
+// Each builder returns {el, tl}: the scene element and its internal timeline (starts at 0).
+const BUILDERS={
+  title(s){const el=div(`${s.kicker?`<div class="kicker">${esc(s.kicker)}</div>`:""}<h1 class="title">${lines(s.title)}</h1><div class="rule"></div>${s.subtitle?`<div class="subtitle">${esc(s.subtitle)}</div>`:""}`);
+    const tl=gsap.timeline();tl.from(q(el,".kicker"),{y:30,opacity:0,duration:.6,ease:"power3.out"})
+      .from(q(el,".line>span"),{yPercent:110,duration:.9,stagger:.12,ease:"expo.out"},"-=.3")
+      .from(q(el,".rule"),{scaleX:0,duration:.8,ease:"power3.inOut"},"-=.5")
+      .from(q(el,".subtitle"),{y:20,opacity:0,duration:.7,ease:"power2.out"},"-=.4");return{el,tl}},
+  stats(s){const el=div(`${s.title?`<div class="kicker">${esc(s.title)}</div>`:""}<div class="stats">${s.items.map(i=>`<div class="stat"><div class="v" data-to="${+i.value}" data-pre="${esc(i.prefix)}" data-suf="${esc(i.suffix)}">0</div><div class="l">${esc(i.label)}</div></div>`).join("")}</div>`);
+    const tl=gsap.timeline();tl.from(q(el,".kicker"),{opacity:0,y:20,duration:.5});
+    q(el,".v").forEach((v,k)=>{const o={n:0},to=+v.dataset.to,d=Number.isInteger(to)?0:1;
+      tl.from(v.parentNode,{y:40,opacity:0,duration:.6,ease:"power3.out"},.2+k*.15)
+        .to(o,{n:to,duration:1.6,ease:"power2.out",onUpdate:()=>v.textContent=v.dataset.pre+o.n.toFixed(d).replace(/\B(?=(\d{3})+(?!\d))/g,"'")+v.dataset.suf},.2+k*.15)});return{el,tl}},
+  list(s){const el=div(`<h2 class="title" style="font-size:calc(var(--u)*5.5)">${lines(s.title)}</h2><ul class="list">${s.items.map((t,k)=>`<li><b>${String(k+1).padStart(2,"0")}</b><span>${esc(t)}</span></li>`).join("")}</ul>`);
+    const tl=gsap.timeline();tl.from(q(el,".line>span"),{yPercent:110,duration:.8,ease:"expo.out"}).from(q(el,"li"),{x:-60,opacity:0,duration:.6,stagger:.18,ease:"power3.out"},"-=.3");return{el,tl}},
+  beforeAfter(s){const el=div(`<div class="ba"><div class="img before" style="${bgOf(s.before,"#3a3a3a")}"></div><div class="img after" style="${bgOf(s.after,"#8a7650")}"></div><div class="divider"></div><div class="tag" style="left:var(--pad)">${esc(s.beforeLabel||"Vorher")}</div><div class="tag t2" style="right:var(--pad);opacity:0">${esc(s.afterLabel||"Nachher")}</div>${s.caption?`<div class="cap">${esc(s.caption)}</div>`:""}</div>`);
+    el.style.padding=0;const tl=gsap.timeline(),w=W;
+    tl.from(q(el,".before"),{scale:1.08,duration:s.duration||5,ease:"none"},0)
+      .to(q(el,".after"),{clipPath:"inset(0 0% 0 0)",duration:1.6,ease:"power2.inOut"},1)
+      .fromTo(q(el,".divider"),{x:0},{x:w,duration:1.6,ease:"power2.inOut"},1)
+      .to(q(el,".t2"),{opacity:1,duration:.4},2.4).from(q(el,".cap"),{y:30,opacity:0,duration:.6},2.6);return{el,tl}},
+  quote(s){const el=div(`<div class="quote">${esc(s.text)}</div><div class="by">— ${esc(s.author)}</div>`);
+    const tl=gsap.timeline();tl.from(q(el,".quote"),{opacity:0,y:40,duration:1,ease:"power3.out"}).from(q(el,".by"),{opacity:0,duration:.6},"-=.3");return{el,tl}},
+  outro(s){const el=div(`<div class="logo">${esc(s.logo||B.logoText)}</div><div class="rule" style="margin-left:auto;margin-right:auto"></div><div class="cta">${esc(s.cta||"")}</div><div class="contact">${esc(s.contact||B.tagline)}</div>`,"center");
+    const tl=gsap.timeline();tl.from(q(el,".logo"),{scale:.85,opacity:0,duration:1,ease:"expo.out"}).from(q(el,".rule"),{scaleX:0,duration:.7},"-=.5").from(q(el,".cta,.contact"),{y:20,opacity:0,stagger:.15,duration:.6},"-=.3");return{el,tl}}
+};
+let W,H,B;const stage=document.getElementById("stage");
+function q(el,s){return Array.from(el.querySelectorAll(s))}
+function div(html,cls=""){const d=document.createElement("div");d.className="scene "+cls;d.innerHTML=html;stage.appendChild(d);return d}
+function bgOf(src,fallback){return src?`background-image:url('${src}')`:`background:linear-gradient(135deg,${fallback},#111)`}
+
+window.buildComposition=function(spec,brand){
+  B=brand;[W,H]=FORMATS[spec.format||"16:9"]||FORMATS["16:9"];
+  const u=Math.min(W,H)/100*1.0; // 1u = 1% of short side
+  Object.assign(stage.style,{width:W+"px",height:H+"px"});
+  const r=document.documentElement.style;
+  r.setProperty("--u",u+"px");r.setProperty("--pad",(u*8)+"px");r.setProperty("--font",brand.font);
+  for(const [k,v] of Object.entries(brand.colors))r.setProperty("--"+k,v);
+  const master=gsap.timeline({paused:true});const X=spec.transition??0.5;let t=0;
+  for(const s of spec.scenes){const b=BUILDERS[s.type];if(!b)throw new Error("Unknown scene type: "+s.type);
+    const {el,tl}=b(s);const d=s.duration||Math.max(3,tl.duration()+1.2);
+    master.set(el,{opacity:0},0).to(el,{opacity:1,duration:X,ease:"none"},t).add(tl,t+0.05).to(el,{opacity:0,duration:X,ease:"none"},t+d-X);t+=d-X;}
+  const total=t+X;const bar=document.createElement("div");bar.className="bar";stage.appendChild(bar);
+  if(spec.progressBar!==false)master.fromTo(bar,{width:0},{width:W,duration:total,ease:"none"},0);
+  window.__mg={width:W,height:H,fps:spec.fps||30,duration:total,seek:s=>{master.seek(s,false)}};
+  return window.__mg;
+};
+</script></body></html>
