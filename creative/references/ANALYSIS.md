@@ -23,7 +23,7 @@ For each reference, fill in:
 - **What to reuse (principle):** show the human meaning of the space, not the craft. Light as a storytelling device. One emotional figure, one clear gaze direction. Headline in negative space.
 - **What NOT to copy:** children, crayon drawings, dream-on-the-wall metaphor, golden-hour empty room.
 - **Risks noted:**
-  - *Audience:* private family home (B2C). AMS's strategic targets are retail brands, asset managers, architects, GCs (B2B). For B2B, translate the principle (human meaning of the space) to e.g. store staff, shoppers, the opening day, not to families.
+  - *Audience:* B2C (families, owners): a valid and important market for cash flow and winter utilisation. The same principle (human meaning of the space) can be translated to B2B, e.g. shoppers or the opening day of a store.
   - *Ownability:* the image alone could belong to other home-related brands; AMS ownership comes from the brand layer, the slogan and campaign context, not from showing the service. Strengthen the slogan rather than adding construction imagery.
   - *AI-generated look:* typical AI-image signs. Fine for social media; check hands, feet and fine details before print or large formats.
 

@@ -24,7 +24,7 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 6. **Use references as inspiration, never copy** them (no same metaphor, layout or line).
 
 ## Mandatory process
-1. **Brief:** service, target audience (e.g. retail brand managers, asset managers, architects, private owners), the one benefit to communicate, channel/format.
+1. **Brief:** classify per `marketing/STRATEGY.md`: audience (B2C/B2B + segment), commercial objective (lead capture / cash & utilisation / brand building / B2B contracts), KPI, season. Then service, the one benefit, channel/format.
 2. **Reference check:** re-read `creative/references/ANALYSIS.md` — which creative mechanics apply here?
 3. **Three distinct concepts.** Each must use a *different* mechanism (e.g. visual metaphor / unexpected perspective / intelligent humour). Per concept:
    - Idea in one sentence
@@ -46,6 +46,9 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 - **Intelligent humour:** the absurd consequence of *not* choosing a professional, shown elegantly, never slapstick.
 - **Contrast / time:** before/after told through one object, not a room.
 - **Precision as hero:** a line, edge or corner so exact it becomes the subject.
+
+## B2C translation (families, owners, tenants)
+Start from life moments, not from paint: moving in or out, a baby on the way, kids leaving home, selling a flat, winter at home, hosting guests. Emotion and humour work best. Benefit examples: clean and fast with no chaos at home, apartment handover without stress or deposit deductions, a home that feels new.
 
 ## B2B translation (retail brands, architects, asset managers, expansion managers)
 Start from their real problem, then find an unexpected image for it. Example: deadlines → a metaphor around time, races or opening days, without a construction site.
