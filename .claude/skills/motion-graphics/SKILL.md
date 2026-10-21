@@ -49,4 +49,4 @@ Add a builder to `BUILDERS` in `player.html` returning `{el, tl}` (a scene eleme
 - Keep reels 15–30s; first 2s must carry the message.
 
 ## Julia
-`scripts/setup-julia.sh` installs Julia from conda-forge (the official julialang.org hosts may be blocked by the cloud network policy). Julia packages need `pkg.julialang.org` allowed in the environment's network settings.
+`scripts/setup-julia.sh` installs Julia from conda-forge and configures packages to download from GitHub (pkg.julialang.org is blocked by the network policy; GitHub works, including binary packages). Run it at the start of each cloud session.
