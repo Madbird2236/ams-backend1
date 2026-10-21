@@ -1,24 +1,19 @@
-# AMS brand layer — final application proposal (provisional)
+# AMS brand layer — official assets found in AMS OS (2026-10-21)
 
-Status: **provisional**. Adriano confirmed (2026-10-21) the website codes are references, not necessarily the full official identity. Nothing invented: no new colours, no logo recreation, no new fonts.
-
-## What is used now (and why)
-| Element | Value | Source / status |
+## Official sources (nothing recreated)
+| Asset | Where | Notes |
 |---|---|---|
-| Dark colour | #0E0D0D | Website skill — provisional |
-| Light neutral | #B8C3C6 | Website skill — provisional |
-| Text on dark | near-white #F4F4F2 | Neutral, not a brand colour — replace when official white/off-white is known |
-| Typeface | Inter (open licence) | Working typeface only — not an AMS brand font |
-| Logo | **none** | Waiting for official file |
+| Symbol (blue triangle), PNG 512×512 transparent | AMS OS `company_settings.company_logo_url` → Supabase storage `company-assets/logo/ams_logo_transparent.png` | Works on light and dark backgrounds |
+| Wordmark «AMS \| Malergeschäft», PNG 3000×571 | AMS OS `company_settings.invoice_logo_url` → `company-assets/logo/ams_malergeschaeft_invoice.png` | Dark text → light backgrounds only (or on a white plate) |
+| Wordmark SVG | repo `ams-os` `public/marketing/ams-malergeschaeft-logo.svg` | Same design as vector |
+| Colours (from the official SVG) | `#BFE0F2` `#6FB9DF` `#3FA3D6` (symbol) · `#1E96CF` (divider) · `#1E293B` (text) | Replace the provisional website palette (#0E0D0D / #B8C3C6) |
+| Typeface in logo | Helvetica / Arial, bold | Campaign typography stays Inter (open licence) unless Adriano prefers Helvetica |
 
-## Applied in carousel v2-final
-- Headlines near-white on dark slides, #0E0D0D on the light slide 5.
-- Sub-lines, swipe arrow and slide counter in #B8C3C6.
-- CTA button #0E0D0D with near-white text.
-- Logo slot reserved: last slide, bottom-left, clear space = logo height (empty until the file arrives).
+## Applied in previews (not published)
+- Snowman ad (B2C, «Offerte innert 24 Stunden · werktags, nach der Besichtigung»): wordmark on a white plate, top right.
+- Conductor carousel slide 5 (B2B): wordmark on a white plate above the CTA.
+- Rule kept: logo only on the last slide of a carousel and on single ads; never on hook slides.
 
-## Still needs confirmation from Adriano
-1. Official logo files (SVG; light and dark versions) and usage rules (minimum size, clear space).
-2. Official corporate colours (is #0E0D0D / #B8C3C6 official? any accent colour?).
-3. Official typeface (if any) and its licence for social media use.
-4. Whether a brand manual / CI guide exists (PDF) — Julia will then follow it strictly.
+## Open questions
+1. B2B campaigns: use «AMS Malergeschäft» or an «AMS Swiss» wordmark (B2B mailbox brand is ams-swiss)? No AMS Swiss wordmark found.
+2. Is a white/negative wordmark version available for dark backgrounds?
