@@ -9,7 +9,7 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 
 ## Hard rules
 1. **No literal clichés as the main idea.** No ads that are just walls, brushes, rollers, paint cans or painters at work. The service benefit is communicated *indirectly*.
-2. **No logos** in initial creatives.
+2. **No logos** in initial creatives. Adriano generates images without a logo on purpose so Julia adds the AMS brand layer afterwards (logo, typography, colour, layout). The logo is the signature, not the idea: the concept itself must already carry an AMS clue (finish quality, precision, execution), so it could not be signed by a bank, insurer or real-estate agent.
 3. **One image per file.** Never combine several creatives in one image.
 4. **Slogans in Swiss Standard German** — no "ß", Swiss vocabulary, short (ideally ≤ 6 words), wordplay welcome if it works in Swiss usage.
 5. **Originality > safety.** Premium visual quality: clean composition, generous negative space, one idea per image.
