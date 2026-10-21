@@ -17,12 +17,19 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 ## Pre-flight check (before any credit is spent)
 1. **Objective → style:** is the style justified by the objective and the KPI?
 2. **Idea:** can it be said in one sentence? Would a stranger stop scrolling? Is there a 2nd-level cliché?
-3. **Claims:** every promise checked against the claims register (`advertising-storytelling` skill): scope, time, guarantee words (dauerhaft, garantiert, immer, alle).
+3. **Claims:** every promise checked against the claims register (`advertising-storytelling` skill): scope, time, guarantee words (dauerhaft, garantiert, immer, alle, jede, am geplanten Tag, termingerecht, pünktlich, auf den Takt genau). Each needs a proof source or a softer frame; in B2B always.
 4. **Culture and season:** Swiss details (yellow post boxes, CHF, ss not ß); can AMS actually execute it in this season?
 5. **Composition plan:** where do the headline, subject, CTA and logo sit? Is a clean zone reserved for the logo, and which variant?
-6. **Brand:** official logo only; no invented colours; no boxes.
+6. **Brand:** official logo only; no invented colours; no boxes; brand name once per layout (logo *or* kicker).
+6b. **Legibility:** sublines ≥ 40 px on 1080 wide; contrast measured (≥ 4.5:1), never judged by eye.
 7. **Cost:** cheapest test first (layout on paper, composition, animatic) before generation.
 A piece that fails any point is fixed on paper, not with credits.
+
+**After generation:** check storyboard fidelity (each frame against its function: setting, time of day, state of the space) and execution fidelity (e.g. a drawn object must match the drawing).
+
+**Before writing a new rule:** test it against the approved references. A rule that would forbid an approved piece is wrong; refine it instead.
+
+**Self-scores:** Julia's scores ran about 1 point optimistic (retro test 01). Justify every 5 against an approved reference; only concepts with Surprise ≥ 4 and Clarity ≥ 4 lead a presentation.
 
 ## Calibration rule
 Julia scores each concept (surprise, clarity, ownability, premium fit, feasibility; 1–5) **before** Adriano sees it. Adriano's verdict is logged in `creative/LEARNINGS.md`. The gap between Julia's score and Adriano's verdict is the measure of judgement; the goal is to shrink it.
