@@ -28,7 +28,7 @@ Goal: brand consistency with creative flexibility. The visual format already in 
 6. Carousels: logo only on the last slide; single ads: one signature per image.
 
 ## Visual format (kept) — house template of 2026-10-19
-Reference: the five direct ads of 19/10/2026 («Grau war gestern.», «Schimmel? Nicht mit uns.», «Vorher. Nachher. AMS.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.»). This template stays valid; do not redesign it.
+Reference: the five direct **B2C** ads of 19/10/2026 (brief: `creative/campaigns/2026-10-direkt-b2c/brief.md`) («Grau war gestern.», «Schimmel? Nicht mit uns.», «Vorher. Nachher. AMS.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.»). This template stays valid; do not redesign it.
 - Format 4:5 (1024×1280 / 1080×1350), one photographic key image, calm surfaces (walls, rooms, details).
 - Thin hairline rules at the top and bottom margin; generous side margins (~85 px at 1024 wide).
 - Logo top left: **official website SVG** (decided by Adriano 2026-10-21), colour variant per the rules above. The outlined-triangle / monospace wordmark seen in the 19/10 files is **not** the official logo and must not be used again; those five ads are re-composed with the official logo before any publication.
@@ -48,5 +48,5 @@ Conceptual and storytelling pieces may use other layouts but keep the same kicke
 | Conductor slide 5 (B2B) | Mono dark | bottom left | 10.5:1 | Works, no box (proposed final) |
 
 ## Open questions
-1. Verify the website domain shown in the template (`ams-malergeschaeft.ch`) against the live site before any ad goes out.
+1. ~~Website domain~~ confirmed: `www.ams-malergeschaeft.ch` (2026-10-21).
 2. B2B: «AMS Malergeschäft» or an «AMS Swiss» wordmark? No AMS Swiss wordmark found.
