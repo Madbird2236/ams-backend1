@@ -5,7 +5,7 @@
 - **Objective:** lead capture, cash flow and team utilisation
 - **KPI:** site-visit requests (Begehungen) and cost per lead
 - **CTA:** «Begehung anfragen» → www.ams-malergeschaeft.ch (domain confirmed by Adriano; resolves, 308 → www, 200)
-- **Status:** not publishable yet. All five must be re-composed with the official website logo (the outlined wordmark is retired). Waiting for the background files without text.
+- **Status:** reference only (Julia's own work of 19/10/2026, kept as the model for direct conversion ads). Not a production task. If any of them is ever reused, it is re-composed first with the official website logo.
 
 | # | Headline | Subline | Status |
 |---|---|---|---|

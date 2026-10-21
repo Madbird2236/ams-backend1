@@ -31,7 +31,7 @@ Goal: brand consistency with creative flexibility. The visual format already in 
 Reference: the five direct **B2C** ads of 19/10/2026 (brief: `creative/campaigns/2026-10-direkt-b2c/brief.md`) («Grau war gestern.», «Schimmel? Nicht mit uns.», «Vorher. Nachher. AMS.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.»). This template stays valid; do not redesign it.
 - Format 4:5 (1024×1280 / 1080×1350), one photographic key image, calm surfaces (walls, rooms, details).
 - Thin hairline rules at the top and bottom margin; generous side margins (~85 px at 1024 wide).
-- Logo top left: **official website SVG** (decided by Adriano 2026-10-21), colour variant per the rules above. The outlined-triangle / monospace wordmark seen in the 19/10 files is **not** the official logo and must not be used again; those five ads are re-composed with the official logo before any publication.
+- Logo top left: **official website SVG** (decided by Adriano 2026-10-21), colour variant per the rules above. The outlined-triangle / monospace wordmark seen in the 19/10 files is **not** the official logo and must not be used again. The five 19/10 ads are references for the format, not pending production; if one is ever reused, it gets the official logo first.
 - Dark gradient over the lower ~45 % carrying all text.
 - Kicker in letterspaced monospace, brand blue: «AMS MALERGESCHÄFT · ZÜRICH».
 - Headline in bold sans, two lines: line 1 white, line 2 brand blue (the twist or the answer).
