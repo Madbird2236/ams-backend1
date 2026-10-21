@@ -21,3 +21,9 @@ Read before every new concept. Add an entry after every decision by Adriano.
 | 2026-10-21 | B2B CTAs | **Decided** | Retail: «Rollout-Gespräch vereinbaren.» · Architects/Verwaltungen: «Projektbesprechung vereinbaren.» |
 | 2026-10-21 | Systems | **Decided** | AMS OS only; Bexio discontinued. |
 | 2026-10-21 | B2C time promise | **Corrected: 24 h** (website is right) | Earlier 48 h instruction superseded. Ads use «Offerte innert 24 Stunden» (small print: werktags, nach der Besichtigung). B2B: no time promise. |
+
+## 2026-10-21 — Logo colour and style arsenal
+- Don't reinvent the format; evolve one variable at a time. Here the only change was the logo colour.
+- Logo: original blue by default; mono dark/light only when contrast fails; position first, colour second; no boxes when contrast suffices.
+- Mono light failed on the conductor slide (1.4:1): our light, warm imagery rarely has clean dark zones. Plan the zone in the image brief.
+- Keep direct, conceptual and storytelling ads; the campaign objective chooses.

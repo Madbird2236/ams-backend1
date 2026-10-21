@@ -16,15 +16,37 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 - Brand fit is checked *after* the idea exists. It must never water an idea down into a safe construction ad.
 
 ## Hard rules
-1. **No literal clichés as the main idea.** No ads that are just walls, brushes, rollers, paint cans or painters at work. The service benefit is communicated *indirectly*.
-2. **No logos** in initial creatives. Images are generated without a logo on purpose; Julia applies the AMS brand layer afterwards (typography, colours, graphic identity, signature).
+1. **No literal clichés as the main idea.** No ads that are just walls, brushes, rollers, paint cans or painters at work. In conceptual and storytelling work the service benefit is communicated *indirectly*. Direct ads (see «Three styles») may show the result plainly (a finished room, an opened store), but still never brush/roller clichés.
+2. **No logos** in generated images. Images are generated without a logo on purpose; Julia applies the AMS brand layer afterwards with the composition tool (typography, colours, signature), following «Brand layer & logo colour» below.
 3. **One image per file.** Never combine several creatives in one image.
 4. **Slogans in Swiss Standard German** — no "ß", Swiss vocabulary, short (ideally ≤ 6 words), wordplay welcome if it works in Swiss usage.
 5. **Originality > safety.** Premium visual quality: clean composition, generous negative space, one idea per image.
 6. **Use references as inspiration, never copy** them (no same metaphor, layout or line).
 
+## Three styles — one arsenal (approved 2026-10-21)
+All three stay in use. The **campaign objective** picks the style, never taste or novelty. The visual format already approved (photographic key image, Inter headline top-left, short subline, CTA pill, AMS signature at the bottom, no artificial boxes) stays the house format for all three. No new identity.
+
+| Style | Use when the objective is | Typical channel | Example |
+|---|---|---|---|
+| **Direct advertising** | Immediate leads, seasonal offers, retargeting, cash & utilisation (mostly B2C) | Meta/Google ads, flyers, landing pages | Clear benefit + concrete offer + CTA, e.g. «Offerte innert 24 Stunden» (B2C only) |
+| **Conceptual advertising** | Stop the scroll, differentiation, premium positioning, B2B awareness | Social single ads, posters, LinkedIn | Snowman («Im Winter zählt das Innere.»), conductor |
+| **Cinematic storytelling** | Brand building, B2B trust, long consideration cycles | Reels, carousels, explainers (see `advertising-storytelling` skill) | Conductor carousel, Sinfonie / Untermieter Reels |
+
+- Brief step 1 must name the style and why it fits the objective and KPI.
+- One campaign may combine styles across funnel stages (e.g. storytelling Reel for reach, direct ad for retargeting), each creative stays one style.
+- Direct does not mean cheap: same premium image quality, typography and restraint.
+
+## Brand layer & logo colour (approved 2026-10-21)
+Consistency of the brand, flexibility of colour. Source of truth: `creative/BRAND-APPLICATION-PROPOSAL.md`.
+1. **Default = original blue** logo (official SVG/PNG).
+2. If the blue does not read well on the background, use an approved monochrome variant: **mono dark** (`#1E293B`) on light backgrounds, **mono light** (`#FFFFFF`) on dark backgrounds. The original negative (blue symbol, white text) is also approved for dark backgrounds.
+3. **Colour and position are chosen separately:** first the cleanest area that does not compete with headline, subject or CTA; then the variant with enough contrast there (aim ≥ 4.5:1 against the local background).
+4. **No boxes, plates or artificial backgrounds** behind the logo when contrast is sufficient. Only if no clean area with enough contrast exists, report it and propose an option to Adriano (never add a box silently).
+5. Never alter the symbol, typography or proportions; never invent brand colours. The high-contrast version (v5) is **rejected**.
+6. Mono light needs a clean dark area. Our imagery is mostly light and warm, so when a campaign needs it, reserve a dark clean zone in the image brief **before** generating.
+
 ## Mandatory process
-1. **Brief:** classify per `marketing/STRATEGY.md`: audience (B2C/B2B + segment), commercial objective (lead capture / cash & utilisation / brand building / B2B contracts), KPI, season. Then service, the one benefit, channel/format.
+1. **Brief:** classify per `marketing/STRATEGY.md`: style (direct / conceptual / storytelling, chosen by objective), audience (B2C/B2B + segment), commercial objective (lead capture / cash & utilisation / brand building / B2B contracts), KPI, season. Then service, the one benefit, channel/format.
 2. **Reference check:** re-read `creative/references/ANALYSIS.md` — which creative mechanics apply here?
 3. **Three distinct concepts.** Each must use a *different* mechanism (e.g. visual metaphor / unexpected perspective / intelligent humour). Per concept:
    - Idea in one sentence
