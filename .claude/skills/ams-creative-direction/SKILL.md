@@ -40,6 +40,13 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
    Reject any concept scoring < 3 on Clarity, however clever.
 5. **Produce** the chosen concept: each image as a separate file in `creative/campaigns/<YYYY-MM>-<campaign-slug>/`, plus `brief.md` with the three concepts, the scores and the final slogan.
 
+## First campaign deliverable (pending all 4 references)
+After all four reference ads are analysed, present three original concepts:
+1. **Residential** — immediate acquisition.
+2. **B2B** — positioning / contract acquisition.
+3. **Dual-audience** — one idea that speaks to both, with audience-specific copy.
+Each with idea, visual, Swiss German slogan (+ Portuguese translation), audience, objective, KPI and scores.
+
 ## Creative mechanics library (seed — extend from references)
 - **Visual metaphor:** a finish so perfect it is mistaken for something else (glass, silk, sky).
 - **Unexpected perspective:** show the *result's effect* (customers, light, calm, a store that opens on time) instead of the work.
