@@ -42,4 +42,7 @@ A project is not complete because prompts or images exist. Paid assets only afte
 
 ## AMS claims register (authorised only)
 - «Offerte innert 48 Stunden» — authorised (Jarvis operations).
-- Scope of trades AMS coordinates or executes: **confirm with Adriano before naming trades** (see campaign notes). Never promise «alle Gewerke», deadlines guarantees or scopes not confirmed.
+- **Scope (decided 2026-10-21, hypothesis B):** AMS executes the services under its own responsibility and works in coordination with the other trades involved. Allowed: «Wir spielen unseren Part auf den Takt genau – abgestimmt mit allen anderen Gewerken.» **Forbidden until a specific contractual scope is confirmed:** «Alle Gewerke aus einer Hand», «Wir koordinieren alle Gewerke», «Generalunternehmer», naming trades AMS does not execute (e.g. Elektriker), deadline guarantees («garantiert»).
+- Watch metaphors too: a visual (e.g. a conductor) can imply a bigger scope than the copy says — the copy must re-anchor it.
+- Pending: define contracting/coordination models for full retail fit-out projects with Adriano.
+- Learning log: `creative/LEARNINGS.md` — read before each new concept, update after each approval or rejection.
