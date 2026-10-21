@@ -27,8 +27,18 @@ Goal: brand consistency with creative flexibility. The visual format already in 
 5. Mono light needs a clean dark zone. AMS imagery is mostly light, so reserve that zone in the image brief before generation when a campaign needs it.
 6. Carousels: logo only on the last slide; single ads: one signature per image.
 
-## Visual format (kept)
-Photographic key image without logo · Inter headline top-left · short subline · CTA pill · AMS signature at the bottom · Swiss Standard German · no AI-rendered text. Applies to all three styles (direct, conceptual, cinematic storytelling); the campaign objective chooses the style (see `ams-creative-direction` skill).
+## Visual format (kept) — house template of 2026-10-19
+Reference: the five direct ads of 19/10/2026 («Grau war gestern.», «Schimmel? Nicht mit uns.», «Vorher. Nachher. AMS.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.»). This template stays valid; do not redesign it.
+- Format 4:5 (1024×1280 / 1080×1350), one photographic key image, calm surfaces (walls, rooms, details).
+- Thin hairline rules at the top and bottom margin; generous side margins (~85 px at 1024 wide).
+- Logo top left.
+- Dark gradient over the lower ~45 % carrying all text.
+- Kicker in letterspaced monospace, brand blue: «AMS MALERGESCHÄFT · ZÜRICH».
+- Headline in bold sans, two lines: line 1 white, line 2 brand blue (the twist or the answer).
+- One-line subline in white; services separated by « · » or «—».
+- Footer: website in monospace bottom left; CTA pill in brand blue with dark uppercase monospace text bottom right (e.g. «BEGEHUNG ANFRAGEN»).
+- Typography applied by the composition tool, never AI-rendered.
+Conceptual and storytelling pieces may use other layouts but keep the same kicker/headline/CTA logic and logo rules.
 
 ## Test of 2026-10-21 (previews, not published)
 | Creative | Variant | Position | Contrast | Result |
@@ -38,4 +48,6 @@ Photographic key image without logo · Inter headline top-left · short subline 
 | Conductor slide 5 (B2B) | Mono dark | bottom left | 10.5:1 | Works, no box (proposed final) |
 
 ## Open questions
-1. B2B: «AMS Malergeschäft» or an «AMS Swiss» wordmark? No AMS Swiss wordmark found.
+0. **Two logo drawings are in circulation.** The 19/10 template shows an outlined blue triangle with «AMS» + letterspaced monospace «MALERGESCHÄFT», no divider. The website SVG shows a three-tone faceted triangle, blue divider and «AMS / Malergeschäft» in bold sans. Adriano must name one as the official master; until then, ads keep the drawing of the template they belong to.
+1. Verify the website domain shown in the template (`ams-malergeschaeft.ch`) against the live site before any ad goes out.
+2. B2B: «AMS Malergeschäft» or an «AMS Swiss» wordmark? No AMS Swiss wordmark found.

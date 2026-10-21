@@ -16,7 +16,7 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 - Brand fit is checked *after* the idea exists. It must never water an idea down into a safe construction ad.
 
 ## Hard rules
-1. **No literal clichés as the main idea.** No ads that are just walls, brushes, rollers, paint cans or painters at work. In conceptual and storytelling work the service benefit is communicated *indirectly*. Direct ads (see «Three styles») may show the result plainly (a finished room, an opened store), but still never brush/roller clichés.
+1. **No literal clichés as the main idea.** No ads that are just walls, brushes, rollers, paint cans or painters at work. In conceptual and storytelling work the service benefit is communicated *indirectly*. Direct ads (see «Three styles») may show the work and its result plainly (a roller stroke, a peeled masking tape edge, a finished room), shot as a premium detail with the house template of 19/10/2026 (see `creative/BRAND-APPLICATION-PROPOSAL.md`); never a generic stock painter scene.
 2. **No logos** in generated images. Images are generated without a logo on purpose; Julia applies the AMS brand layer afterwards with the composition tool (typography, colours, signature), following «Brand layer & logo colour» below.
 3. **One image per file.** Never combine several creatives in one image.
 4. **Slogans in Swiss Standard German** — no "ß", Swiss vocabulary, short (ideally ≤ 6 words), wordplay welcome if it works in Swiss usage.
@@ -24,11 +24,11 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
 6. **Use references as inspiration, never copy** them (no same metaphor, layout or line).
 
 ## Three styles — one arsenal (approved 2026-10-21)
-All three stay in use. The **campaign objective** picks the style, never taste or novelty. The visual format already approved (photographic key image, Inter headline top-left, short subline, CTA pill, AMS signature at the bottom, no artificial boxes) stays the house format for all three. No new identity.
+All three stay in use. The **campaign objective** picks the style, never taste or novelty. The house template of 19/10/2026 (see `creative/BRAND-APPLICATION-PROPOSAL.md`, «Visual format») stays the reference format, above all for direct ads. No new identity.
 
 | Style | Use when the objective is | Typical channel | Example |
 |---|---|---|---|
-| **Direct advertising** | Immediate leads, seasonal offers, retargeting, cash & utilisation (mostly B2C) | Meta/Google ads, flyers, landing pages | Clear benefit + concrete offer + CTA, e.g. «Offerte innert 24 Stunden» (B2C only) |
+| **Direct advertising** | Immediate leads, seasonal offers, retargeting, cash & utilisation (mostly B2C) | Meta/Google ads, flyers, landing pages | 19/10 series: «Grau war gestern.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.» + CTA «Begehung anfragen» |
 | **Conceptual advertising** | Stop the scroll, differentiation, premium positioning, B2B awareness | Social single ads, posters, LinkedIn | Snowman («Im Winter zählt das Innere.»), conductor |
 | **Cinematic storytelling** | Brand building, B2B trust, long consideration cycles | Reels, carousels, explainers (see `advertising-storytelling` skill) | Conductor carousel, Sinfonie / Untermieter Reels |
 
