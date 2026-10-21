@@ -1,0 +1,925 @@
+From b6ea31970cae283e8aaaed0a9e380e703afc1ea1 Mon Sep 17 00:00:00 2001
+From: "Julia (Claude)" <noreply@anthropic.com>
+Date: Wed, 21 Oct 2026 22:58:51 +0000
+Subject: [PATCH] =?UTF-8?q?feat(crm):=20campaign=20attribution,=20lead=20d?=
+ =?UTF-8?q?edupe=20on=20intake,=20lead=E2=86=92project=20link=20(082)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+- crm_leads: segment (b2c|b2b), utm_*, campaign_id, click_id, landing_page,
+  next_step(+due); projects.lead_id (ON DELETE SET NULL); view
+  crm_campaign_funnel (security_invoker). Additive only, rollback script.
+- /api/lead-intake: dedupe by e-mail then phone (repeat contact no longer
+  500s on the unique e-mail index), fill-empty only, first-touch attribution,
+  source whatsapp accepted, all attribution sanitised.
+- SalesBot e-mail ingestion: FormSubmit forms → source website + hidden
+  attribution fields parsed out of the enquiry text.
+- Attribution writes behind CRM_ATTRIBUTION_ENABLED=1 (set only after 082).
+- Tests: attribution, lead upsert (new/repeat/phone/tenant/race/failure),
+  route integration (auth, validation, repeat, failure), form parsing.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01S6zfxMwM7riK18JSe7Qzmo
+---
+ .env.example                                  |   3 +
+ src/app/api/lead-intake/route.test.ts         | 116 +++++++++++++++
+ src/app/api/lead-intake/route.ts              |  37 ++---
+ src/lib/crm/attribution.test.ts               |  49 +++++++
+ src/lib/crm/attribution.ts                    | 107 ++++++++++++++
+ src/lib/crm/lead-upsert.test.ts               | 134 ++++++++++++++++++
+ src/lib/crm/lead-upsert.ts                    | 121 ++++++++++++++++
+ src/lib/salesbot/email-poll.ts                |  31 +++-
+ src/lib/salesbot/form-attribution.test.ts     |  41 ++++++
+ supabase/migrations/082_crm_attribution.sql   |  92 ++++++++++++
+ .../rollbacks/082_crm_attribution_down.sql    |  20 +++
+ 11 files changed, 729 insertions(+), 22 deletions(-)
+ create mode 100644 src/app/api/lead-intake/route.test.ts
+ create mode 100644 src/lib/crm/attribution.test.ts
+ create mode 100644 src/lib/crm/attribution.ts
+ create mode 100644 src/lib/crm/lead-upsert.test.ts
+ create mode 100644 src/lib/crm/lead-upsert.ts
+ create mode 100644 src/lib/salesbot/form-attribution.test.ts
+ create mode 100644 supabase/migrations/082_crm_attribution.sql
+ create mode 100644 supabase/rollbacks/082_crm_attribution_down.sql
+
+diff --git a/.env.example b/.env.example
+index e2bb969..29a5365 100644
+--- a/.env.example
++++ b/.env.example
+@@ -48,6 +48,9 @@ CRON_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ # Shared secret protecting POST /api/lead-intake (website form + Telegram
+ # bot feed the CRM funnel through it). Sent as `Authorization: Bearer <value>`
+ # or `x-lead-secret`. Generate: openssl rand -hex 32
++# CRM campaign attribution (utm_*, campaign_id, segment). Set to 1 ONLY after
++# migration 082 is applied — before that the columns don't exist.
++CRM_ATTRIBUTION_ENABLED=0
+ LEAD_INTAKE_SECRET=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+ 
+ # ── Stripe (billing / Abo) ───────────────────────────────────────────────
+diff --git a/src/app/api/lead-intake/route.test.ts b/src/app/api/lead-intake/route.test.ts
+new file mode 100644
+index 0000000..321ef5c
+--- /dev/null
++++ b/src/app/api/lead-intake/route.test.ts
+@@ -0,0 +1,116 @@
++import { describe, it, expect, vi, beforeEach } from "vitest";
++
++// ── Fake service-role client (only what the route touches) ──────────────────
++type Row = Record<string, unknown>;
++const state: { leads: Row[]; convs: Row[]; msgs: Row[]; failInsert: boolean; orgs: Row[] } = {
++  leads: [], convs: [], msgs: [], failInsert: false, orgs: [{ id: "org-ams", slug: "ams-swiss" }],
++};
++const norm = (r: Row) => ({
++  ...r,
++  email_normalized: typeof r.email === "string" ? (r.email as string).trim().toLowerCase() || null : null,
++  phone_normalized: typeof r.phone === "string" ? (r.phone as string).replace(/[^0-9+]/g, "") || null : null,
++});
++function q(table: string, op = "select", payload?: unknown) {
++  const f: [string, unknown][] = [];
++  const src = () => (table === "organizations" ? state.orgs : table === "crm_leads" ? state.leads.map(norm) : []);
++  // eslint-disable-next-line @typescript-eslint/no-explicit-any
++  const b: any = {};
++  b.select = () => b; b.order = () => b; b.limit = () => b; b.gte = () => b;
++  b.eq = (k: string, v: unknown) => { f.push([k, v]); return b; };
++  b.maybeSingle = async () => ({ data: src().find((r) => f.every(([k, v]) => (r as Row)[k] === v)) ?? null, error: null });
++  b.single = async () => {
++    if (table === "crm_leads" && op === "insert") {
++      if (state.failInsert) return { data: null, error: { message: "db down" } };
++      const id = `lead-${state.leads.length + 1}`; state.leads.push({ id, ...(payload as Row) }); return { data: { id }, error: null };
++    }
++    if (table === "crm_conversations" && op === "insert") { const id = `c${state.convs.length + 1}`; state.convs.push({ id, ...(payload as Row) }); return { data: { id }, error: null }; }
++    return { data: null, error: null };
++  };
++  b.then = (res: (v: unknown) => void) => {
++    if (table === "crm_messages" && op === "insert") state.msgs.push(payload as Row);
++    if (table === "crm_leads" && op === "update") for (const r of state.leads) if (f.every(([k, v]) => (norm(r) as Row)[k] === v)) Object.assign(r, payload);
++    if (table === "public_rate_limits" && op === "select") return res({ count: 0, error: null });
++    return res({ data: null, error: null });
++  };
++  return b;
++}
++vi.mock("@/lib/supabase/admin", () => ({
++  createAdminClient: () => ({
++    from: (t: string) => ({
++      select: () => q(t, "select"),
++      insert: (p: unknown) => q(t, "insert", p),
++      update: (p: unknown) => q(t, "update", p),
++    }),
++  }),
++}));
++
++import { POST } from "./route";
++
++const SECRET = "test-secret-0123456789";
++const req = (body: unknown, secret: string | null = SECRET) =>
++  new Request("http://localhost/api/lead-intake", {
++    method: "POST",
++    headers: { "content-type": "application/json", ...(secret ? { authorization: `Bearer ${secret}` } : {}) },
++    body: typeof body === "string" ? body : JSON.stringify(body),
++  });
++
++beforeEach(() => {
++  state.leads = []; state.convs = []; state.msgs = []; state.failInsert = false;
++  process.env.LEAD_INTAKE_SECRET = SECRET;
++  process.env.CRM_ATTRIBUTION_ENABLED = "1";
++});
++
++describe("POST /api/lead-intake", () => {
++  it("503 when the secret is not configured", async () => {
++    process.env.LEAD_INTAKE_SECRET = "";
++    expect((await POST(req({ name: "Max" }))).status).toBe(503);
++  });
++  it("401 on missing or wrong secret", async () => {
++    expect((await POST(req({ name: "Max" }, null))).status).toBe(401);
++    expect((await POST(req({ name: "Max" }, "wrong-secret-0123456789"))).status).toBe(401);
++  });
++  it("400 on invalid JSON and on missing name", async () => {
++    expect((await POST(req("{oops"))).status).toBe(400);
++    expect((await POST(req({ email: "a@b.ch" }))).status).toBe(400);
++  });
++  it("404 on unknown org (no cross-tenant fallback)", async () => {
++    expect((await POST(req({ name: "Max", org: "other-co" }))).status).toBe(404);
++  });
++  it("creates a new lead with campaign attribution + website conversation", async () => {
++    const res = await POST(req({
++      name: "Max Muster", email: "max@example.ch", source: "website", notes: "3.5 Zi streichen",
++      utm_source: "instagram", utm_medium: "reel", utm_campaign: "b2c-2026-01-untermieter", segment: "b2c",
++      page: "https://www.ams-malergeschaeft.ch/maler-offerte-zuerich/?utm_source=instagram",
++    }));
++    expect(res.status).toBe(200);
++    expect(state.leads).toHaveLength(1);
++    expect(state.leads[0]).toMatchObject({
++      org_id: "org-ams", source: "website", utm_source: "instagram", campaign_id: "b2c-2026-01-untermieter",
++      segment: "b2c", landing_page: "/maler-offerte-zuerich/?utm_source=instagram",
++    });
++    expect(state.convs).toHaveLength(1);
++  });
++  it("repeated contact: same e-mail → same lead (previously a 500), new conversation kept", async () => {
++    await POST(req({ name: "Max", email: "max@example.ch", utm_campaign: "first" }));
++    const res = await POST(req({ name: "Max", email: "MAX@example.ch", utm_campaign: "second" }));
++    expect(res.status).toBe(200);
++    expect(state.leads).toHaveLength(1);
++    expect(state.leads[0].campaign_id).toBe("first");
++    expect(state.convs).toHaveLength(2);
++  });
++  it("WhatsApp source is accepted; unknown sources fall back to website", async () => {
++    await POST(req({ name: "Luca", phone: "+41 79 000 00 00", source: "whatsapp" }));
++    await POST(req({ name: "Eva", email: "eva@example.ch", source: "carrier-pigeon" }));
++    expect(state.leads.map((l) => l.source)).toEqual(["whatsapp", "website"]);
++  });
++  it("500 when the database insert really fails (no silent success)", async () => {
++    state.failInsert = true;
++    expect((await POST(req({ name: "Max", email: "max@example.ch" }))).status).toBe(500);
++  });
++  it("hostile attribution values are dropped, lead still created", async () => {
++    const res = await POST(req({ name: "Max", email: "x@example.ch", utm_source: "<img src=x onerror=1>", segment: "admin" }));
++    expect(res.status).toBe(200);
++    expect(state.leads[0].utm_source).toBeUndefined();
++    expect(state.leads[0].segment).toBeUndefined();
++  });
++});
+diff --git a/src/app/api/lead-intake/route.ts b/src/app/api/lead-intake/route.ts
+index 6f66b99..c1e8976 100644
+--- a/src/app/api/lead-intake/route.ts
++++ b/src/app/api/lead-intake/route.ts
+@@ -1,11 +1,16 @@
+ import { timingSafeEqual } from "node:crypto";
+ import { NextResponse } from "next/server";
+ import { createAdminClient } from "@/lib/supabase/admin";
++import { extractAttribution } from "@/lib/crm/attribution";
++import { upsertLead } from "@/lib/crm/lead-upsert";
+ 
+ /**
+  * Public lead-intake endpoint — feeds the CRM funnel from outside the app:
+  *   - website contact forms (source "website")
+  *   - the Telegram bot ("lead: ..." command → source "phone"/"telegram")
++ *   - WhatsApp leads entered by the team/Jarvis (source "whatsapp")
++ *   Optional attribution fields: segment, utm_source/medium/campaign/content/term,
++ *   campaign_id, gclid|fbclid|li_fat_id|click_id, landing_page|page.
+  *
+  * Auth: shared secret (LEAD_INTAKE_SECRET, set in Vercel) via
+  * `Authorization: Bearer <secret>` or `x-lead-secret: <secret>`.
+@@ -18,7 +23,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
+ 
+ export const dynamic = "force-dynamic";
+ 
+-const INTAKE_SOURCES = ["website", "phone", "telegram"] as const;
++const INTAKE_SOURCES = ["website", "phone", "telegram", "whatsapp"] as const;
+ const RATE_LIMIT_PER_HOUR = 20;
+ 
+ function secretMatches(provided: string, expected: string): boolean {
+@@ -101,23 +106,19 @@ export async function POST(req: Request) {
+   const notes = clean(body.notes, 4000);
+   const brand = clean(body.brand, 40) === "ams-swiss" ? "ams-swiss" : "maler";
+ 
+-  const { data: lead, error } = await admin
+-    .from("crm_leads")
+-    .insert({
+-      org_id: org.id,
+-      stage: "new",
+-      name,
+-      phone,
+-      email,
+-      company,
+-      notes,
+-      source,
+-    })
+-    .select("id")
+-    .single();
+-
+-  if (error || !lead) {
+-    console.error("lead-intake insert failed:", error?.message);
++  // Dedupe (e-mail, then phone) + first-touch attribution. A repeated contact
++  // reuses its lead instead of failing on the unique e-mail index (previously
++  // a 500 → enquiry lost). Attribution is written only when
++  // CRM_ATTRIBUTION_ENABLED=1 (i.e. after migration 082).
++  let lead: { id: string };
++  try {
++    const r = await upsertLead(admin, org.id, {
++      name, phone, email, company, notes, source,
++      attribution: extractAttribution(body),
++    });
++    lead = { id: r.leadId };
++  } catch (e) {
++    console.error("lead-intake upsert failed:", e instanceof Error ? e.message : e);
+     return NextResponse.json({ error: "Could not create lead" }, { status: 500 });
+   }
+ 
+diff --git a/src/lib/crm/attribution.test.ts b/src/lib/crm/attribution.test.ts
+new file mode 100644
+index 0000000..d19e53e
+--- /dev/null
++++ b/src/lib/crm/attribution.test.ts
+@@ -0,0 +1,49 @@
++import { describe, it, expect } from "vitest";
++import { extractAttribution, attributionFromRows, isAttributionRow, attributionColumns } from "./attribution";
++
++describe("extractAttribution", () => {
++  it("keeps valid UTM fields and derives campaign_id from utm_campaign", () => {
++    const a = extractAttribution({
++      utm_source: "instagram", utm_medium: "reel", utm_campaign: "b2c-2026-01-untermieter", segment: "B2C",
++    });
++    expect(a).toEqual({
++      segment: "b2c", utm_source: "instagram", utm_medium: "reel",
++      utm_campaign: "b2c-2026-01-untermieter", campaign_id: "b2c-2026-01-untermieter",
++    });
++  });
++  it("prefers explicit campaign_id and picks gclid as click_id", () => {
++    const a = extractAttribution({ utm_campaign: "x", campaign_id: "b2b-2026-01-dirigent", gclid: "Cj0KCQ_abc-123" });
++    expect(a.campaign_id).toBe("b2b-2026-01-dirigent");
++    expect(a.click_id).toBe("Cj0KCQ_abc-123");
++  });
++  it("drops unsafe or oversized values instead of failing", () => {
++    const a = extractAttribution({ utm_source: "<script>alert(1)</script>", utm_medium: "a".repeat(500), segment: "vip" });
++    expect(a.utm_source).toBeUndefined();
++    expect(a.utm_medium).toHaveLength(120);
++    expect(a.segment).toBeUndefined();
++  });
++  it("stores only the same-site path of the landing page", () => {
++    expect(extractAttribution({ page: "https://www.ams-malergeschaeft.ch/maler-offerte-zuerich/?utm_source=ig#form" }).landing_page)
++      .toBe("/maler-offerte-zuerich/?utm_source=ig");
++    expect(extractAttribution({ landing_page: "/kontakt/" }).landing_page).toBe("/kontakt/");
++  });
++  it("returns {} for empty / non-object input", () => {
++    expect(extractAttribution(undefined)).toEqual({});
++    expect(extractAttribution({ name: "Max" })).toEqual({});
++  });
++});
++
++describe("form rows", () => {
++  const rows = ["Name: Max Muster", "E-Mail: max@example.ch", "utm_source: meta", "utm_campaign: b2c-2026-02-schneemann", "Segment: b2c", "Projekt: Wohnung 3.5 Zi"];
++  it("detects attribution rows", () => {
++    expect(rows.filter(isAttributionRow)).toEqual(["utm_source: meta", "utm_campaign: b2c-2026-02-schneemann", "Segment: b2c"]);
++  });
++  it("parses attribution from rows", () => {
++    expect(attributionFromRows(rows)).toEqual({
++      segment: "b2c", utm_source: "meta", utm_campaign: "b2c-2026-02-schneemann", campaign_id: "b2c-2026-02-schneemann",
++    });
++  });
++  it("builds a column payload without empty fields", () => {
++    expect(attributionColumns({ utm_source: "meta" })).toEqual({ utm_source: "meta" });
++  });
++});
+diff --git a/src/lib/crm/attribution.ts b/src/lib/crm/attribution.ts
+new file mode 100644
+index 0000000..31aafd4
+--- /dev/null
++++ b/src/lib/crm/attribution.ts
+@@ -0,0 +1,107 @@
++/**
++ * Campaign attribution for CRM leads (first-touch).
++ *
++ * Pure + side-effect-free (unit-tested). Used by:
++ *   - /api/lead-intake  (JSON body from the website / bots)
++ *   - SalesBot e-mail ingestion (FormSubmit website forms with hidden fields)
++ *
++ * Every value is untrusted input: trimmed, length-capped and restricted to a
++ * safe character set. Unknown/invalid values are dropped (never an error), so
++ * attribution can never block a lead from being created.
++ */
++
++export type Segment = "b2c" | "b2b";
++
++export interface LeadAttribution {
++  segment?: Segment;
++  utm_source?: string;
++  utm_medium?: string;
++  utm_campaign?: string;
++  utm_content?: string;
++  utm_term?: string;
++  campaign_id?: string;
++  click_id?: string;
++  landing_page?: string;
++}
++
++const TOKEN_MAX = 120;
++// Latin letters incl. accents/umlauts (U+00C0–U+024F), digits, simple punctuation.
++const SAFE_TOKEN = /^[A-Za-z0-9\u00C0-\u024F ._\-+:/|()]+$/;
++
++function token(v: unknown, max = TOKEN_MAX): string | undefined {
++  if (typeof v !== "string") return undefined;
++  const s = v.trim().slice(0, max);
++  if (!s || !SAFE_TOKEN.test(s)) return undefined;
++  return s;
++}
++
++function segment(v: unknown): Segment | undefined {
++  if (typeof v !== "string") return undefined;
++  const s = v.trim().toLowerCase();
++  return s === "b2c" || s === "b2b" ? s : undefined;
++}
++
++/** Keep only a same-site path (+ query) — never store foreign URLs or fragments. */
++function landingPath(v: unknown): string | undefined {
++  if (typeof v !== "string") return undefined;
++  const raw = v.trim().slice(0, 1000);
++  if (!raw) return undefined;
++  try {
++    const u = new URL(raw, "https://placeholder.invalid");
++    const path = (u.pathname + u.search).slice(0, 500);
++    return path.startsWith("/") ? path : undefined;
++  } catch {
++    return undefined;
++  }
++}
++
++/** Build attribution from a flat key/value object (JSON body or parsed form). */
++export function extractAttribution(input: Record<string, unknown> | null | undefined): LeadAttribution {
++  if (!input || typeof input !== "object") return {};
++  const out: LeadAttribution = {};
++  const seg = segment(input.segment);
++  if (seg) out.segment = seg;
++  for (const k of ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"] as const) {
++    const t = token(input[k]);
++    if (t) out[k] = t;
++  }
++  // campaign_id: explicit, else fall back to utm_campaign (our convention: same value).
++  const cid = token(input.campaign_id) ?? out.utm_campaign;
++  if (cid) out.campaign_id = cid;
++  const click = token(input.click_id, 255) ?? token(input.gclid, 255) ?? token(input.fbclid, 255) ?? token(input.li_fat_id, 255);
++  if (click) out.click_id = click;
++  const lp = landingPath(input.landing_page ?? input.page);
++  if (lp) out.landing_page = lp;
++  return out;
++}
++
++const FIELD_KEYS = new Set([
++  "segment", "utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term",
++  "campaign_id", "click_id", "gclid", "fbclid", "li_fat_id", "landing_page",
++]);
++
++/** True for a "label: value" row that carries attribution (hidden form field). */
++export function isAttributionRow(row: string): boolean {
++  const i = row.indexOf(":");
++  if (i <= 0) return false;
++  return FIELD_KEYS.has(row.slice(0, i).trim().toLowerCase());
++}
++
++/** Parse attribution out of "label: value" rows (FormSubmit table rows). */
++export function attributionFromRows(rows: string[]): LeadAttribution {
++  const obj: Record<string, string> = {};
++  for (const row of rows) {
++    const i = row.indexOf(":");
++    if (i <= 0) continue;
++    const key = row.slice(0, i).trim().toLowerCase();
++    if (FIELD_KEYS.has(key)) obj[key] = row.slice(i + 1).trim();
++  }
++  return extractAttribution(obj);
++}
++
++/** Supabase insert payload (snake_case columns) — empty fields omitted. */
++export function attributionColumns(a: LeadAttribution): Record<string, string> {
++  const out: Record<string, string> = {};
++  for (const [k, v] of Object.entries(a)) if (v) out[k] = v;
++  return out;
++}
+diff --git a/src/lib/crm/lead-upsert.test.ts b/src/lib/crm/lead-upsert.test.ts
+new file mode 100644
+index 0000000..64f820f
+--- /dev/null
++++ b/src/lib/crm/lead-upsert.test.ts
+@@ -0,0 +1,134 @@
++import { describe, it, expect, beforeEach, afterEach } from "vitest";
++import { upsertLead, normalizeEmail, normalizePhone, fillEmptyPatch } from "./lead-upsert";
++
++/** In-memory fake of the Supabase query builder for crm_leads. */
++function fakeDb(seed: Record<string, unknown>[] = [], opts: { failInsert?: string; raceRow?: Record<string, unknown> } = {}) {
++  const rows = seed.map((r) => ({ ...r }));
++  const calls: { op: string; filters: [string, unknown][]; payload?: unknown }[] = [];
++  const derive = (r: Record<string, unknown>) => ({
++    ...r,
++    email_normalized: normalizeEmail(r.email as string),
++    phone_normalized: normalizePhone(r.phone as string),
++  });
++  function builder(op: string, payload?: unknown) {
++    const filters: [string, unknown][] = [];
++    // eslint-disable-next-line @typescript-eslint/no-explicit-any
++    const b: any = {};
++    const match = () => rows.map(derive).filter((r) => filters.every(([k, v]) => (r as Record<string, unknown>)[k] === v)) as Record<string, unknown>[];
++    b.select = () => b; b.order = () => b; b.limit = () => b;
++    b.eq = (k: string, v: unknown) => { filters.push([k, v]); return b; };
++    b.maybeSingle = async () => { calls.push({ op, filters: [...filters] }); return { data: match()[0] ?? null, error: null }; };
++    b.single = async () => {
++      calls.push({ op, filters: [...filters], payload });
++      if (op === "insert") {
++        if (opts.failInsert) {
++          if (opts.raceRow) rows.push(opts.raceRow);
++          return { data: null, error: { message: opts.failInsert } };
++        }
++        const id = `lead-${rows.length + 1}`;
++        rows.push({ id, ...(payload as object) });
++        return { data: { id }, error: null };
++      }
++      return { data: null, error: null };
++    };
++    b.then = (res: (v: unknown) => void) => {
++      calls.push({ op, filters: [...filters], payload });
++      if (op === "update") {
++        for (const r of rows) if (filters.every(([k, v]) => (derive(r) as Record<string, unknown>)[k] === v)) Object.assign(r, payload);
++      }
++      res({ error: null });
++    };
++    return b;
++  }
++  return {
++    rows, calls,
++    from: (table: string) => {
++      expect(table).toBe("crm_leads");
++      return {
++        select: () => builder("select").select(),
++        insert: (p: unknown) => builder("insert", p),
++        update: (p: unknown) => builder("update", p),
++      };
++    },
++  };
++}
++
++const ORG = "org-ams";
++const OTHER = "org-other";
++
++describe("upsertLead", () => {
++  const prev = process.env.CRM_ATTRIBUTION_ENABLED;
++  beforeEach(() => { process.env.CRM_ATTRIBUTION_ENABLED = "1"; });
++  afterEach(() => { process.env.CRM_ATTRIBUTION_ENABLED = prev; });
++
++  it("creates a new lead with attribution", async () => {
++    const db = fakeDb();
++    const r = await upsertLead(db, ORG, {
++      name: "Max", email: "Max@Example.ch ", source: "website",
++      attribution: { utm_source: "meta", campaign_id: "b2c-2026-02-schneemann", segment: "b2c" },
++    });
++    expect(r).toEqual({ leadId: "lead-1", created: true });
++    expect(db.rows[0]).toMatchObject({ org_id: ORG, stage: "new", source: "website", utm_source: "meta", campaign_id: "b2c-2026-02-schneemann", segment: "b2c" });
++  });
++
++  it("reuses the existing lead for a repeated e-mail (no duplicate, no overwrite)", async () => {
++    const db = fakeDb([{ id: "L1", org_id: ORG, name: "Max Original", email: "max@example.ch", stage: "offer", notes: "alt", campaign_id: "b2c-old" }]);
++    const r = await upsertLead(db, ORG, {
++      name: "Max Neu", email: "MAX@example.ch", phone: "+41 79 000 00 00", source: "website", notes: "neu",
++      attribution: { campaign_id: "b2c-new", utm_source: "google" },
++    });
++    expect(r).toEqual({ leadId: "L1", created: false });
++    expect(db.rows).toHaveLength(1);
++    expect(db.rows[0]).toMatchObject({ name: "Max Original", stage: "offer", notes: "alt", campaign_id: "b2c-old", phone: "+41 79 000 00 00" });
++    expect(db.rows[0].utm_source).toBeUndefined(); // first-touch kept
++  });
++
++  it("fills attribution on an existing lead that had none (e.g. came by e-mail before)", async () => {
++    const db = fakeDb([{ id: "L1", org_id: ORG, name: "Anna", email: "anna@example.ch", stage: "new" }]);
++    await upsertLead(db, ORG, { name: "Anna", email: "anna@example.ch", source: "website", attribution: { campaign_id: "b2c-2026-01-untermieter" } });
++    expect(db.rows[0].campaign_id).toBe("b2c-2026-01-untermieter");
++  });
++
++  it("matches WhatsApp/phone-only contacts by normalised phone", async () => {
++    const db = fakeDb([{ id: "L7", org_id: ORG, name: "Luca", phone: "+41797935000", stage: "contacted" }]);
++    const r = await upsertLead(db, ORG, { name: "Luca", phone: "+41 79 793 50 00", source: "whatsapp" });
++    expect(r).toEqual({ leadId: "L7", created: false });
++  });
++
++  it("never matches a lead of another company (tenant isolation)", async () => {
++    const db = fakeDb([{ id: "X1", org_id: OTHER, name: "Max", email: "max@example.ch" }]);
++    const r = await upsertLead(db, ORG, { name: "Max", email: "max@example.ch", source: "website" });
++    expect(r.created).toBe(true);
++    expect(db.calls.filter((c) => c.op === "select").every((c) => c.filters.some(([k, v]) => k === "org_id" && v === ORG))).toBe(true);
++  });
++
++  it("recovers from a unique-constraint race by reusing the winner", async () => {
++    const db = fakeDb([], { failInsert: "duplicate key value violates unique constraint", raceRow: { id: "W1", org_id: ORG, name: "Max", email: "max@example.ch" } });
++    const r = await upsertLead(db, ORG, { name: "Max", email: "max@example.ch", source: "website" });
++    expect(r).toEqual({ leadId: "W1", created: false });
++  });
++
++  it("throws on a real insert failure so the caller can answer 500", async () => {
++    const db = fakeDb([], { failInsert: "connection reset" });
++    await expect(upsertLead(db, ORG, { name: "Max", email: "max@example.ch", source: "website" })).rejects.toThrow(/connection reset/);
++  });
++
++  it("does not write attribution columns while the flag is off (pre-migration safety)", async () => {
++    process.env.CRM_ATTRIBUTION_ENABLED = "0";
++    const db = fakeDb();
++    await upsertLead(db, ORG, { name: "Max", email: "m@example.ch", source: "website", attribution: { campaign_id: "c1" } });
++    expect(db.rows[0].campaign_id).toBeUndefined();
++  });
++});
++
++describe("helpers", () => {
++  it("normalises like the DB generated columns", () => {
++    expect(normalizeEmail("  A@B.CH ")).toBe("a@b.ch");
++    expect(normalizePhone("+41 (79) 793-50-90")).toBe("+41797935090");
++    expect(normalizePhone("")).toBeNull();
++  });
++  it("fillEmptyPatch never touches name/notes/stage", () => {
++    const p = fillEmptyPatch({ id: "1", name: "A", notes: "x", stage: "won" }, { name: "B", notes: "y", source: "website", company: "AG" }, true);
++    expect(p).toEqual({ company: "AG" });
++  });
++});
+diff --git a/src/lib/crm/lead-upsert.ts b/src/lib/crm/lead-upsert.ts
+new file mode 100644
+index 0000000..d6c2cc5
+--- /dev/null
++++ b/src/lib/crm/lead-upsert.ts
+@@ -0,0 +1,121 @@
++/**
++ * Lead dedupe + first-touch attribution, shared by /api/lead-intake and the
++ * SalesBot e-mail ingestion. Never creates a second lead for the same person.
++ *
++ * Matching (same rules as the DB generated columns):
++ *   email_normalized = lower(trim(email))            (UNIQUE per org)
++ *   phone_normalized = phone without [^0-9+]         (indexed, not unique)
++ * Order: e-mail first, then phone. Existing lead → only EMPTY fields are filled
++ * (name/notes/stage are never overwritten; attribution is first-touch).
++ *
++ * Multi-tenant golden rule: every query is scoped with .eq("org_id", orgId)
++ * because callers use the service-role client.
++ */
++import type { LeadAttribution } from "./attribution";
++import { attributionColumns } from "./attribution";
++
++/** Attribution columns exist only after migration 082 → feature flag. */
++export function attributionEnabled(): boolean {
++  return process.env.CRM_ATTRIBUTION_ENABLED === "1";
++}
++
++export function normalizeEmail(email: string | null | undefined): string | null {
++  const s = (email ?? "").trim().toLowerCase();
++  return s || null;
++}
++
++export function normalizePhone(phone: string | null | undefined): string | null {
++  const s = (phone ?? "").replace(/[^0-9+]/g, "");
++  return s || null;
++}
++
++export interface LeadInput {
++  name: string;
++  email?: string | null;
++  phone?: string | null;
++  company?: string | null;
++  notes?: string | null;
++  source: string;
++  isOps?: boolean;
++  attribution?: LeadAttribution;
++}
++
++export interface UpsertResult {
++  leadId: string;
++  created: boolean;
++}
++
++// Minimal structural type of the Supabase client used here (keeps tests simple).
++// eslint-disable-next-line @typescript-eslint/no-explicit-any
++type Db = { from: (table: string) => any };
++
++const ATTR_KEYS = [
++  "segment", "utm_source", "utm_medium", "utm_campaign", "utm_content",
++  "utm_term", "campaign_id", "click_id", "landing_page",
++] as const;
++
++async function findExisting(db: Db, orgId: string, email: string | null, phone: string | null) {
++  if (email) {
++    const { data } = await db.from("crm_leads").select("*")
++      .eq("org_id", orgId).eq("email_normalized", email).maybeSingle();
++    if (data) return data as Record<string, unknown>;
++  }
++  if (phone) {
++    const { data } = await db.from("crm_leads").select("*")
++      .eq("org_id", orgId).eq("phone_normalized", phone)
++      .order("created_at", { ascending: true }).limit(1).maybeSingle();
++    if (data) return data as Record<string, unknown>;
++  }
++  return null;
++}
++
++/** Patch with only the fields that are empty on the existing lead. */
++export function fillEmptyPatch(existing: Record<string, unknown>, input: LeadInput, withAttribution: boolean) {
++  const patch: Record<string, unknown> = {};
++  if (!existing.phone && input.phone) patch.phone = input.phone;
++  if (!existing.email && input.email) patch.email = input.email;
++  if (!existing.company && input.company) patch.company = input.company;
++  if (withAttribution && input.attribution) {
++    // First touch: only when the lead has NO campaign data yet.
++    const hasAny = ATTR_KEYS.some((k) => existing[k]);
++    if (!hasAny) Object.assign(patch, attributionColumns(input.attribution));
++  }
++  return patch;
++}
++
++export async function upsertLead(db: Db, orgId: string, input: LeadInput): Promise<UpsertResult> {
++  const withAttribution = attributionEnabled();
++  const email = normalizeEmail(input.email);
++  const phone = normalizePhone(input.phone);
++
++  const existing = await findExisting(db, orgId, email, phone);
++  if (existing) {
++    const patch = fillEmptyPatch(existing, input, withAttribution);
++    if (Object.keys(patch).length) {
++      const { error } = await db.from("crm_leads").update(patch)
++        .eq("org_id", orgId).eq("id", existing.id as string);
++      if (error) console.error("lead upsert: fill-empty update failed:", error.message);
++    }
++    return { leadId: existing.id as string, created: false };
++  }
++
++  const row: Record<string, unknown> = {
++    org_id: orgId,
++    stage: "new",
++    name: input.name,
++    email: input.email ?? null,
++    phone: input.phone ?? null,
++    company: input.company ?? null,
++    notes: input.notes ?? null,
++    source: input.source,
++    ...(input.isOps ? { is_ops: true } : {}),
++    ...(withAttribution && input.attribution ? attributionColumns(input.attribution) : {}),
++  };
++  const { data, error } = await db.from("crm_leads").insert(row).select("id").single();
++  if (!error && data) return { leadId: data.id as string, created: true };
++
++  // Unique race (same e-mail inserted concurrently) → reuse the winner.
++  const raced = await findExisting(db, orgId, email, null);
++  if (raced) return { leadId: raced.id as string, created: false };
++  throw new Error(`lead insert failed: ${error?.message ?? "unknown"}`);
++}
+diff --git a/src/lib/salesbot/email-poll.ts b/src/lib/salesbot/email-poll.ts
+index ff91ec9..44a4c0a 100644
+--- a/src/lib/salesbot/email-poll.ts
++++ b/src/lib/salesbot/email-poll.ts
+@@ -1,4 +1,6 @@
+ import { ImapFlow } from "imapflow";
++import { attributionFromRows, attributionColumns, isAttributionRow, type LeadAttribution } from "@/lib/crm/attribution";
++import { attributionEnabled, fillEmptyPatch } from "@/lib/crm/lead-upsert";
+ import { notifyLead } from "./notify-lead";
+ import type { SupabaseClient } from "@supabase/supabase-js";
+ 
+@@ -222,7 +224,7 @@ export function parseFormSubmitLead(
+   subject: string | null,
+   bodyText: string,
+   selfIdentity?: string,
+-): { email: string; name: string | null; enquiry: string } | null {
++): { email: string; name: string | null; enquiry: string; attribution: LeadAttribution } | null {
+   const from = (fromAddress || "").toLowerCase();
+   const body = bodyText || "";
+   const isFormSubmit = from.includes("formsubmit.co") || /submitted your form/i.test(body);
+@@ -267,8 +269,12 @@ export function parseFormSubmitLead(
+     if (m && m[1].trim()) name = m[1].trim().slice(0, 200);
+   }
+ 
+-  const enquiry = (pairs.join("\n") || body.trim()).slice(0, MAX_BODY_CHARS);
+-  return { email, name, enquiry };
++  // Hidden attribution fields (utm_*, campaign_id, segment, click ids) are
++  // split off: they go to dedicated lead columns, not into the enquiry text.
++  const attribution = attributionFromRows(pairs);
++  const visible = pairs.filter((p) => !isAttributionRow(p));
++  const enquiry = (visible.join("\n") || body.trim()).slice(0, MAX_BODY_CHARS);
++  return { email, name, enquiry, attribution };
+ }
+ 
+ /**
+@@ -462,6 +468,19 @@ export async function pollEmailAccount(
+                 .maybeSingle();
+               if (existingLead) {
+                 leadId = existingLead.id as string;
++                // Repeat contact via the website form: keep the lead, add
++                // first-touch attribution only if it has none yet.
++                if (formLead && attributionEnabled()) {
++                  const { data: full } = await admin
++                    .from("crm_leads").select("*").eq("org_id", orgId).eq("id", leadId).maybeSingle();
++                  if (full) {
++                    const patch = fillEmptyPatch(full, { name: effectiveName || "", source: "website", attribution: formLead.attribution }, true);
++                    delete patch.phone; delete patch.email; delete patch.company;
++                    if (Object.keys(patch).length) {
++                      await admin.from("crm_leads").update(patch).eq("org_id", orgId).eq("id", leadId);
++                    }
++                  }
++                }
+               } else {
+                 const { data: newLead, error: leadError } = await admin
+                   .from("crm_leads")
+@@ -470,7 +489,11 @@ export async function pollEmailAccount(
+                     stage: "new",
+                     name: (effectiveName || effectiveFrom.split("@")[0] || "Unbekannt").slice(0, 200),
+                     email: effectiveFrom.slice(0, 320),
+-                    source: "email",
++                    // FormSubmit website forms are website leads (first-touch
++                    // attribution from the form's hidden fields); everything
++                    // else stays an ordinary e-mail lead.
++                    source: formLead ? "website" : "email",
++                    ...(formLead && attributionEnabled() ? attributionColumns(formLead.attribution) : {}),
+                     // 'ops' mailboxes (invoice@/finance@) never feed the kanban;
+                     // bulk/marketing senders (is_system) never become sales leads.
+                     is_ops: account.defaultKind === "ops" || isSystem,
+diff --git a/src/lib/salesbot/form-attribution.test.ts b/src/lib/salesbot/form-attribution.test.ts
+new file mode 100644
+index 0000000..cd538fa
+--- /dev/null
++++ b/src/lib/salesbot/form-attribution.test.ts
+@@ -0,0 +1,41 @@
++import { describe, it, expect, vi } from "vitest";
++vi.mock("imapflow", () => ({ ImapFlow: class {} }));
++import { parseFormSubmitLead } from "./email-poll";
++
++const body = [
++  "Someone just submitted your form on https://www.ams-malergeschaeft.ch/.",
++  "Here's what they had to say:",
++  "Name", "Value",
++  "Name", "Max Muster",
++  "E-Mail", "max@example.ch",
++  "Objekt", "3.5-Zimmer-Wohnung",
++  "utm_source", "instagram",
++  "utm_campaign", "b2c-2026-01-untermieter",
++  "segment", "b2c",
++  "Projekt", "Wände und Decken streichen",
++  "Submitted at 2026-10-21 10:00",
++].join("\n");
++
++describe("parseFormSubmitLead attribution", () => {
++  it("extracts attribution and keeps it out of the enquiry text", () => {
++    const r = parseFormSubmitLead("submissions@formsubmit.co", "Neue Offerten-Anfrage — Max Muster", body, "info@maler-ams.ch");
++    expect(r).not.toBeNull();
++    expect(r!.email).toBe("max@example.ch");
++    expect(r!.name).toBe("Max Muster");
++    expect(r!.attribution).toEqual({
++      segment: "b2c", utm_source: "instagram",
++      utm_campaign: "b2c-2026-01-untermieter", campaign_id: "b2c-2026-01-untermieter",
++    });
++    expect(r!.enquiry).toContain("Objekt: 3.5-Zimmer-Wohnung");
++    expect(r!.enquiry).not.toContain("utm_");
++  });
++  it("forms without hidden fields still parse exactly as before (empty attribution)", () => {
++    const plain = body.split("\n").filter((l) => !["utm_source","instagram","utm_campaign","b2c-2026-01-untermieter","segment","b2c"].includes(l)).join("\n");
++    const r = parseFormSubmitLead("submissions@formsubmit.co", null, plain, "info@maler-ams.ch");
++    expect(r!.attribution).toEqual({});
++    expect(r!.enquiry).toBe("Name: Max Muster\nE-Mail: max@example.ch\nObjekt: 3.5-Zimmer-Wohnung\nProjekt: Wände und Decken streichen");
++  });
++  it("non-FormSubmit mail is untouched", () => {
++    expect(parseFormSubmitLead("kunde@example.ch", "Anfrage", "Hallo", "info@maler-ams.ch")).toBeNull();
++  });
++});
+diff --git a/supabase/migrations/082_crm_attribution.sql b/supabase/migrations/082_crm_attribution.sql
+new file mode 100644
+index 0000000..e778cfa
+--- /dev/null
++++ b/supabase/migrations/082_crm_attribution.sql
+@@ -0,0 +1,92 @@
++-- Migration 082: campaign attribution + lead→project link + campaign funnel view.
++--
++-- ADDITIVE ONLY: new nullable columns, one FK (ON DELETE SET NULL), indexes and
++-- a read-only view. No existing column/constraint/policy is changed, no data is
++-- rewritten. Existing RLS on crm_leads/projects keeps covering the new columns.
++-- The view runs with security_invoker so the caller's RLS applies.
++-- Rollback: supabase/rollbacks/082_crm_attribution_down.sql
++--
++-- Bot contract (CLAUDE.md rule 2): projects gains only a NULLABLE column →
++-- ams_bot_writer inserts keep working unchanged.
++
++-- ── 1. First-touch attribution + next step on leads ─────────────────────────
++ALTER TABLE public.crm_leads
++  ADD COLUMN IF NOT EXISTS segment       TEXT CHECK (segment IN ('b2c','b2b')),
++  ADD COLUMN IF NOT EXISTS utm_source    TEXT CHECK (length(utm_source)   <= 120),
++  ADD COLUMN IF NOT EXISTS utm_medium    TEXT CHECK (length(utm_medium)   <= 120),
++  ADD COLUMN IF NOT EXISTS utm_campaign  TEXT CHECK (length(utm_campaign) <= 120),
++  ADD COLUMN IF NOT EXISTS utm_content   TEXT CHECK (length(utm_content)  <= 120),
++  ADD COLUMN IF NOT EXISTS utm_term      TEXT CHECK (length(utm_term)     <= 120),
++  ADD COLUMN IF NOT EXISTS campaign_id   TEXT CHECK (length(campaign_id)  <= 120),
++  ADD COLUMN IF NOT EXISTS click_id      TEXT CHECK (length(click_id)     <= 255),
++  ADD COLUMN IF NOT EXISTS landing_page  TEXT CHECK (length(landing_page) <= 500),
++  ADD COLUMN IF NOT EXISTS next_step     TEXT CHECK (length(next_step)    <= 300),
++  ADD COLUMN IF NOT EXISTS next_step_due DATE;
++
++CREATE INDEX IF NOT EXISTS idx_crm_leads_org_campaign
++  ON public.crm_leads (org_id, campaign_id) WHERE campaign_id IS NOT NULL;
++
++-- ── 2. Opportunity link: a project (with its offers + invoices) knows the lead
++ALTER TABLE public.projects
++  ADD COLUMN IF NOT EXISTS lead_id UUID REFERENCES public.crm_leads(id) ON DELETE SET NULL;
++
++CREATE INDEX IF NOT EXISTS idx_projects_org_lead
++  ON public.projects (org_id, lead_id) WHERE lead_id IS NOT NULL;
++
++-- ── 3. Campaign funnel (lead → project → offer → invoice), per org ──────────
++-- Per-lead pre-aggregation avoids fan-out double counting.
++CREATE OR REPLACE VIEW public.crm_campaign_funnel
++WITH (security_invoker = true) AS
++WITH lead_projects AS (
++  SELECT p.lead_id, p.id AS project_id, p.stage::text AS project_stage
++  FROM public.projects p
++  WHERE p.lead_id IS NOT NULL
++),
++offer_totals AS (
++  SELECT lp.lead_id,
++         count(o.id)                                             AS offers,
++         coalesce(sum(o.total_chf), 0)                           AS offers_chf,
++         count(o.id) FILTER (WHERE o.status::text = 'accepted')  AS offers_accepted,
++         coalesce(sum(o.total_chf) FILTER (WHERE o.status::text = 'accepted'), 0) AS accepted_chf
++  FROM lead_projects lp
++  JOIN public.offers o ON o.project_id = lp.project_id
++  GROUP BY lp.lead_id
++),
++invoice_totals AS (
++  SELECT lp.lead_id,
++         coalesce(sum(i.total_chf) FILTER (WHERE i.cancelled_at IS NULL), 0) AS invoiced_chf,
++         coalesce(sum(i.paid_chf)  FILTER (WHERE i.cancelled_at IS NULL), 0) AS paid_chf
++  FROM lead_projects lp
++  JOIN public.invoices i ON i.project_id = lp.project_id
++  GROUP BY lp.lead_id
++),
++project_counts AS (
++  SELECT lead_id, count(*) AS projects FROM lead_projects GROUP BY lead_id
++)
++SELECT
++  l.org_id,
++  coalesce(l.campaign_id, '(none)')                    AS campaign_id,
++  l.segment,
++  min(l.created_at)                                    AS first_lead_at,
++  count(*)                                             AS leads,
++  count(*) FILTER (WHERE l.stage <> 'new')             AS leads_worked,
++  count(*) FILTER (WHERE l.stage = 'won')              AS leads_won,
++  coalesce(sum(pc.projects), 0)                        AS projects,
++  coalesce(sum(ot.offers), 0)                          AS offers,
++  coalesce(sum(ot.offers_chf), 0)                      AS offers_chf,
++  coalesce(sum(ot.offers_accepted), 0)                 AS offers_accepted,
++  coalesce(sum(ot.accepted_chf), 0)                    AS accepted_chf,
++  coalesce(sum(it.invoiced_chf), 0)                    AS invoiced_chf,
++  coalesce(sum(it.paid_chf), 0)                        AS paid_chf
++FROM public.crm_leads l
++LEFT JOIN project_counts pc ON pc.lead_id = l.id
++LEFT JOIN offer_totals   ot ON ot.lead_id = l.id
++LEFT JOIN invoice_totals it ON it.lead_id = l.id
++WHERE NOT l.is_ops
++GROUP BY l.org_id, coalesce(l.campaign_id, '(none)'), l.segment;
++
++REVOKE ALL ON public.crm_campaign_funnel FROM anon;
++GRANT SELECT ON public.crm_campaign_funnel TO authenticated;
++
++COMMENT ON VIEW public.crm_campaign_funnel IS
++  'Campaign ROI per org: leads → worked → projects → offers → accepted → invoiced/paid. security_invoker: caller RLS applies.';
+diff --git a/supabase/rollbacks/082_crm_attribution_down.sql b/supabase/rollbacks/082_crm_attribution_down.sql
+new file mode 100644
+index 0000000..a038409
+--- /dev/null
++++ b/supabase/rollbacks/082_crm_attribution_down.sql
+@@ -0,0 +1,20 @@
++-- Rollback for migration 082 (run only with Adriano's approval).
++-- Drops ONLY what 082 added. Data written into the new columns is lost.
++BEGIN;
++DROP VIEW IF EXISTS public.crm_campaign_funnel;
++DROP INDEX IF EXISTS public.idx_projects_org_lead;
++ALTER TABLE public.projects DROP COLUMN IF EXISTS lead_id;
++DROP INDEX IF EXISTS public.idx_crm_leads_org_campaign;
++ALTER TABLE public.crm_leads
++  DROP COLUMN IF EXISTS segment,
++  DROP COLUMN IF EXISTS utm_source,
++  DROP COLUMN IF EXISTS utm_medium,
++  DROP COLUMN IF EXISTS utm_campaign,
++  DROP COLUMN IF EXISTS utm_content,
++  DROP COLUMN IF EXISTS utm_term,
++  DROP COLUMN IF EXISTS campaign_id,
++  DROP COLUMN IF EXISTS click_id,
++  DROP COLUMN IF EXISTS landing_page,
++  DROP COLUMN IF EXISTS next_step,
++  DROP COLUMN IF EXISTS next_step_due;
++COMMIT;
+-- 
+2.43.0
+
