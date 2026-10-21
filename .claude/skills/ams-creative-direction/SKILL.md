@@ -40,6 +40,26 @@ Goal: AMS gets its own advertising identity — as creative in communication as 
    Reject any concept scoring < 3 on Clarity, however clever.
 5. **Produce** the chosen concept: each image as a separate file in `creative/campaigns/<YYYY-MM>-<campaign-slug>/`, plus `brief.md` with the three concepts, the scores and the final slogan.
 
+## Carousels = visual stories
+A carousel is a story with beginning, development, surprise and conclusion, never a set of pretty images or variants.
+1. **Slide 1 — hook:** stops the scroll immediately.
+2. **Slide 2 — curiosity or conflict.**
+3. **Middle slides — develop the visual metaphor.**
+4. **Reveal:** connects the idea to the commercial benefit.
+5. **Last slide — clear call to action** (and where contacts go).
+- Every slide has a narrative job and makes people swipe to the next.
+- Vary framing and layout (close-up, wide, top-down, reveal); never repeat the same structure.
+- Keep characters, objects, lighting and art direction consistent: generate every slide with the approved key image as reference.
+- Format **1080 × 1350**, one file per slide; also deliver each slide without text.
+- Typography is applied separately with a composition tool (exact Swiss German), never AI-rendered text.
+- Storyboard first (slide, image, text, function), then production.
+
+## Production & QA (mandatory)
+- Generated images are inspected visually before delivery (composition, typography, details, cultural correctness — e.g. Swiss post boxes are yellow).
+- Deliver per campaign: high-res file **with text** and **without text**, individually named.
+- Before publishing, present: final image, ad copy, CTA, audience and where contacts land.
+- Approved claim: «Offerte innert 48 Stunden» (backed by the Jarvis operations system). Use it where relevant, creatively, never generically. Marketing (Julia) generates leads; Jarvis ensures fast response and offer preparation — the client experience must match the promise.
+
 ## First campaign deliverable (pending all 4 references)
 After all four reference ads are analysed, present three original concepts:
 1. **Residential** — immediate acquisition.
