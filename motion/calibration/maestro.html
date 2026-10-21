@@ -1,0 +1,237 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>
+  .s1 { top: 120px; font-size: 96px; }
+  .s2 { top: 120px; font-size: 86px; }
+  .s3 { top: 1080px; font-size: 80px; color: #F6F2EA; }
+  .s4 { top: 96px; font-size: 80px; }
+  .s5 { top: 110px; font-size: 96px; }
+</style></head>
+<body><div id="stage">
+<svg id="svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="glowL" x="-20%" y="-200%" width="140%" height="500%"><feGaussianBlur stdDeviation="14"/></filter>
+    <radialGradient id="hall" cx="50%" cy="38%" r="70%"><stop offset="0" stop-color="#2a2016"/><stop offset=".55" stop-color="#120e0a"/><stop offset="1" stop-color="#070605"/></radialGradient>
+    <linearGradient id="doorLight" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFF6E4"/><stop offset="1" stop-color="#F3D9A8"/></linearGradient>
+    <linearGradient id="spill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFE9C2" stop-opacity=".55"/><stop offset="1" stop-color="#FFE9C2" stop-opacity="0"/></linearGradient>
+    <linearGradient id="floorG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8a7a66"/><stop offset="1" stop-color="#3a322a"/></linearGradient>
+  </defs>
+  <rect id="bgHall" width="1080" height="1350" fill="url(#hall)"/>
+  <g id="dots"></g>
+  <g id="store" opacity="0"></g>
+  <g id="stand"></g>
+  <g id="sheets"></g>
+  <g id="score" opacity="0"></g>
+  <path id="baton" d="M330,1060 L740,520" stroke="#F6F2EA" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <circle id="tip" cx="740" cy="520" r="10" fill="#fff" filter="url(#glow)" opacity="0"/>
+  <path id="key" d="M400,1120 L680,880" stroke="#F3D9A8" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0"/>
+</svg>
+<div class="layer" id="txt">
+  <div class="scrim" id="scrimTop" style="top:0;height:620px;background:linear-gradient(#0b0a09 0%,#0b0a09f0 52%,#0b0a0900 100%);opacity:0"></div>
+  <div class="scrim" id="scrimBot" style="bottom:0;height:520px;background:linear-gradient(#0b0a0900,#0b0a09f0);opacity:0"></div>
+</div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="../node_modules/gsap/dist/MorphSVGPlugin.min.js"></script>
+<script src="lib.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin, MorphSVGPlugin);
+const R = rnd(11), svg = document.getElementById("svg"), T = document.getElementById("txt");
+const $ = (id) => document.getElementById(id);
+const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const B = 0.5; // one beat at 120 BPM
+const show = (e, t) => { tl.set(e, { autoAlpha: 0 }, 0).set(e, { autoAlpha: 1 }, t - .001); };
+
+// ---------- Scene 1: hall lights + baton ----------
+const dots = $("dots"), dotEls = [];
+for (let r = 0; r < 4; r++) {
+  const y0 = 300 + r * 105, n = 13 + r * 2;
+  for (let i = 0; i < n; i++) {
+    const x = 40 + (1000 / (n - 1)) * i, y = y0 - 70 * Math.pow((x - 540) / 540, 2) + (R() - .5) * 6, rr = 4 + r * 1.3;
+    const g = el("g", { transform: `translate(${x},${y})` }, dots);
+    el("circle", { r: rr * 3.2, fill: "#F2BE73", opacity: .22, filter: "url(#glow)" }, g);
+    el("circle", { r: rr, fill: "#FFD9A0" }, g);
+    dotEls.push({ g, d: Math.abs(x - 540) / 540, row: r });
+  }
+}
+dotEls.forEach((o) => tl.from(o.g, { opacity: 0, scale: .2, duration: .6, ease: "power2.out" }, .25 + o.d * .7 + o.row * .05));
+[0, 1, 2, 3].forEach((r) => tl.fromTo(dotEls.filter((o) => o.row === r).map((o) => o.g), { y: "+=0" }, { y: `-=${8 + r * 6}`, duration: 3, ease: "none" }, 0));
+tl.fromTo("#baton", { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .6, ease: "power3.out" }, .4)
+  .fromTo("#tip", { opacity: 0 }, { opacity: 1, duration: .2 }, .95).to("#tip", { opacity: 0, duration: .5 }, 1.2)
+  .to(dotEls.map((o) => o.g), { opacity: 1, scale: 1.35, duration: .12, ease: "power1.out", stagger: { each: .004, from: "center" } }, 1.0)
+  .to(dotEls.map((o) => o.g), { scale: 1, duration: .5 }, 1.2);
+const h1 = words(T, "Ein falscher Einsatz.", "s1"); show(h1.box, 1.0);
+tl.from(h1.w, { yPercent: 115, duration: .45, ease: "expo.out", stagger: .25 }, 1.0);
+// the wrong entry: baton jerks, lights flicker, the word "falscher" slips off-grid
+tl.to("#baton", { keyframes: [{ rotation: -6, duration: .05 }, { rotation: 5, duration: .06 }, { rotation: -3, duration: .06 }, { rotation: 0, duration: .1 }], svgOrigin: "330 1060", ease: "none" }, 2.0)
+  .to(dotEls.map((o) => o.g), { keyframes: [{ opacity: .35, duration: .05 }, { opacity: 1, duration: .05 }, { opacity: .5, duration: .06 }, { opacity: 1, duration: .1 }], stagger: { each: .002, from: "random" } }, 2.0)
+  .to(h1.w[1], { y: 10, rotation: 3, duration: .15, ease: "power2.out", color: "#E9C48A" }, 2.0);
+const s1 = document.createElement("div"); s1.className = "sub"; s1.style.top = "350px"; s1.textContent = "Und alle hören ihn."; T.appendChild(s1); show(s1, 2.1);
+tl.from(s1, { y: 30, opacity: 0, duration: .4 }, 2.1);
+
+// ---------- Transition 1: the baton becomes the music stand, which falls ----------
+const stand = $("stand");
+const legs = el("path", { d: "M540,1180 L455,1262 M540,1180 L625,1262", stroke: "#F6F2EA", "stroke-width": 7, "stroke-linecap": "round", fill: "none" }, stand);
+const desk = el("path", { d: "M395,575 L685,575 L665,730 L415,730 Z", stroke: "#F6F2EA", "stroke-width": 7, "stroke-linejoin": "round", fill: "#1a1511" }, stand);
+tl.to(h1.box, { autoAlpha: 0, duration: .3, ease: "power1.in" }, 2.65).to([h1.w, s1], { y: 140, rotation: (i) => (i % 2 ? 8 : -6), opacity: 0, duration: .45, ease: "power2.in", stagger: .04 }, 2.5)
+  .to("#baton", { morphSVG: "M540,1180 L540,700", duration: .45, ease: "power2.inOut" }, 2.5)
+  .fromTo(legs, { drawSVG: "50% 50%" }, { drawSVG: "0% 100%", duration: .3 }, 2.72)
+  .fromTo(desk, { drawSVG: "0% 0%", fillOpacity: 0 }, { drawSVG: "0% 100%", fillOpacity: 1, duration: .3 }, 2.72);
+// fall: stand and pole rotate together around the right foot
+tl.to([stand, "#baton"], { rotation: -34, svgOrigin: "625 1262", duration: .32, ease: "power2.in" }, 2.98)
+  .to([stand, "#baton"], { rotation: -31, svgOrigin: "625 1262", duration: .25, ease: "bounce.out" }, 3.30)
+  .to(dotEls.map((o) => o.g), { opacity: .28, duration: .6 }, 3.0)
+  .to("#svg", { x: 10, duration: .04, yoyo: true, repeat: 5, ease: "none" }, 3.0);
+
+// ---------- Scene 2: scattered sheets ----------
+const SH = $("sheets"), sheets = [];
+for (let i = 0; i < 12; i++) {
+  const g = el("g", {}, SH), inner = el("g", { transform: "translate(-85,-110)" }, g);
+  el("rect", { width: 170, height: 220, rx: 3, fill: "#EFE8DA" }, inner);
+  for (let s = 0; s < 3; s++) for (let l = 0; l < 5; l++) el("line", { x1: 16, x2: 154, y1: 40 + s * 58 + l * 6, y2: 40 + s * 58 + l * 6, stroke: "#8a8172", "stroke-width": 1.2 }, inner);
+  for (let n = 0; n < 6; n++) el("ellipse", { cx: 26 + R() * 118, cy: 40 + Math.floor(R() * 3) * 58 + R() * 24, rx: 5, ry: 4, fill: "#2a251f" }, inner);
+  const tx = 120 + R() * 840, ty = 520 + R() * 660, rot = (R() - .5) * 130;
+  gsap.set(g, { x: 430, y: 760, rotation: -20, scale: .4, opacity: 0, transformOrigin: "0 0" });
+  sheets.push({ g, tx, ty, rot });
+}
+sheets.forEach((s, i) => {
+  tl.to(s.g, { opacity: 1, duration: .05 }, 3.02 + i * .015)
+    .to(s.g, { x: s.tx, y: s.ty, rotation: s.rot, scale: .85 + R() * .3, duration: .9, ease: "power3.out" }, 3.02 + i * .015)
+    .to(s.g, { x: `+=${(R() - .5) * 60}`, y: `+=${20 + R() * 40}`, rotation: `+=${(R() - .5) * 30}`, duration: 1.8, ease: "sine.inOut" }, 3.95);
+});
+const h2 = words(T, "Viele Gewerke.\nEin Eröffnungstermin.", "s2"); show(h2.box, 3.37);
+[3.37, 3.61, 3.83, 4.21].forEach((t, i) => tl.from(h2.w[i], { yPercent: 115, rotation: (i % 2 ? 7 : -9), duration: .35, ease: "back.out(2)" }, t));
+const s2 = document.createElement("div"); s2.className = "sub"; s2.style.top = "330px"; s2.textContent = "Und jeder Einsatz muss sitzen."; T.appendChild(s2); show(s2, 4.77);
+tl.from(s2, { y: 30, opacity: 0, duration: .4 }, 4.77);
+// tok tok: the stand clears, words drop, sheets gather into one score
+tl.to([stand, "#baton"], { opacity: 0, duration: .25 }, 5.5)
+  .to([...h2.w, s2], { y: -40, opacity: 0, duration: .3, ease: "power2.in", stagger: .02 }, 5.5);
+const PAGE = { x: 140, y: 360, w: 800, h: 660 };
+sheets.forEach((s, i) => tl.to(s.g, { x: PAGE.x + PAGE.w / 2, y: PAGE.y + PAGE.h / 2, rotation: 0, scaleX: PAGE.w / 170, scaleY: PAGE.h / 220, duration: .5, ease: "expo.inOut" }, 5.75 + i * .012));
+tl.to("#bgHall", { opacity: .55, duration: .5 }, 5.75).to(dotEls.map((o) => o.g), { opacity: .08, duration: .5 }, 5.75);
+
+// ---------- Scene 3: score -> Bauprogramm ----------
+const SC = $("score");
+el("rect", { x: PAGE.x, y: PAGE.y, width: PAGE.w, height: PAGE.h, rx: 6, fill: "#EFE8DA" }, SC);
+const trades = ["Gipser", "Maler", "Ladenbau", "Andere Gewerke"];
+const bars = [[372, 590], [540, 770], [700, 905], [372, 905]];
+const staffLines = [], notes = [], barEls = [], labels = [];
+trades.forEach((tr, k) => {
+  const top = 430 + k * 140;
+  for (let l = 0; l < 5; l++) staffLines.push(el("line", { x1: 360, x2: 915, y1: top + l * 14, y2: top + l * 14, stroke: "#7d7466", "stroke-width": 1.6 }, SC));
+  const lab = el("text", { x: 160, y: top + 36, "font-family": "InterT", "font-weight": 600, "font-size": 25, fill: "#2a251f" }, SC); lab.textContent = tr; labels.push(lab);
+  const [a, b] = bars[k], cy = top + 28;
+  const bar = el("rect", { x: a, y: cy - 15, width: b - a, height: 30, rx: 15, fill: k === 3 ? "#BFE0F2" : "#3FA3D6" }, SC); barEls.push(bar);
+  [a, b].forEach((x) => notes.push(el("ellipse", { cx: x, cy, rx: 15, ry: 11, fill: "#1f1b16", transform: `rotate(-18 ${x} ${cy})` }, SC)));
+});
+const playhead = el("line", { x1: 372, x2: 372, y1: 410, y2: 990, stroke: "#1E96CF", "stroke-width": 4, opacity: 0 }, SC);
+tl.to(SC, { opacity: 1, duration: .1 }, 6.38).to(sheets.map((s) => s.g), { opacity: 0, duration: .1 }, 6.4)
+  .from(staffLines, { drawSVG: "0% 0%", duration: .4, ease: "power2.inOut", stagger: .01 }, 6.4)
+  .from(labels, { opacity: 0, x: -20, duration: .3, stagger: B / 2 }, 6.5);
+notes.forEach((n, i) => tl.from(n, { scale: 0, transformOrigin: "50% 50%", duration: .25, ease: "back.out(3)" }, 6.75 + i * .125));
+barEls.forEach((b, i) => {
+  gsap.set(b, { scaleX: 0, transformOrigin: "0% 50%" });
+  tl.to(b, { scaleX: 1, duration: .35, ease: "power2.out" }, 7.75 + i * .25);
+});
+tl.to(notes, { fill: "#14527A", duration: .3 }, 7.75)
+  .to(playhead, { opacity: 1, duration: .1 }, 7.75)
+  .to(playhead, { attr: { x1: 905, x2: 905 }, duration: .75, ease: "none" }, 7.75)
+  .to(playhead, { opacity: 0, duration: .1 }, 8.45);
+const h3 = words(T, "Jede Stimme\nhat ihren Einsatz.", "s3"); show(h3.box, 7.0);
+tl.from(h3.w, { yPercent: 115, duration: .4, ease: "expo.out", stagger: B / 2 }, 7.0);
+
+// ---------- Transition 3: six staff lines become the store's ceiling lights ----------
+const ST = $("store"), VP = [540, 560];
+const lights = [-260, 40, 340, 740, 1040, 1340].map((xn) => ({ xn, xf: 540 + (xn - 540) * .38 }));
+const lead = [0, 4, 7, 12, 15, 19].map((i) => staffLines[i]);
+const dash = { "stroke-dasharray": "14 12", stroke: "#8c857a", "stroke-width": 2, fill: "none" };
+const planes = {
+  ceil: el("path", { d: "M0,0 L1080,0 L746,470 L334,470 Z", fill: "#16130f", opacity: 0 }, ST),
+  left: el("path", { d: "M0,0 L334,470 L334,800 L0,1350 Z", fill: "#3b342c", opacity: 0 }, ST),
+  right: el("path", { d: "M1080,0 L746,470 L746,800 L1080,1350 Z", fill: "#3b342c", opacity: 0 }, ST),
+  floor: el("path", { d: "M0,1350 L334,800 L746,800 L1080,1350 Z", fill: "url(#floorG)", opacity: 0 }, ST),
+  back: el("path", { d: "M334,470 L746,470 L746,800 L334,800 Z", fill: "#d9cfbf", opacity: 0 }, ST),
+};
+const edges = el("path", { d: "M0,0 L334,470 L746,470 L1080,0 M334,470 L334,800 L746,800 L746,470 M0,1350 L334,800 M1080,1350 L746,800", ...dash }, ST);
+// shelves on both side walls (perspective), unfinished = dashed
+const shelves = [];
+[[0, 334], [1080, 746]].forEach(([xn, xf]) => {
+  [0.42, 0.6, 0.78].forEach((f) => {
+    const yn = 1350 * f * .78, yf = 470 + (800 - 470) * f;
+    shelves.push(el("path", { d: `M${xn},${yn} L${xf},${yf}`, ...dash }, ST));
+  });
+});
+const goods = [];
+[[0, 334], [1080, 746]].forEach(([xn, xf], side) => [0.42, 0.6].forEach((f) => {
+  for (let i = 0; i < 4; i++) {
+    const u = .25 + i * .17, x = xn + (xf - xn) * u, yb = (1350 * f * .78) + ((470 + 330 * f) - 1350 * f * .78) * u, hgt = 46 * (1 - u * .6), wdt = 34 * (1 - u * .6);
+    goods.push(el("rect", { x: x - wdt / 2, y: yb - hgt, width: wdt, height: hgt, rx: 3, fill: ["#3FA3D6", "#E8E0D2", "#6FB9DF", "#c9b89c"][(i + side) % 4], opacity: 0 }, ST));
+  }
+}));
+const doorBack = el("rect", { x: 470, y: 610, width: 140, height: 190, fill: "url(#doorLight)" }, ST);
+const doorL = el("rect", { x: 470, y: 610, width: 70, height: 190, fill: "#2b251f", stroke: "#8c857a", "stroke-width": 2 }, ST);
+const doorR = el("rect", { x: 540, y: 610, width: 70, height: 190, fill: "#2b251f", stroke: "#8c857a", "stroke-width": 2 }, ST);
+const spill = el("path", { d: "M470,800 L610,800 L760,1350 L320,1350 Z", fill: "url(#spill)", opacity: 0 }, ST);
+const lightGlow = lights.map((L) => el("line", { x1: L.xn, y1: 0, x2: L.xf, y2: 470, stroke: "#FFF1D6", "stroke-width": 18, filter: "url(#glowL)", opacity: 0 }, svg));
+svg.insertBefore(ST, $("stand")); lightGlow.forEach((g) => svg.insertBefore(g, $("stand")));
+const lightLines = lead.map((ln) => { svg.appendChild(ln); return ln; }); // lift six staff lines above the page
+
+tl.to([...labels, ...notes, ...barEls], { opacity: 0, duration: .25 }, 8.5)
+  .to(staffLines.filter((l) => !lead.includes(l)), { opacity: 0, duration: .25 }, 8.5)
+  .to(SC.querySelector("rect"), { opacity: 0, duration: .45 }, 8.55)
+  .to(h3.box, { autoAlpha: 0, y: -30, duration: .3, ease: "power2.in" }, 8.5)
+  .to("#bgHall", { opacity: 0, duration: .5 }, 8.55).to(dotEls.map((o) => o.g), { opacity: 0, duration: .3 }, 8.55)
+  .to(ST, { opacity: 1, duration: .5 }, 8.75)
+  .from(edges, { drawSVG: "0% 0%", duration: .6, ease: "power2.inOut" }, 8.7)
+  .from(shelves, { drawSVG: "0% 0%", duration: .5, stagger: .03 }, 8.8);
+lead.forEach((ln, i) => tl.to(ln, { attr: { x1: lights[i].xn, y1: 0, x2: lights[i].xf, y2: 470 }, stroke: "#8c857a", strokeWidth: 3, duration: .7, ease: "expo.inOut" }, 8.55 + i * .02));
+
+// ---------- Scene 4: reveal — lights switch on beat by beat, the store completes ----------
+tl.to("#scrimTop", { opacity: 1, duration: .4 }, 9.2);
+const h4 = words(T, "Ihre Eröffnung\nist eine Partitur.", "s4"); show(h4.box, 9.5);
+tl.from(h4.w, { yPercent: 115, duration: .4, ease: "expo.out", stagger: B / 2 }, 9.5);
+const s4 = document.createElement("div"); s4.className = "sub"; s4.style.top = "290px"; s4.style.width = "880px";
+s4.textContent = "Wir spielen unseren Part auf den Takt genau – abgestimmt mit allen anderen Gewerken."; T.appendChild(s4); show(s4, 10.6);
+tl.from(s4, { y: 26, opacity: 0, duration: .45 }, 10.6);
+const order = [2, 3, 1, 4, 0, 5];
+order.forEach((li, k) => {
+  const t = 9.5 + k * B;
+  tl.to(lightLines[li], { stroke: "#FFF6E6", strokeWidth: 6, duration: .06, ease: "none" }, t)
+    .fromTo(lightGlow[li], { opacity: 0 }, { opacity: .95, duration: .08 }, t)
+    .to(shelves[k], { strokeDasharray: "2000 0", stroke: "#cfc4b2", duration: .2 }, t)
+    .to(goods.filter((_, gi) => gi % 6 === k), { opacity: 1, duration: .25, ease: "back.out(2)" }, t + .05);
+  const p = [planes.ceil, planes.left, planes.right, planes.floor, planes.back, null][k];
+  if (p) tl.to(p, { opacity: 1, duration: .35 }, t);
+});
+tl.to(edges, { strokeDasharray: "2000 0", stroke: "#bdb2a1", duration: .3 }, 11.5)
+  .to([planes.left, planes.right], { fill: "#5a5045", duration: .6 }, 11.5);
+
+const keyStyle = { stroke: "#F3D9A8", "stroke-width": 9, "stroke-linecap": "round", "stroke-linejoin": "round", fill: "none" };
+const keyRing = el("path", { d: "M470,923 a52,52 0 1,1 -0.1,0", ...keyStyle }, svg);
+const keyTeeth = el("path", { d: "M712,975 L712,1018 M742,975 L742,1006", ...keyStyle }, svg);
+// ---------- Scene 5: final chord — doors open, the baton becomes the key ----------
+tl.to([...h4.w, s4], { opacity: 0, y: -20, duration: .25, stagger: .02 }, 11.85)
+  .to(doorL, { scaleX: 0, transformOrigin: "0% 50%", duration: .6, ease: "power3.inOut" }, 12.0)
+  .to(doorR, { scaleX: 0, transformOrigin: "100% 50%", duration: .6, ease: "power3.inOut" }, 12.0)
+  .to(spill, { opacity: 1, duration: .7 }, 12.1)
+  .to(lightGlow, { opacity: 1, duration: .2 }, 12.0)
+  .to("#key", { opacity: 1, duration: .05 }, 12.15)
+  .fromTo("#key", { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .35, ease: "power3.out" }, 12.15)
+  .to("#key", { morphSVG: "M522,975 L760,975", duration: .4, ease: "expo.inOut" }, 12.55)
+  .fromTo(keyRing, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .4, ease: "power2.inOut" }, 12.85)
+  .fromTo(keyTeeth, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .25 }, 13.0)
+  .to(["#key", keyRing, keyTeeth], { rotation: -8, svgOrigin: "540 975", duration: .5, ease: "back.out(2)" }, 13.25)
+  .to("#scrimBot", { opacity: 1, duration: .5 }, 12.8);
+const h5 = words(T, "Ihr Eröffnungstag.\nAuf den Takt genau.", "s5"); show(h5.box, 13.0);
+h5.box.querySelectorAll(".ln")[1].classList.add("blue");
+tl.from(h5.w, { yPercent: 115, duration: .45, ease: "expo.out", stagger: B / 2 }, 13.0);
+const cta = document.createElement("div"); cta.className = "cta"; cta.style.top = "1106px"; cta.textContent = "Rollout-Gespräch vereinbaren"; T.appendChild(cta);
+const logo = document.createElement("div"); logo.style.cssText = "position:absolute;left:84px;top:1236px"; logo.innerHTML = logoSVG(300); T.appendChild(logo);
+tl.from(cta, { scale: .85, opacity: 0, transformOrigin: "0% 50%", duration: .4, ease: "back.out(2)" }, 14.0)
+  .from(logo, { opacity: 0, y: 14, duration: .5 }, 14.25)
+  .to({}, { duration: .01 }, 14.99);
+
+mount(tl, 15);
+</script></body></html>

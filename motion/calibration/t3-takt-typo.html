@@ -1,0 +1,47 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>.big { top: 330px; font-size: 150px; letter-spacing: -4px; } .big .ln:nth-child(2) .w { color: #3FA3D6; }</style></head>
+<body><div id="stage">
+<svg id="svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <g id="grid" stroke="#F6F2EA" stroke-width="1.5" opacity=".18">
+    <line x1="84" y1="200" x2="84" y2="760"/>
+    <line x1="0" y1="474" x2="1080" y2="474"/><line x1="0" y1="630" x2="1080" y2="630"/>
+  </g>
+  <line id="under" x1="84" y1="660" x2="640" y2="660" stroke="#3FA3D6" stroke-width="8" stroke-linecap="round"/>
+  <g id="metro">
+    <path d="M440,1250 L640,1250 L600,900 L480,900 Z" fill="#1a1714" stroke="#3a342d" stroke-width="2"/>
+    <line x1="540" y1="1230" x2="540" y2="920" stroke="#3a342d" stroke-width="2" stroke-dasharray="4 8"/>
+    <g id="arm"><line x1="540" y1="1230" x2="540" y2="880" stroke="#F6F2EA" stroke-width="6" stroke-linecap="round"/>
+      <rect x="522" y="960" width="36" height="28" rx="4" fill="#F6F2EA"/></g>
+    <circle cx="540" cy="1230" r="10" fill="#F6F2EA"/>
+  </g>
+</svg>
+<div class="layer" id="txt"><div class="label">Studie 3 · Typografie im Takt</div></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="lib.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+const $ = (i) => document.getElementById(i), tl = gsap.timeline();
+const h = words($("txt"), "Auf den Takt\ngenau.", "big");
+// each word is a hit: it lands on its beat, a little off the grid (as in real life)
+const off = [[-26, 18, -5], [34, -22, 4], [-18, 30, 6], [42, -26, -4]];
+h.w.forEach((w, i) => {
+  const t = .5 + i * .5;
+  tl.set(w, { x: off[i][0], y: off[i][1], rotation: off[i][2], autoAlpha: 0 }, 0)
+    .fromTo(w, { scale: 1.5, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: .18, ease: "power4.out", immediateRender: false }, t);
+});
+// beat 4: everything snaps onto the grid at once — precision as the payoff
+tl.to(h.w, { x: 0, y: 0, rotation: 0, duration: .12, ease: "power4.out" }, 2.03)
+  .to("#grid", { opacity: .45, duration: .06 }, 2.03).to("#grid", { opacity: .12, duration: .6 }, 2.15)
+  .fromTo("#under", { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .35, ease: "expo.out" }, 3.0)
+  .to(h.w[3], { scale: 1.06, duration: .08, yoyo: true, repeat: 1, transformOrigin: "0% 100%" }, 3.0);
+// metronome: extremes land exactly on the beats, the last swing stops dead centre on the chord
+gsap.set("#arm", { svgOrigin: "540 1230", rotation: -24 });
+for (let k = 0; k < 5; k++) tl.to("#arm", { rotation: k % 2 ? -24 : 24, duration: .5, ease: "sine.inOut" }, k * .5);
+tl.to("#arm", { rotation: 0, duration: .5, ease: "power2.out" }, 2.5)
+  .to("#arm line", { stroke: "#3FA3D6", duration: .1 }, 3.0).to("#arm rect", { fill: "#3FA3D6", duration: .1 }, 3.0);
+tl.to({}, { duration: .01 }, 4.49);
+mount(tl, 4.5);
+</script></body></html>

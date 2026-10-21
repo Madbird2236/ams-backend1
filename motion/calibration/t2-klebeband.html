@@ -1,0 +1,70 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="base.css">
+<style>.k { top: 150px; font-size: 84px; color: #1E293B; }</style></head>
+<body><div id="stage">
+<svg id="svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <defs>
+    <filter id="worn" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".035 .05" numOctaves="5" seed="3" result="n"/>
+      <feColorMatrix in="n" type="matrix" values="0 0 0 0 .44  0 0 0 0 .42  0 0 0 0 .39  0 0 0 -2.2 1.25"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <filter id="grain" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="8"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .05 0"/>
+      <feComposite in2="SourceGraphic" operator="in"/>
+    </filter>
+    <linearGradient id="light" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset="1" stop-color="#000" stop-opacity=".22"/></linearGradient>
+    <linearGradient id="flapG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9fd2ee"/><stop offset="1" stop-color="#5aa9d6"/></linearGradient>
+    <clipPath id="revealClip"><path id="reveal" d="M0,0 Z"/></clipPath>
+  </defs>
+  <!-- A: old, worn grey wall -->
+  <g id="A"><rect width="1080" height="1350" fill="#7e7a74"/><rect width="1080" height="1350" fill="#7e7a74" filter="url(#worn)"/>
+    <path d="M120,200 C300,260 260,420 420,470 C560,520 520,640 700,700" stroke="#5f5a53" stroke-width="2" fill="none" opacity=".6"/>
+    <path d="M640,980 C720,1040 820,1020 900,1120" stroke="#5f5a53" stroke-width="2" fill="none" opacity=".5"/></g>
+  <!-- B: fresh two-tone wall, the edge lies exactly where the tape was -->
+  <g id="B" clip-path="url(#revealClip)">
+    <rect width="1080" height="1350" fill="#F1EDE6"/>
+    <path id="blueSide" fill="#3FA3D6"/>
+    <rect width="1080" height="1350" fill="url(#light)"/><rect width="1080" height="1350" fill="#fff" filter="url(#grain)"/>
+  </g>
+  <path id="tape" fill="#6FB9DF"/>
+  <path id="tapeEdge" fill="none" stroke="#4e93bd" stroke-width="2"/>
+  <path id="flap" fill="url(#flapG)"/>
+</svg>
+<div class="layer" id="txt"><div class="label" style="color:rgba(20,18,15,.45)">Studie 2 · Klebeband-Wipe</div></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="lib.js"></script>
+<script>
+const $ = (i) => document.getElementById(i), tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const S = [140, 1450], E = [980, -100], L = Math.hypot(E[0] - S[0], E[1] - S[1]);
+const u = [(E[0] - S[0]) / L, (E[1] - S[1]) / L], n = [-u[1], u[0]], W = 64, BIG = 4000;
+const P = (d, o = 0) => [S[0] + u[0] * d + n[0] * o, S[1] + u[1] * d + n[1] * o];
+const pt = (p) => p[0].toFixed(1) + "," + p[1].toFixed(1);
+// blue paint on one side of the tape's centre line
+$("blueSide").setAttribute("d", `M${pt(P(-BIG, 0))} L${pt(P(BIG, 0))} L${pt(P(BIG, -BIG))} L${pt(P(-BIG, -BIG))} Z`);
+const st = { d: 0 };
+function draw() {
+  const d = st.d;
+  // reveal: everything "behind" the peel front (perpendicular to the tape)
+  $("reveal").setAttribute("d", `M${pt(P(-BIG, BIG))} L${pt(P(d, BIG))} L${pt(P(d, -BIG))} L${pt(P(-BIG, -BIG))} Z`);
+  // stuck tape: from the peel point to the far end
+  $("tape").setAttribute("d", `M${pt(P(d, W / 2))} L${pt(P(L + 200, W / 2))} L${pt(P(L + 200, -W / 2))} L${pt(P(d, -W / 2))} Z`);
+  $("tapeEdge").setAttribute("d", `M${pt(P(d, W / 2))} L${pt(P(L + 200, W / 2))} M${pt(P(d, -W / 2))} L${pt(P(L + 200, -W / 2))}`);
+  // peeled flap: folded back over the tape, lifted towards the viewer
+  const len = Math.min(d, 320), lift = 26;
+  const a = P(d, W / 2), b = P(d, -W / 2), c = P(d - len, -W / 2 + lift), e = P(d - len, W / 2 + lift);
+  $("flap").setAttribute("d", d > 2 ? `M${pt(a)} L${pt(b)} L${pt(c)} L${pt(e)} Z` : "");
+}
+draw();
+tl.to("#svg", { scale: 1.04, transformOrigin: "540px 675px", duration: 1, ease: "sine.inOut" }, 0)
+  .to(st, { d: L + 200, duration: 1.45, ease: "power2.in", onUpdate: draw }, 1.0)        // the pull accelerates like a real peel
+  .to("#svg", { scale: 1.0, duration: 1.2, ease: "power3.out" }, 2.45);
+// the line comes out of the edge it describes
+const h = words($("txt"), "Die Kante macht\nden Meister.", "k");
+tl.set(h.box, { autoAlpha: 0 }, 0).set(h.box, { autoAlpha: 1 }, 2.5)
+  .from(h.w, { xPercent: -110, duration: .5, ease: "expo.out", stagger: .12 }, 2.5);
+tl.to({}, { duration: .01 }, 4.49);
+mount(tl, 4.5);
+</script></body></html>

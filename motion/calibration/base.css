@@ -1,0 +1,17 @@
+@font-face { font-family: "Geist"; font-weight: 700; src: url(../assets/fonts/geist-700.woff2) format("woff2"); }
+@font-face { font-family: "InterD"; font-weight: 700; src: url(../assets/fonts/InterDisplay-Bold.otf); }
+@font-face { font-family: "InterT"; font-weight: 400; src: url(../assets/fonts/Inter-Regular.otf); }
+@font-face { font-family: "InterT"; font-weight: 600; src: url(../assets/fonts/Inter-SemiBold.otf); }
+html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; background: #0b0a09; }
+#stage > svg { position: absolute; inset: 0; }
+.layer { position: absolute; inset: 0; pointer-events: none; }
+.hl { position: absolute; left: 84px; font-family: InterD, sans-serif; font-weight: 700; color: #F6F2EA; letter-spacing: -2px; line-height: 1.04; }
+.hl .ln { white-space: nowrap; }
+.hl .m { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 6px; }
+.hl .w { display: inline-block; }
+.sub { position: absolute; left: 84px; font-family: InterT, sans-serif; font-weight: 400; font-size: 42px; line-height: 1.28; color: #D8D2C6; letter-spacing: -.2px; }
+.blue { color: #3FA3D6; }
+.cta { position: absolute; left: 84px; font-family: InterT, sans-serif; font-weight: 600; font-size: 38px; padding: 24px 42px; border-radius: 999px; background: #F6F2EA; color: #14120F; }
+.scrim { position: absolute; left: 0; right: 0; }
+.label { position: absolute; right: 40px; bottom: 30px; font-family: InterT, sans-serif; font-weight: 600; font-size: 22px; letter-spacing: 3px; color: rgba(255,255,255,.45); text-transform: uppercase; }
