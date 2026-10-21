@@ -36,3 +36,6 @@ Job IDs refer to the Higgsfield library.
 - Check every word of AI-rendered text letter by letter (umlauts, hyphens).
 - Apply the AMS brand layer: logo, colours, typography.
 - Check hands and fine details before print or large formats.
+
+
+> 2026-10-21: «Offerte innert 48 Stunden» is B2C-only. B2B ads 02a/02b carry no 48 h promise (verified: CTA «Rollout-Gespräch vereinbaren» only).

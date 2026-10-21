@@ -16,8 +16,8 @@ Until confirmed, v2 uses the safe version B. No deadline guarantee wording («ga
 | 1 | Hook | ECU baton raised, diagonal from lower-left to upper-right | The baton's diagonal continues as the fallen music stand on slide 2 (same angle and position at the slide edge) | «Ein falscher Einsatz. Und alle hören ihn.» |
 | 2 | Conflict | Hall in chaos; sheet music sliding off the right edge | The loose sheets slide into slide 3 and land as one ordered score | «Mehrere Gewerke. Ein Eröffnungstermin. Und niemand gibt den Takt an.» |
 | 3 | Development | Top-down on the score: the staves are labelled with trades; the notes are shaped like timeline bars | The staves become the ceiling light lines of the store on slide 4 (same horizontal lines, same height) | «Jede Stimme hat ihren Einsatz.» |
-| 4 | **Reveal (peak)** | The score is the Bauprogramm pinned to a column; the conductor faces a team of craftspeople poised like an orchestra, tools as instruments, in the unfinished store at night; the light lines from slide 3 run overhead | The conductor's raised hand carries over to slide 5 | «Ihre Eröffnung ist eine Partitur. Wir dirigieren sie.» |
-| 5 | Payoff + CTA | Same position, same hand: instead of the baton he hands the store key to the client; doors open, first customers in the background | Loop closes: slide 1 baton → slide 5 key | «Ihr Eröffnungstag. Auf den Takt genau.» CTA «Rollout-Gespräch vereinbaren» · «Offerte innert 48 Stunden» |
+| 4 | **Reveal (peak)** | The score is the Bauprogramm pinned to a column; the conductor faces a team of craftspeople poised like an orchestra, tools as instruments, in the unfinished store at night; the light lines from slide 3 run overhead | The conductor's raised hand carries over to slide 5 | «Ihre Eröffnung ist eine Partitur. Wir spielen unseren Part auf den Takt genau – abgestimmt mit allen anderen Gewerken.» |
+| 5 | Payoff + CTA | Same position, same hand: instead of the baton he hands the store key to the client; doors open, first customers in the background | Loop closes: slide 1 baton → slide 5 key | «Ihr Eröffnungstag. Auf den Takt genau.» CTA «Rollout-Gespräch vereinbaren» |
 
 Why the reveal is now the peak: slides 1–3 stay entirely musical; slide 4 flips the world (concert hall → store, score → Bauprogramm, musicians → craftspeople) in one image, and slide 5 pays it off with the key handover.
 Production: 3 new images (slides 2, 4, 5 re-shot for continuity) + edits; slides 1 and 3 can be adjusted from existing assets. Estimated ~15 credits.
@@ -35,7 +35,10 @@ VO: one line only, at the end (8 words).
 | 13–15 s | Whip-pan | Hall dissolves: we are in a raw store shell at night | Whoosh into a held breath | — |
 | 15–22 s | Wide, then rhythmic close-ups | **Reveal:** craftspeople as orchestra. On the downbeat every tool plays its part: roller strokes = strings, drill = snare roll, staple gun = percussion, tape measure snap = cymbal. Time-lapse on the beat: walls finished, shelves in, light rows switch on one by one | A real piece of music built only from tool sounds, crescendo | — |
 | 22–25 s | Wide, morning | Last light row snaps on exactly on the final chord; doors open, first customers enter | Final chord → door chime → soft crowd ambience | — |
-| 25–30 s | MCU | Conductor lowers the baton and hands the store key to the store manager | Room tone, warm sting | VO: «Wir bringen Ihren Ladenbau in den Takt.» Card: «Ihr Eröffnungstag. Auf den Takt genau.» CTA: «Rollout-Gespräch vereinbaren · Offerte innert 48 Stunden» |
+| 25–30 s | MCU | Conductor lowers the baton and hands the store key to the store manager | Room tone, warm sting | VO: «Wir bringen Ihren Ladenbau in den Takt.» Card: «Ihr Eröffnungstag. Auf den Takt genau.» CTA: «Rollout-Gespräch vereinbaren» |
 
 Sound design brief: record or source ~20 tool sounds, tune and sequence them into a 120 BPM orchestral-percussive cue; the first 10 s use real orchestra samples so the switch is audible.
 Production: ~10 AI video shots (5–6 s each, image-to-video from approved stills) + motion-graphics morph (score → Bauprogramm) in the motion engine + sound design. Cost to be quoted before generating.
+
+
+> 2026-10-21: «Offerte innert 48 Stunden» removed from all B2B material (B2C-only claim).
