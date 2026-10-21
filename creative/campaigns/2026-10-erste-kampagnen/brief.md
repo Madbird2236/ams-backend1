@@ -6,7 +6,7 @@ Job IDs refer to the Higgsfield library.
 ## 1. Residential — winter interiors
 - **Slogan:** «Im Winter zählt das Innere.» (PT: No inverno, conta o interior.) Double meaning: inner values / the interior of your home.
 - **Sub:** Innenarbeiten von November bis Februar.
-- **CTA:** Jetzt Wintertermin sichern – Offerte in 48 Stunden.
+- **CTA:** Jetzt Wintertermin sichern – Offerte innert 24 Stunden.
 - **Concept:** a snowman has moved into a calm, beautifully renovated living room (slippers, tea) while the storm rages outside. Humour plus insight: in winter we live inside, so the inside is what counts.
 - **Audience:** B2C: owners, families, tenants. **Objective:** immediate lead capture and winter utilisation. **KPI:** enquiries and booked winter jobs per CHF spent.
 - **Images:** base `0b8f1a53` (alt `da943d18`), with text `bf9518a3`.
@@ -38,4 +38,4 @@ Job IDs refer to the Higgsfield library.
 - Check hands and fine details before print or large formats.
 
 
-> 2026-10-21: «Offerte innert 48 Stunden» is B2C-only. B2B ads 02a/02b carry no 48 h promise (verified: CTA «Rollout-Gespräch vereinbaren» only).
+> 2026-10-21: «Offerte innert 24 Stunden» is B2C-only. B2B ads 02a/02b carry no time promise (verified: CTA «Rollout-Gespräch vereinbaren» only).

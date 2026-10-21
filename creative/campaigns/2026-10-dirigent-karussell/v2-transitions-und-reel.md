@@ -41,4 +41,4 @@ Sound design brief: record or source ~20 tool sounds, tune and sequence them int
 Production: ~10 AI video shots (5–6 s each, image-to-video from approved stills) + motion-graphics morph (score → Bauprogramm) in the motion engine + sound design. Cost to be quoted before generating.
 
 
-> 2026-10-21: «Offerte innert 48 Stunden» removed from all B2B material (B2C-only claim).
+> 2026-10-21: «Offerte innert 24 Stunden» removed from all B2B material (B2C-only claim).

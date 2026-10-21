@@ -58,7 +58,7 @@ A carousel is a story with beginning, development, surprise and conclusion, neve
 - Generated images are inspected visually before delivery (composition, typography, details, cultural correctness — e.g. Swiss post boxes are yellow).
 - Deliver per campaign: high-res file **with text** and **without text**, individually named.
 - Before publishing, present: final image, ad copy, CTA, audience and where contacts land.
-- Claim «Offerte innert 48 Stunden»: **B2C residential only** (Jarvis operations). **Never in B2B.** Use it creatively, never generically. Marketing (Julia) generates leads; Jarvis ensures fast response and offer preparation — the client experience must match the promise.
+- Claim «Offerte innert 24 Stunden»: **B2C residential only** (Jarvis operations). **Never in B2B.** Use it creatively, never generically. Marketing (Julia) generates leads; Jarvis ensures fast response and offer preparation — the client experience must match the promise.
 
 ## First campaign deliverable (pending all 4 references)
 After all four reference ads are analysed, present three original concepts:

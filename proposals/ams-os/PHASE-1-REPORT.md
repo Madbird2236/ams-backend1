@@ -14,7 +14,7 @@ Branch: `feature/crm-attribution` in a local clone of `Madbird2236/ams-os` (comm
 | Invoices | 39 (31 imported from Bexio, 8 AMS); 7 linked to a project; 0 to an offer. | Funnel value only measurable for new opportunities going forward. |
 
 ### Phase 0 operating rules (approved as procedure)
-1. Every new lead gets **owner** (`assigned_to`), **stage** and **next step + due date** (new columns in 082) within 48 h (B2C) / 5 working days (B2B).
+1. Every new lead gets **owner** (`assigned_to`), **stage** and **next step + due date** (new columns in 082) within 24 h (B2C) / 5 working days (B2B).
 2. When a lead needs an offer → create an opportunity (project in stage «lead»/«offer») **linked to the lead**, write the offer in AMS OS on that project.
 3. Offer accepted → project «confirmed» (= contract) → invoices on the project.
 4. Old «new» leads: reviewed in batches with Jarvis' list; only Adriano changes their stage.

@@ -2,7 +2,7 @@
 
 **Premise:** a snowman moves into a family's freshly renovated living room for the winter and won't leave.
 **Audience:** B2C — owners and tenants in German-speaking Switzerland. **Objective:** immediate lead capture, winter utilisation (Nov–Feb).
-**CTA:** «Jetzt Wintertermin sichern» · «Offerte innert 48 Stunden» (authorised for B2C residential).
+**CTA:** «Jetzt Wintertermin sichern» · «Offerte innert 24 Stunden» (authorised for B2C residential).
 **Lead destination:** to be decided by Adriano (WhatsApp Business / form on website / phone). Required before launch.
 **Claims check:** no «bis Weihnachten», no price promise, no named trades beyond interior work.
 
@@ -22,7 +22,7 @@
 | 5 | 12.5–15.5 | Two-shot | Father points to the armchair («that's my chair»); snowman calmly points around the room: too beautiful to leave | Score pause, comedic beat | — | NEW |
 | 6 | 15.5–21.0 | Slow pull-back reveal | The whole family on the sofa in winter jackets, hats and scarves, breath visible. Thermostat on the wall reads 5 °C. Snowman sips iced tea, perfectly happy | Teeth chattering, ice cubes clink | — | NEW |
 | 7 | 21.0–25.0 | Medium, by the window | Snowman looks at the snow outside, then around the room, smiles | Score resolves | «Im Winter zählt das Innere.» | REUSE key visual |
-| 8 | 25.0–30.0 | End card over a soft blur of the room | — | VO (warm, male or female, Swiss Standard German): «Machen Sie Ihr Zuhause so schön, dass niemand mehr gehen will.» (11 words ≈ 4.5 s) | «Innenarbeiten von November bis Februar.» · «Jetzt Wintertermin sichern – Offerte innert 48 Stunden.» | Motion engine |
+| 8 | 25.0–30.0 | End card over a soft blur of the room | — | VO (warm, male or female, Swiss Standard German): «Machen Sie Ihr Zuhause so schön, dass niemand mehr gehen will.» (11 words ≈ 4.5 s) | «Innenarbeiten von November bis Februar.» · «Jetzt Wintertermin sichern – Offerte innert 24 Stunden.» | Motion engine |
 
 ## Production plan and cost (nothing generated yet)
 | Item | Qty | Unit | Credits |

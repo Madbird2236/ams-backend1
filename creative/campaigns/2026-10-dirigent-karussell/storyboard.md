@@ -1,4 +1,4 @@
-> **v1 superseded. Do not publish v1** (claims «Alle Gewerke», «Elektriker», 48 h in B2B). Use v2-final.
+> **v1 superseded. Do not publish v1** (claims «Alle Gewerke», «Elektriker», time promise in B2B). Use v2-final.
 
 # Karussell «Der Dirigent» — B2B (Retail-Rollouts, Expansion, GU)
 

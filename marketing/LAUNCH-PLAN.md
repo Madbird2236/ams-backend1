@@ -9,7 +9,7 @@ Budgets below are **suggestions for a 4-week test**, based on typical Swiss benc
 | Audience | Owners & tenants, 30–65, 25 km around Zürich (plus Zug/Aargau where we already have pages); interests: home, interior, moving; lookalikes later |
 | Channels | Instagram + Facebook (Reels + feed), retarget website visitors; Google Search (existing account) for «Maler Offerte Zürich», «Wohnung streichen» |
 | Creative | Reel «Der Untermieter» (after approval), static snowman ad, carousel variant |
-| CTA | «Jetzt Wintertermin sichern – Offerte innert 48 Stunden» → WhatsApp or form |
+| CTA | «Jetzt Wintertermin sichern – Offerte innert 24 Stunden» → WhatsApp or form |
 | Suggested budget | Meta CHF 30/day (≈ CHF 900 / 4 weeks) + Google Search CHF 25/day (≈ CHF 750) |
 | KPIs | Cost per lead (target ≤ CHF 40), lead → offer ≥ 60 %, offer → won ≥ 25 %, booked hours in the occupancy sheet |
 | Stop rule | CPL > CHF 80 after 10 days or < 5 qualified leads → change creative/audience |
@@ -22,7 +22,7 @@ Budgets below are **suggestions for a 4-week test**, based on typical Swiss benc
 | CTA | Retail: «Rollout-Gespräch vereinbaren.» · Architects / Verwaltungen: «Projektbesprechung vereinbaren.» → B2B form |
 | Suggested budget | LinkedIn CHF 50/day for 3 weeks (≈ CHF 1'050) — LinkedIn is expensive; the organic + outreach part costs time, not money |
 | KPIs | Qualified meetings (target 4–6 in 4 weeks), cost per meeting, tenders invited, pipeline CHF in AMS OS |
-| Claims | Hypothesis B only; no 48 h promise; no «alle Gewerke» |
+| Claims | Hypothesis B only; no time promise; no «alle Gewerke» |
 
 ## Timeline
 | Week | Action |

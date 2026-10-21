@@ -22,7 +22,7 @@ Checked 2026-10-21, read-only. Nothing changed in any system.
 2. **Website → AMS OS looks weak or broken:** only 3 website-source leads in AMS OS, the last on 2026-07-22. Form leads may only arrive by e-mail (then counted as «email»). Needs verification by whoever maintains the site (the `/api/lead/` code is compiled; env vars not readable with my access).
 3. **Pipeline not maintained:** 348 leads sit in stage «new» (179 flagged operational, 99 created in the last 30 days); only 4 won and 1 offer recorded. If stages aren't updated, campaign → offer → contract tracking cannot work, whatever the ads do.
 4. **WhatsApp leads are invisible to AMS OS** (wa.me link only).
-5. **Promise conflict:** the page `/maler-offerte-zuerich/` says «Festpreis in 24 h»; campaigns say «Offerte innert 48 Stunden». Pick one claim and use it everywhere.
+5. **Promise conflict — resolved:** official B2C promise is 24 h as on the website (werktags, nach der Besichtigung); campaigns aligned. B2B: no time promise.
 6. No B2B-specific form.
 
 ## Proposed flows (no new tools — extend the website and AMS OS)
@@ -42,6 +42,6 @@ Ad / LinkedIn post (UTM) → new section «Projektanfrage Gewerbe & Retail» on 
 | 5 | Website | Install tags only for channels we actually use (Meta pixel for B2C ads; LinkedIn Insight for B2B; Google tag if Google Ads runs), with consent banner (Swiss revDSG) | small |
 | 6 | Website | B2B form section on `/malerarbeiten-gewerbe/` | small |
 | 7 | WhatsApp | Phase 1: campaign code in prefilled text + manual entry in AMS OS. Phase 2 (later, cost): WhatsApp Business API connected to AMS OS (schema already supports it) | 1: none · 2: medium |
-| 8 | Process | Weekly pipeline hygiene: every lead moved out of «new» within 48 h (B2C) / 5 working days (B2B) | discipline |
+| 8 | Process | Weekly pipeline hygiene: every lead moved out of «new» within 24 h (B2C) / 5 working days (B2B) | discipline |
 
 Who implements: the AMS OS / website codebases — on your instruction, in a separate change with review. Julia does not modify production systems without approval.

@@ -50,7 +50,7 @@ Method: live website HTML/JS, Vercel deployment metadata, AMS OS source code (re
 | Priority | Problem | Solution (existing systems only) |
 |---|---|---|
 | P1 | Offers not in AMS OS | Create every offer in AMS OS (Jarvis `create_offer` already exists); add `lead_id` to `offers` so offer ↔ lead is linked |
-| P1 | Pipeline not maintained | Rule: every lead leaves «new» within 48 h (B2C) / 5 working days (B2B); Jarvis daily list of stale leads (endpoint already exists) |
+| P1 | Pipeline not maintained | Rule: every lead leaves «new» within 24 h (B2C) / 5 working days (B2B); Jarvis daily list of stale leads (endpoint already exists) |
 | P1 | No origin tracking | Website: capture UTM + gclid/fbclid, add them as hidden fields to the FormSubmit mail; AMS OS parser reads them → new lead columns `utm_source`, `utm_medium`, `utm_campaign`, `campaign_id`, `segment` |
 | P2 | Form leads labelled «email» | Parser sets `source = website` when the mail is a FormSubmit submission |
 | P2 | WhatsApp invisible | Phase 1: campaign code in the prefilled WhatsApp text + one-tap «lead from WhatsApp» in AMS OS/Jarvis. Phase 2: WhatsApp Business API into AMS OS (schema ready; external cost) |
