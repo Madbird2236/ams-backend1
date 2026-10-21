@@ -5,7 +5,7 @@ Goal: brand consistency with creative flexibility. The visual format already in 
 ## Official sources (nothing recreated)
 | Asset | Where | Notes |
 |---|---|---|
-| Logo SVG (symbol + «AMS \| Malergeschäft») | website / repo `ams-os` `public/marketing/ams-malergeschaeft-logo.svg` | Master file; variants only recolour it |
+| Logo SVG (symbol + «AMS \| Malergeschäft») | website / repo `ams-os` `public/marketing/ams-malergeschaeft-logo.svg` | **The only official logo (confirmed by Adriano 2026-10-21).** Master file; variants only recolour it |
 | Symbol PNG 512×512 transparent | AMS OS `company-assets/logo/ams_logo_transparent.png` | |
 | Wordmark PNG 3000×571 | AMS OS `company-assets/logo/ams_malergeschaeft_invoice.png` | Dark text, light backgrounds |
 | Brand colours (from the official SVG) | `#BFE0F2` `#6FB9DF` `#3FA3D6` (symbol) · `#1E96CF` (divider) · `#1E293B` (text) | No other brand colours |
@@ -31,7 +31,7 @@ Goal: brand consistency with creative flexibility. The visual format already in 
 Reference: the five direct ads of 19/10/2026 («Grau war gestern.», «Schimmel? Nicht mit uns.», «Vorher. Nachher. AMS.», «Die Kante macht den Meister.», «Auszug? Übergabefertig.»). This template stays valid; do not redesign it.
 - Format 4:5 (1024×1280 / 1080×1350), one photographic key image, calm surfaces (walls, rooms, details).
 - Thin hairline rules at the top and bottom margin; generous side margins (~85 px at 1024 wide).
-- Logo top left.
+- Logo top left: **official website SVG** (decided by Adriano 2026-10-21), colour variant per the rules above. The outlined-triangle / monospace wordmark seen in the 19/10 files is **not** the official logo and must not be used again; those five ads are re-composed with the official logo before any publication.
 - Dark gradient over the lower ~45 % carrying all text.
 - Kicker in letterspaced monospace, brand blue: «AMS MALERGESCHÄFT · ZÜRICH».
 - Headline in bold sans, two lines: line 1 white, line 2 brand blue (the twist or the answer).
@@ -48,6 +48,5 @@ Conceptual and storytelling pieces may use other layouts but keep the same kicke
 | Conductor slide 5 (B2B) | Mono dark | bottom left | 10.5:1 | Works, no box (proposed final) |
 
 ## Open questions
-0. **Two logo drawings are in circulation.** The 19/10 template shows an outlined blue triangle with «AMS» + letterspaced monospace «MALERGESCHÄFT», no divider. The website SVG shows a three-tone faceted triangle, blue divider and «AMS / Malergeschäft» in bold sans. Adriano must name one as the official master; until then, ads keep the drawing of the template they belong to.
 1. Verify the website domain shown in the template (`ams-malergeschaeft.ch`) against the live site before any ad goes out.
 2. B2B: «AMS Malergeschäft» or an «AMS Swiss» wordmark? No AMS Swiss wordmark found.

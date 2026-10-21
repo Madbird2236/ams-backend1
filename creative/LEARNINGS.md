@@ -27,3 +27,4 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Logo: original blue by default; mono dark/light only when contrast fails; position first, colour second; no boxes when contrast suffices.
 - Mono light failed on the conductor slide (1.4:1): our light, warm imagery rarely has clean dark zones. Plan the zone in the image brief.
 - Keep direct, conceptual and storytelling ads; the campaign objective chooses.
+- 2026-10-21: the website SVG is the only official logo. The outlined-triangle wordmark from the 19/10 ads is retired; check every template's logo against the master before reuse.
