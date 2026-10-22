@@ -53,6 +53,9 @@ A project is not complete because prompts or images exist. Paid assets only afte
   - Real rollout photos exist and may serve as proof, **subject to the client's permission to show their store or brand** (blocklist always applies).
   - **Precision (2026-10-22 review):** Switzerland has **four** language regions (incl. Romansh). The Romansh region is **not** confirmed. Allowed: «in der Deutschschweiz, der Romandie und im Tessin». **Forbidden:** «in allen Sprachregionen», «schweizweit», «überall».
   - Hours and geography are stated exactly as confirmed, never generalised.
+  - **Re-confirmed 2026-10-22:** night/weekend work and Romandie/Ticino remain confirmed capabilities. Never turn them into absolute availability promises (any project, any time, any place).
+    - Allowed: «auch nachts und am Wochenende», «in der Deutschschweiz, der Romandie und im Tessin».
+    - Forbidden: «jederzeit», «rund um die Uhr», «überall», «für jedes Projekt».
 - Watch metaphors too: a visual (e.g. a conductor) can imply a bigger scope than the copy says — the copy must re-anchor it.
 - Pending: define contracting/coordination models for full retail fit-out projects with Adriano.
 - Learning log: `creative/LEARNINGS.md` — read before each new concept, update after each approval or rejection.
