@@ -47,3 +47,9 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - B2B must show real benefits without inventing history or capabilities. Self-check found two cases in my own sketches: «Filiale 7» label and «Fünf Städte» implying a five-city track record.
   - The silent test is an aid, not a law: some ideas live in the text–image pair.
   - Always add up the total script length including the end card. Self-check: retail C was labelled 27 s but is 31 s (27 + 4 s card), and its 13-word card needs ≈ 4.4 s, not 4 s. Mould C was labelled 30 s, but with the card it is ≈ 33 s.
+- 2026-10-22 KT-1 and VOX-1 **approved as demonstrations**: kinetic typography, editorial explainer, camera and stylised 3D are now shown capabilities. Corrections, now permanent criteria (CREATIVE-COMPETENCIES 6d–6f):
+  - KT-1: a stronger first second, more contrast in the wardrobe scene, a more legible end card.
+  - VOX-1 fact error: Switzerland has **four** language regions; I showed three and claimed «in allen Sprachregionen». Never claim «all» without showing and confirming all.
+  - VOX-1 finish: map contrast, label size, final composition.
+  - Audio was too hot: measured KT-1 −14.3 LUFS / +0.2 dBFS peak, VOX-1 −9.9 LUFS / +0.6 dBFS (clipping), Maestro −11.0 LUFS / +0.7 dBFS. New rule: −14 LUFS, true peak ≤ −1.5 dBTP via `motion/engine/loudnorm.sh` (tested: KT-1 → −14.1 LUFS / −1.5 dB, VOX-1 → −13.9 LUFS / −3.3 dB).
+- Next phase focus (Adriano): visual finish plus hybrid work (photo, real video, type, 3D, animation) in short examples, without paid credits. Quality over quantity of effects.

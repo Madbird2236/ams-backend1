@@ -42,3 +42,13 @@ Two voices from one TTS: the villain pitched down with room echo; AMS clear and 
 3. **VOX-1:** the de region's light blue is weak on the paper; the Lausanne pin head is oversized in the close-up; the end card partly covers the map; the source line is small (18 px).
 4. **KT-1:** the end card is calm but plain compared with the villain half; the 3D «Oberflächen» plane could carry a real texture (photo) once assets exist.
 5. **Not yet used:** particles, dolly zoom, photo cut-outs (Vox collage), real footage. These are next in the program.
+
+## Adriano's verdict (2026-10-22)
+Approved as demonstrations of technical and creative progress beyond the Maestro. He liked the typography tied to word meaning, and the mix of maps, depth, icons and camera.
+
+To fix in future work (now permanent criteria, not re-rendered):
+- **KT-1:** first-second impact; contrast of the wardrobe scene; end-card legibility.
+- **VOX-1:**
+  - The fact error: four language regions, not three. No «in allen Sprachregionen».
+  - Map contrast, label size and final composition.
+- **Audio:** normalised levels with a safety margin. The delivered files peaked above 0 dBFS. The tool now exists, and the normalised versions measure −14.1 / −13.9 LUFS.

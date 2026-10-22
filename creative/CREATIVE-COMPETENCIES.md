@@ -29,6 +29,13 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 6a. **Truth in B2B:** communicate real benefits only. Never invent track record, references, numbers or capabilities (e.g. «Filiale 7», «five-city rollout»), even as placeholders in visuals. Confirmed facts only (claims register).
 6b. **Legibility:** sublines ≥ 40 px on 1080 wide; contrast measured (≥ 4.5:1), never judged by eye.
 6c. **Total duration:** add up every scene **including the end card**, and give each text its reading time (≈ 0.3 s per word + 0.5 s). The stated length must equal the sum.
+6d. **Motion finish (permanent, from KT-1/VOX-1 review 2026-10-22):**
+   - **First second:** frame 0–1 s must already carry a strong image or word; no near-empty opening.
+   - **Dark scenes:** the key object must separate from the background. Measure it; never rely on a dark-on-dark look.
+   - **End card:** headline ≥ 64 px, body ≥ 36 px, CTA ≥ 36 px on 1080 wide; contrast ≥ 4.5:1; nothing behind it competing; held for at least its reading time.
+   - **Maps and diagrams:** regions must be clearly distinguishable from each other and from the background; labels ≥ 28 px; the final composition keeps the map and the text apart.
+6e. **Facts in explainers:** every count and every «alle/allen» is checked. Switzerland has **four** national languages and language regions (German, French, Italian, Romansh). Never say «in allen Sprachregionen» unless all four are shown **and** confirmed. Geographic scope and working hours are claimed only as confirmed in the claims register, and never generalised beyond what was confirmed.
+6f. **Audio delivery:** normalise every deliverable with `motion/engine/loudnorm.sh` to −14 LUFS integrated (±1), true peak ≤ −1.5 dBTP. Measure before delivery so levels stay consistent between videos.
 7. **Cost:** cheapest test first (layout on paper, composition, animatic) before generation.
 A piece that fails any point is fixed on paper, not with credits.
 
