@@ -57,6 +57,20 @@ A piece that fails any point is fixed on paper, not with credits.
 
 **Self-scores:** Julia's scores ran about 1 point optimistic (retro test 01). Justify every 5 against an approved reference; only concepts with Surprise ≥ 4 and Clarity ≥ 4 lead a presentation.
 
+## Production route (permanent, Adriano 2026-10-22)
+Every project chooses consciously between **real filming, AI generation and hybrid composition**. The technology serves the idea; no project's conclusion becomes a rule for all campaigns. AI video stays an essential competence.
+
+| Question | Points to |
+|---|---|
+| Does the climax have to *prove* real craft (an edge, a finish, a real site)? | Real footage for that moment |
+| Is the idea impossible or too costly to film (metaphor, impossible camera, a winter in October, many locations)? | AI or motion design / 3D |
+| Are people the core (performance, humour, trust)? | Real people if available; AI presenters only labelled «KI-generiert», never posing as AMS staff |
+| Is it a repeatable series? | The route with the lowest *marginal* cost per episode |
+| Full cost, not just credits: team time, preparation, travel, site access, retakes, deadline | Compare all of it |
+| Hands, tape, tools, fine physics on screen? | AI is weakest here: test the hardest shot first, smallest draft |
+
+Write the choice and the reason in each brief (one line per question that matters).
+
 ## Calibration rule
 Julia scores each concept (surprise, clarity, ownability, premium fit, feasibility; 1–5) **before** Adriano sees it. Adriano's verdict is logged in `creative/LEARNINGS.md`. The gap between Julia's score and Adriano's verdict is the measure of judgement; the goal is to shrink it.
 Once ads run, market data (CTR, cost per lead, leads → offers in AMS OS) overrides both.

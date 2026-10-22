@@ -1,6 +1,7 @@
 # «Chef, wann?» — Drehplan (echte Aufnahme, Smartphone)
 
-**Dauer:** ca. ½ Tag · **Team:** 2 Personen («Chef» und Kollegin/Kollege) + 1 Person an der Kamera (kann die Kollegin selbst sein, POV) · **Kosten:** 0 Credits
+**Wann:** nur auf einer laufenden Baustelle, wenn die Situation ohnehin vorkommt (dunkler Farbton über heller Wand, Klebeband vor dem Abziehen). Keine Arbeiten unterbrechen, kein separates Team aufbieten.
+**Dauer:** ca. 1–2 Stunden am Rand der Arbeit · **Team:** 2 Personen («Chef» und Kollegin/Kollege), Kamera kann die Kollegin selbst führen (POV) · **Kosten:** keine Credits, aber Arbeitszeit, Vorbereitung und Anfahrt
 
 ## Vorbereitung (am Vortag)
 - **Wand:** hell (weiss) unten, oben dunkler Farbton in Seidenmatt (z. B. Petrol/Tannengrün). Kontrast ist entscheidend.

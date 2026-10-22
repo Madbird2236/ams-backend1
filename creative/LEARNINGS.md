@@ -98,3 +98,8 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Open every reveal on the thing revealed (the edge), not on the character.
 - Temp TTS proves timing, not comic performance; test humour with real voices before production.
 - «Chef, wann?» v2 (Adriano's notes): gestures need silhouette, outline and size to read silent; a climax needs one uninterrupted movement and time without text; a closing line after the climax steals it (move series hooks to the caption). An animatic proves timing, not tactile satisfaction.
+
+## 2026-10-22 — «Chef, wann?» closed at animatic stage
+- Status: concept approved, animatic v2 complete, ready for production. Real filming preferred, opportunistic on a running job only.
+- Correction: «0 credits» is not «free». Team time, preparation, travel and site access are costs; compare full cost.
+- One project's route is never a general rule: route decided per project (new section «Production route» in the competencies).

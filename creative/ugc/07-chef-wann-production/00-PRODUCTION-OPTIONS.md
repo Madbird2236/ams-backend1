@@ -1,4 +1,11 @@
-# «Chef, wann?» — production options (for decision; nothing spent)
+# «Chef, wann?» — production options
+
+## Status (Adriano, 2026-10-22)
+- **Concept approved. Animatic v2 complete. READY FOR PRODUCTION when the material exists.**
+- **Route: real filming preferred**, but **opportunistic**: no crew is booked and no AMS work is interrupted for this video. The shooting plan (`01-DREHPLAN-DE.md`) waits for a suitable site (dark satin colour above a light wall, a masked edge about to be pulled, two people present).
+- **Filming is not free:** team time, preparation and travel are real costs, even when no credits are spent.
+- This project's conclusion is **not** a general rule: AI video stays an essential competence; each project chooses its route (see `creative/CREATIVE-COMPETENCIES.md`, «Production route»).
+
 
 Basis: animatic v2 (`creative/ugc/06-chef-wann-animatic/`). Concept approved; execution not yet approved for production.
 
@@ -13,8 +20,8 @@ Basis: animatic v2 (`creative/ugc/06-chef-wann-animatic/`). Concept approved; ex
 | Comic performance | Real people; quality depends on the two performers (can take 3–5 takes) | AI performance, uncertain; German speech quality untested | Same as hybrid |
 | Macro edge (the climax) | Real, perfect if prepared (see shot list) | Real | **Highest risk:** hands, tape physics and a straight edge are AI's weakest points; a painter spots a fake edge instantly |
 | Honesty / label | No AI label. People are shown as themselves at work; nothing claims «apprentice» | «KI-generiert» label needed; the «Chef» must not pose as a real AMS person | Same, label on the whole film |
-| Cost | 0 credits; ≈ half a day for 2 people + phone + tripod | Dialogue shots: Seedance 2.5 draft ≈ 45 credits per 15 s attempt, final ≈ 105; plus retakes | ≈ 105 credits per 15 s attempt at 720p; realistic budget with retakes 200–300 |
-| Series (episode 2, 3 …) | Same setup each time, near-zero marginal cost | Each episode needs new generations | Each episode needs new generations |
+| Cost | 0 credits, but **team time** (≈ ½ day for 2–3 people incl. preparation), travel and an available site: real costs; lowest when it rides on an existing job | Dialogue shots: Seedance 2.5 draft ≈ 45 credits per 15 s attempt, final ≈ 105; plus retakes | ≈ 105 credits per 15 s attempt at 720p; realistic budget with retakes 200–300 |
+| Series (episode 2, 3 …) | Same setup each time; marginal cost = team time on a running job | Each episode needs new generations | Each episode needs new generations |
 | Brand fit (premium execution partner) | Strongest: real craft, real edge | Mixed: real climax, synthetic people | Weakest for a craft brand: the proof is fake |
 
 ## Recommendation
