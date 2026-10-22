@@ -1,0 +1,237 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../lab.css">
+<!-- «Chef, wann?» animatic v1. Fictional characters, temp voices (Piper), 0 credits.
+     Rules applied: one reading layer, no hold without micro-life, nothing cut by occluders, every move serves the joke. -->
+<style>
+  #stage { width:1080px; height:1920px; background:#F2EEE7; }
+  .sc { position:absolute; inset:0; visibility:hidden; }
+  .sc svg { position:absolute; left:0; top:0; }
+  .cam { position:absolute; inset:-80px; transform-origin:50% 50%; }
+  .say { position:absolute; left:0; width:1080px; text-align:center; font-family:IS; font-size:54px; color:#1E293B; letter-spacing:-.4px; opacity:0; }
+  .stamp { position:absolute; left:0; width:1080px; top:1470px; text-align:center; font-family:IDK; font-size:132px; letter-spacing:-4px; color:#1E293B; opacity:0; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:28px; color:#1E293B; opacity:.7; }
+  .ch { display:inline-block; }
+</style></head>
+<body><div id="stage">
+
+<!-- B1–B3: phone POV. The tape line runs from the colleague's fingers (foreground) to the Chef on the ladder (background). -->
+<div class="sc" id="pov"><div class="cam" id="povCam">
+  <svg width="1240" height="2080" viewBox="-80 -80 1240 2080">
+    <defs>
+      <filter id="far" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+      <filter id="soft"><feGaussianBlur stdDeviation="40"/></filter>
+    </defs>
+    <rect x="-80" y="-80" width="1240" height="2080" fill="#E7E2DA"/>
+    <polygon points="-80,1211 1160,2000 -80,2000" fill="#D3CBBE"/>
+    <polygon points="-80,596 1160,-80 1160,1154 -80,961" fill="#2E4B53"/>
+    <polygon points="-80,961 1160,1154 1160,2000 -80,1211" fill="#F2EEE7"/>
+    <polygon id="sun" points="-40,635 140,536 260,1387 80,1273" fill="#FFF6DD" opacity=".18" filter="url(#soft)"/>
+    <polygon points="-80,961 740,1089 740,1128 -80,976" fill="#E3D08B"/>
+    <path id="flap" d="M740 1086 L800 1111 L796 1154 L740 1130 Z" fill="#EAD99A"/>
+    <!-- background: Chef on a ladder, painting the corner, back to camera -->
+    <g id="chefFar" filter="url(#far)">
+      <g transform="translate(150,0)">
+        <rect x="0" y="560" width="14" height="820" fill="#B8935A" transform="rotate(-4 7 1380)"/><rect x="150" y="560" width="14" height="820" fill="#B8935A" transform="rotate(4 157 1380)"/>
+        <rect x="-10" y="760" width="180" height="12" fill="#B8935A"/><rect x="-14" y="960" width="188" height="12" fill="#B8935A"/><rect x="-18" y="1160" width="196" height="12" fill="#B8935A"/>
+        <g id="chefBody">
+          <rect x="34" y="700" width="40" height="270" rx="18" fill="#F7F7F5"/><rect x="86" y="700" width="40" height="270" rx="18" fill="#F7F7F5"/>
+          <rect x="26" y="950" width="54" height="24" rx="10" fill="#5B4636"/><rect x="82" y="950" width="54" height="24" rx="10" fill="#5B4636"/>
+          <rect x="22" y="480" width="116" height="240" rx="34" fill="#F7F7F5"/>
+          <circle cx="80" cy="440" r="44" fill="#B98563"/><path d="M38 432 C 40 382, 122 380, 124 432 Z" fill="#3B2F28"/>
+          <g id="armR"><rect x="118" y="490" width="30" height="170" rx="15" fill="#F7F7F5" transform="rotate(-150 133 505)"/><circle cx="133" cy="505" r="1" fill="none"/></g>
+          <g id="armL"><rect x="12" y="490" width="30" height="170" rx="15" fill="#F7F7F5"/></g>
+          <g id="armUp" opacity="0"><rect x="-40" y="488" width="78" height="30" rx="15" fill="#F7F7F5"/><rect x="-44" y="400" width="30" height="110" rx="15" fill="#F7F7F5"/>
+            <rect x="-48" y="368" width="38" height="40" rx="14" fill="#B98563"/><rect x="-36" y="318" width="13" height="56" rx="6.5" fill="#B98563"/></g>
+        </g>
+      </g>
+    </g>
+    <!-- foreground: the colleague's fingers pinch the tape end -->
+    <g id="pinch" transform="translate(0,0)">
+      <g transform="translate(780,1115)">
+        <rect x="-6" y="-30" width="210" height="64" rx="32" fill="#D29C79" transform="rotate(-12)"/>
+        <rect x="-10" y="6" width="200" height="70" rx="35" fill="#C8916E" transform="rotate(18)"/>
+        <ellipse cx="190" cy="80" rx="150" ry="120" fill="#C8916E"/>
+        <rect x="200" y="60" width="300" height="300" rx="40" fill="#7C8B95" transform="rotate(30 200 60)"/>
+        <ellipse cx="6" cy="-6" rx="18" ry="12" fill="#E7C2AA" transform="rotate(-12)"/>
+      </g>
+    </g>
+    <!-- B3: the other hand drums on the wall -->
+    <g id="drum" opacity="0" transform="translate(-230,250)">
+      <g class="tip"><rect x="380" y="1300" width="56" height="170" rx="28" fill="#C8916E"/></g>
+      <g class="tip"><rect x="446" y="1282" width="56" height="190" rx="28" fill="#D29C79"/></g>
+      <g class="tip"><rect x="512" y="1290" width="56" height="186" rx="28" fill="#C8916E"/></g>
+      <g class="tip"><rect x="578" y="1316" width="52" height="164" rx="26" fill="#D29C79"/></g>
+      <rect x="366" y="1430" width="290" height="300" rx="90" fill="#C8916E"/>
+      <rect x="390" y="1660" width="250" height="400" rx="40" fill="#7C8B95"/>
+    </g>
+  </svg>
+</div>
+  <div class="say" id="s1" style="top:1300px">Chef, wann?</div>
+  <div class="stamp" id="n1">Noch nicht.</div>
+  <div class="say" id="s2" style="top:1300px">Chef? Jetzt?</div>
+  <div class="stamp" id="n2">Noch nicht.</div>
+  <div class="say" id="s3" style="top:1300px">Und jetzt?</div>
+</div>
+
+<!-- B4: the knuckle test -->
+<div class="sc" id="knk"><div class="cam" id="knkCam">
+  <svg width="1240" height="2080" viewBox="-80 -80 1240 2080">
+    <rect x="-80" y="-80" width="1240" height="1700" fill="#2E4B53"/>
+    <rect x="-80" y="1620" width="1240" height="80" fill="#E3D08B"/>
+    <rect x="-80" y="1700" width="1240" height="400" fill="#F2EEE7"/>
+    <polygon points="520,-80 820,-80 980,1700 680,1700" fill="#FFF6DD" opacity=".10" filter="url(#soft)"/>
+    <g id="knuckle" transform="translate(700,0)">
+      <rect x="760" y="700" width="520" height="380" rx="60" fill="#F7F7F5"/>
+      <rect x="560" y="690" width="300" height="300" rx="110" fill="#B98563"/>
+      <rect x="470" y="720" width="190" height="110" rx="55" fill="#C48E6B"/>
+      <rect x="430" y="760" width="110" height="160" rx="55" fill="#C48E6B"/>
+      <path d="M478 742 C 500 728, 528 728, 548 742" stroke="#9C6C4F" stroke-width="7" fill="none" stroke-linecap="round"/>
+      <rect x="600" y="950" width="210" height="80" rx="40" fill="#AD7A59"/>
+    </g>
+  </svg>
+</div>
+  <div class="say" id="s4" style="top:1240px;color:#fff;font-size:46px;font-family:IR">Jetzt.</div>
+</div>
+
+<!-- B5: the pull (slow, about 45°) -->
+<div class="sc" id="pull"><div class="cam" id="pullCam">
+  <svg width="1240" height="2080" viewBox="-80 -80 1240 2080">
+    <rect x="-80" y="-80" width="1240" height="1040" fill="#2E4B53"/>
+    <rect x="-80" y="960" width="1240" height="1040" fill="#F2EEE7"/>
+    <rect id="tapeOn" x="-80" y="930" width="1000" height="60" fill="#E3D08B"/>
+    <line id="edge" x1="1160" y1="960" x2="1160" y2="960" stroke="#fff" stroke-width="3" opacity=".55"/>
+    <g id="strip"><polygon id="stripP" fill="#EAD99A"/></g>
+    <g id="hands">
+      <g transform="rotate(0)">
+        <rect x="-4" y="-22" width="150" height="46" rx="23" fill="#D29C79" transform="rotate(20)"/>
+        <rect x="-6" y="-24" width="150" height="48" rx="24" fill="#C8916E" transform="rotate(70)"/>
+        <ellipse cx="120" cy="120" rx="110" ry="90" fill="#C8916E" transform="rotate(45 120 120)"/>
+        <rect x="170" y="140" width="200" height="150" rx="30" fill="#7C8B95" transform="rotate(45 170 140)"/>
+        <g transform="translate(150,40)">
+          <ellipse cx="120" cy="60" rx="120" ry="80" fill="#B98563" transform="rotate(30 120 60)"/>
+          <rect x="-30" y="20" width="150" height="50" rx="25" fill="#B98563" transform="rotate(160 -30 45)"/>
+          <rect x="190" y="20" width="240" height="190" rx="30" fill="#F7F7F5" transform="rotate(30 190 20)"/>
+        </g>
+      </g>
+    </g>
+  </svg>
+</div>
+  <div class="say" id="lang" style="top:640px;color:#fff;font-family:IDB;font-size:104px;letter-spacing:-2px">Langsam.</div>
+  <div class="say" id="schr" style="top:1300px;font-family:IDB;font-size:96px;letter-spacing:-2px;transform-origin:50% 50%">Schräg.</div>
+</div>
+
+<!-- B6: the reveal, wide -->
+<div class="sc" id="wide"><div class="cam" id="wideCam">
+  <svg width="1240" height="2080" viewBox="-80 -80 1240 2080">
+    <rect x="-80" y="-80" width="1240" height="1130" fill="#2E4B53"/>
+    <rect x="-80" y="1050" width="1240" height="1000" fill="#F2EEE7"/>
+    <line x1="-80" y1="1050" x2="1160" y2="1050" stroke="#fff" stroke-width="2" opacity=".5"/>
+    <rect x="-80" y="1720" width="1240" height="360" fill="#DAD3C7"/>
+    <g id="ladder" transform="translate(120,520)">
+      <rect x="0" y="0" width="18" height="1240" fill="#B8935A"/><rect x="170" y="0" width="18" height="1240" fill="#B8935A"/>
+      <rect x="0" y="200" width="188" height="14" fill="#B8935A"/><rect x="0" y="480" width="188" height="14" fill="#B8935A"/><rect x="0" y="760" width="188" height="14" fill="#B8935A"/><rect x="0" y="1040" width="188" height="14" fill="#B8935A"/>
+    </g>
+    <g id="chef" transform="translate(380,980)">
+      <circle cx="80" cy="60" r="56" fill="#B98563"/><path d="M28 40 C 40 -10, 130 -10, 136 46 Z" fill="#3B2F28"/>
+      <rect x="10" y="120" width="140" height="300" rx="40" fill="#F7F7F5"/>
+      <rect x="20" y="400" width="54" height="320" rx="24" fill="#F7F7F5"/><rect x="86" y="400" width="54" height="320" rx="24" fill="#F7F7F5"/>
+      <rect x="14" y="700" width="70" height="36" rx="14" fill="#5B4636"/><rect x="80" y="700" width="70" height="36" rx="14" fill="#5B4636"/>
+    </g>
+    <g id="ball" transform="translate(880,1560)"><circle r="70" fill="#C8916E"/><circle cx="-10" cy="-30" r="44" fill="#E3D08B"/></g>
+  </svg>
+</div>
+  <div class="say" id="wow" style="top:1470px;left:250px;font-size:42px;font-family:IR;opacity:0">Wow.</div>
+  <div class="say" id="s6" style="top:1380px">Morgen: wann man <span style="font-family:IDB">nicht</span> streicht.</div>
+</div>
+
+<!-- B7: end card. The line becomes the signature. -->
+<div class="sc" id="end">
+  <div id="endPaint" style="position:absolute;left:0;top:0;width:1080px;height:1050px;background:#2E4B53;transform-origin:50% 0"></div>
+  <div id="endLine" style="position:absolute;left:0;top:1050px;width:1080px;height:4px;background:#1E96CF;transform-origin:50% 50%"></div>
+  <div id="head" style="position:absolute;left:0;width:1080px;top:820px;text-align:center;font-family:IDB;font-size:84px;line-height:1.05;letter-spacing:-2px;color:#1E293B;opacity:0">Die Kante<br>macht den Meister.</div>
+  <div id="logo" style="position:absolute;left:330px;top:1130px;opacity:0"></div>
+  <div style="position:absolute;left:0;width:1080px;top:1580px;text-align:center;font-family:IR;font-size:28px;color:#1E293B;opacity:.6">Animatic · fiktive Figuren · Temp-Stimmen</div>
+</div>
+
+<div id="lab">Animatic · fiktive Figuren</div>
+</div>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../lablib.js"></script>
+<script>
+document.getElementById("logo").innerHTML = logoSVG(420);
+const tl = gsap.timeline();
+const vis = (id, a, b) => { tl.set(id, { visibility: "visible" }, a); if (b) tl.set(id, { visibility: "hidden" }, b); };
+// ---- cut points (hard cuts = jump cuts of a phone video; time passes between them) ----
+const B = { b1: 0, b2: 2.5, b3: 4.2, b4: 6.6, b5: 8.9, b6: 12.4, b7: 14.9, end: 17.4 };
+vis("#pov", B.b1, B.b4); vis("#knk", B.b4, B.b5); vis("#pull", B.b5, B.b6); vis("#wide", B.b6, B.b7); vis("#end", B.b7);
+const line = (id, a, b) => { tl.fromTo(id, { opacity: 0, y: 12 }, { opacity: 1, y: 0, duration: .14, ease: "power2.out" }, a); if (b) tl.set(id, { opacity: 0 }, b); };
+const stamp = (id, a, b) => { tl.fromTo(id, { opacity: 0, scale: 1.28, rotate: -3 }, { opacity: 1, scale: 1, rotate: -2, duration: .12, ease: "power3.in" }, a); tl.set(id, { opacity: 0 }, b); };
+
+// B1: «Chef, wann?» — «Noch nicht.»
+line("#s1", .25, 1.45); stamp("#n1", 1.50, B.b2);
+// B2: shorter, the answer snaps back without a beat (escalation)
+tl.set("#povCam", { rotate: 3.5, y: -170 }, B.b2).set("#sun", { x: 300 }, B.b2);
+line("#s2", 2.68, 3.55); stamp("#n2", 3.58, B.b3);
+// B3: «Und jetzt?» — no answer. Only a raised finger. Silence is the punchline.
+tl.set("#povCam", { rotate: -2, y: -60 }, B.b3).set("#sun", { x: 560 }, B.b3).to("#sun", { x: 640, duration: 2.4, ease: "none" }, B.b3)
+  .set("#drum", { opacity: 1 }, B.b3);
+line("#s3", 4.30, 5.62);
+tl.set("#armL", { opacity: 0 }, 5.72).set("#armUp", { opacity: 1, scale: .6, svgOrigin: "180 500" }, 5.72).to("#armUp", { scale: 1, duration: .22, ease: "back.out(2.2)" }, 5.72)
+  .fromTo("#povCam", { scale: 1, transformOrigin: "22% 28%" }, { scale: 1.7, duration: .5, ease: "power3.out" }, 5.80)
+  .to("#armUp", { rotate: -6, svgOrigin: "180 500", duration: .18, yoyo: true, repeat: 1, ease: "sine.inOut" }, 6.15);
+gsap.utils.toArray("#drum .tip").forEach((el, i) => {
+  for (let k = 0; k < 3; k++) tl.to(el, { y: -26, duration: .07, yoyo: true, repeat: 1, ease: "power1.out" }, 4.30 + k * .32 + i * .055);
+});
+tl.to("#drum", { y: 30, opacity: 0, duration: .3 }, 5.60);
+// B4: suspense. The knuckle comes in slowly, touches, the camera leans in. Then a whisper.
+tl.to("#knuckle", { x: 0, duration: 1.0, ease: "power2.out" }, 6.70)
+  .to("#knuckle", { x: -14, duration: .12, yoyo: true, repeat: 1, ease: "power1.inOut" }, 7.62)
+  .fromTo("#knkCam", { scale: 1 }, { scale: 1.12, duration: 2.3, ease: "sine.inOut" }, B.b4)
+  .to("#s4", { opacity: 1, duration: .35, ease: "sine.out" }, 8.25);
+// B5: the pull. «Langsam.» types itself at the pace of the peel; «Schräg.» lies along the strip.
+const P = { t: 0 };
+tl.to(P, { t: 1, duration: 3.3, ease: "sine.inOut" }, 9.0);
+const lc = chars(document.getElementById("lang")); gsap.set(lc, { opacity: 0 });
+tl.set("#lang", { opacity: 1 }, 9.2).to(lc, { opacity: 1, duration: .25, stagger: .16, ease: "none" }, 9.2)
+  .to("#lang", { letterSpacing: "14px", duration: 1.6, ease: "sine.out" }, 9.2)
+  .set("#schr", { rotate: 45 }, 9).fromTo("#schr", { opacity: 0 }, { opacity: 1, duration: .2 }, 10.35)
+  .to(["#lang", "#schr"], { opacity: 0, duration: .3 }, 12.0);
+// B6: pull back from the edge to the whole wall (the reveal), «Wow.», the Chef already leaves
+tl.fromTo("#wideCam", { scale: 2.6, transformOrigin: "88% 54%" }, { scale: 1, duration: 1.1, ease: "power3.out" }, B.b6)
+  .to("#wow", { opacity: .85, duration: .2 }, 12.62)
+  .to("#chef", { x: -170, y: -40, duration: 1.5, ease: "power1.inOut" }, 12.9)
+  .set("#wow", { opacity: 0 }, 13.2);
+line("#s6", 13.22, B.b7);
+// B7: the line contracts into the signature, headline above, logo below
+tl.to("#endPaint", { scaleY: 0, duration: .45, ease: "power3.inOut" }, B.b7).fromTo("#endLine", { scaleX: 1 }, { scaleX: .16, y: -10, duration: .6, ease: "power3.inOut" }, B.b7 + .3)
+  .to("#head", { opacity: 1, duration: .45, ease: "sine.out" }, B.b7 + .55)
+  .to("#logo", { opacity: 1, duration: .45, ease: "sine.out" }, B.b7 + .9);
+tl.to({}, { duration: .01 }, B.end - .01);
+
+// ---- continuous micro-life: handheld phone drift (never a frozen frame) ----
+const n1 = (t, f, s) => Math.sin(t * f + s) * .6 + Math.sin(t * f * 2.3 + s * 1.7) * .4;
+function life(t) {
+  const hx = n1(t, 1.3, 1) * 7, hy = n1(t, 1.1, 2) * 6, hr = n1(t, .9, 3) * .35;
+  ["#povCam", "#knkCam", "#pullCam", "#wideCam"].forEach(id => {
+    const el = document.querySelector(id); el.style.translate = `${hx}px ${hy}px`; el.style.rotate = hr + "deg";
+  });
+  // pinching fingers: tiny eager tremble, stronger in B2
+  const k = t < B.b2 ? 1.5 : t < B.b3 ? 3 : 1;
+  document.getElementById("pinch").setAttribute("transform", `translate(${Math.sin(t * 31) * k} ${Math.cos(t * 27) * k})`);
+  // B5 geometry: the peel point travels left, the strip leaves at 45° to the hands
+  const px = 1100 - 900 * P.t, L = 140 + 260 * P.t, c = Math.SQRT1_2;
+  document.getElementById("tapeOn").setAttribute("width", Math.max(0, px + 80));
+  document.getElementById("edge").setAttribute("x1", px);
+  const hx2 = px + L * c, hy2 = 960 + L * c;
+  const nx = -c * 28, ny = c * 28;
+  document.getElementById("stripP").setAttribute("points", `${px + nx},${960 + ny} ${px - nx},${960 - ny} ${hx2 - nx},${hy2 - ny} ${hx2 + nx},${hy2 + ny}`);
+  document.getElementById("hands").setAttribute("transform", `translate(${hx2} ${hy2})`);
+  document.getElementById("pullCam").style.transform = `translate(${(1080 / 2 - px) * .55 - 180}px, -60px) scale(1.15)`;
+  const mx = px + L * c * .5 - 110 * c, my = 960 + L * c * .5 + 110 * c;   // midpoint of the strip, offset to the white side
+  document.getElementById("schr").style.left = (mx - 540 + (1080 / 2 - px) * .55 - 180) * 1 + "px";
+  document.getElementById("schr").style.top = (my - 60 - 60) + "px";
+}
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: B.end };
+tl.pause(0);
+window.seek = (t) => { tl.seek(t, false); life(t); };
+</script></body></html>

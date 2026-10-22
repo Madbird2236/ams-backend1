@@ -43,3 +43,6 @@ Balance: 4 of 10 units are highlighted (Wand, OHNE, DÄMMUNG, Trommel); the rest
 
 ## Self-score (before Adriano's verdict, already discounted ~1 point)
 Sync precision 4 · integration in the image 4 · balance discreet/highlight 4 · sound–type link 3.5 · finish 3.5.
+
+## Adriano's verdict (2026-10-22): approved as a technical prototype
+Kept: wall tracking, depth from the stud, typography that shows the absence of insulation. To fix in future work (now pre-flight 6i): words split by the studs; freeze too long (use micro-animation, subtle camera moves, rhythm changes); EN and DE layers compete (one primary layer, mobile-first hierarchy). Finish and fluidity still need to reach advertising level.

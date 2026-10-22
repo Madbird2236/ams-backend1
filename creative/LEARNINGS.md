@@ -90,3 +90,10 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Choosing the passage is part of the type design: playing «no insulation» over the empty cavity fixed the voice–image error before a single letter moved.
 - Type in the scene must respect the scene: lay words out so occluders (the stud) fall in the gaps, or the key word becomes unreadable.
 - `fromTo` before its start time shows the *from* state: hidden elements (rings) must use `set` at their start, not `fromTo`.
+- KT-UGC-1 verdict: approved as technical prototype. New pre-flight 6i: key words never cut by occluders; no hold > ~1.5 s without micro-life; one primary reading layer on mobile. Techniques kept: tracking, spatial depth, type that embodies meaning.
+
+## 2026-10-22 — «Chef, wann?» animatic v1
+- A running gag needs one fixed visual signature (same stamp, same place) so it reads with sound off.
+- Silence is a beat: it needs a clear trigger (one gesture) and ~0.8–1 s; any overlapping line kills it (v1 draft had «Und jetzt?» still running when the finger rose).
+- Open every reveal on the thing revealed (the edge), not on the character.
+- Temp TTS proves timing, not comic performance; test humour with real voices before production.
