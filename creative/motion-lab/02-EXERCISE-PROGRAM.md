@@ -27,7 +27,7 @@ The content is always AMS-relevant and claims-safe (confirmed facts only), so th
 |---|---|---|---|---|
 | ICON-1 | **Process in pictograms** | Icons and indicators | Begehung → Offerte innert 24 h (B2C) → Ausführung → Übergabe, with a progress line | Understandable without VO in 6 s; every icon means one thing |
 | CAM-3 | **Dolly zoom** | 3D camera | An empty store the night before opening; the room «stretches» around the expansion manager's point of view | The effect reads as inner tension, not as a technical trick |
-| 3D-1 | **Lit 3D object** | 3D motion | The key from the Maestro as a 3D object, a light sweep, a turn into the handover | Clean lighting, no aliasing; render time noted |
+| 3D-1 ✅ 2026-10-22 (done as «Grau war gestern.»: a 3D room transformation) | **Lit 3D object** | 3D motion | The key from the Maestro as a 3D object, a light sweep, a turn into the handover | Clean lighting, no aliasing; render time noted |
 | MET-1 | **Visual metaphor, static and animated** | Metaphor (weakness 1) | «kalte Füsse» redesigned: 6 thumbnails, best one animated (the wall shivers, the socks go on) | Passes the silent test **or** works as a deliberate text–image pair (judged by Adriano) |
 | KT-3 | **Expressive type** | Tracking/weight as emotion | «kalte Füsse»: letters shiver, frost forms, then warm up | The emotion is felt in the type alone |
 

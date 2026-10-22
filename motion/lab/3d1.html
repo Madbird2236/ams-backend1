@@ -1,0 +1,174 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<!-- 3D-1 «Grau war gestern.» A raw grey room; a paint edge travels around it; the slogan remains as the unpainted (masked) grey.
+     Demonstrates: lighting (sun through a window, sky fill, warming), materials (concrete, matte paint with a wet edge, wood, aluminium),
+     shadows (window frame, objects), depth (foreground tools, dust in the beam), camera that follows the story, type integrated as negative space. -->
+<style>
+  #stage { width:1080px; height:1920px; background:#111; }
+  #gl { position:absolute; left:0; top:0; width:1080px; height:1920px; }
+  #logo { position:absolute; left:330px; top:415px; opacity:0; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:26px; color:#fff; opacity:.55; }
+</style></head>
+<body><div id="stage"><canvas id="gl" width="1080" height="1920"></canvas><div id="logo"></div><div id="lab">Lab · 3D-1</div></div>
+<script src="../node_modules/three/build/three.min.js"></script>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="lablib.js"></script>
+<script>
+(async () => {
+if (THREE.ColorManagement) { THREE.ColorManagement.legacyMode = false; THREE.ColorManagement.enabled = true; }
+await document.fonts.load("200px IDK"); await document.fonts.load("40px IS");
+document.getElementById("logo").innerHTML = logoSVG(420, "#FFFFFF");
+const R = rnd(21);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1080, 1920, false);
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.outputEncoding = THREE.sRGBEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.0;
+const scene = new THREE.Scene(); scene.background = new THREE.Color("#0d0f12");
+scene.fog = new THREE.Fog("#1a1d22", 6, 14);
+const camera = new THREE.PerspectiveCamera(50, 1080 / 1920, .05, 50);
+
+// ---------- procedural textures ----------
+function canvasTex(w, h, draw, repeat) { const c = document.createElement("canvas"); c.width = w; c.height = h; draw(c.getContext("2d"), w, h);
+  const t = new THREE.CanvasTexture(c); t.encoding = THREE.sRGBEncoding; t.anisotropy = 8; if (repeat) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(...repeat); } return t; }
+const concrete = canvasTex(1024, 1024, (g, w, h) => {
+  g.fillStyle = "#8d8c88"; g.fillRect(0, 0, w, h);
+  for (let i = 0; i < 9000; i++) { const v = 120 + R() * 40 | 0; g.fillStyle = `rgba(${v},${v - 2},${v - 6},${.05 + R() * .08})`; const r = 1 + R() * 18; g.beginPath(); g.arc(R() * w, R() * h, r, 0, 7); g.fill(); }
+  for (let i = 0; i < 40; i++) { g.strokeStyle = `rgba(70,70,68,${.06 + R() * .08})`; g.lineWidth = 1 + R() * 2; g.beginPath(); let x = R() * w, y = R() * h; g.moveTo(x, y); for (let k = 0; k < 6; k++) { x += (R() - .5) * 90; y += (R() - .5) * 90; g.lineTo(x, y); } g.stroke(); }
+  for (let i = 0; i < 260; i++) { g.fillStyle = `rgba(55,55,52,${.25 + R() * .3})`; g.beginPath(); g.arc(R() * w, R() * h, .8 + R() * 2.2, 0, 7); g.fill(); }   // pores
+}, [2, 2]);
+const wood = canvasTex(1024, 1024, (g, w, h) => {
+  const bw = 128; for (let x = 0; x < w; x += bw) { const base = 150 + R() * 30 | 0; g.fillStyle = `rgb(${base},${base * .72 | 0},${base * .48 | 0})`; g.fillRect(x, 0, bw, h);
+    for (let k = 0; k < 40; k++) { g.strokeStyle = `rgba(90,60,35,${.05 + R() * .1})`; g.lineWidth = 1 + R() * 2; const xx = x + R() * bw; g.beginPath(); g.moveTo(xx, 0); g.bezierCurveTo(xx + 8, h * .3, xx - 8, h * .6, xx + 4, h); g.stroke(); }
+    g.fillStyle = "rgba(40,25,15,.5)"; g.fillRect(x, 0, 2, h); const cut = R() * h; g.fillRect(x, cut, bw, 2); }
+}, [3, 3]);
+// the slogan as a mask: these pixels stay raw grey when the paint passes
+const textTex = canvasTex(2000, 1080, (g, w, h) => {
+  g.fillStyle = "#000"; g.fillRect(0, 0, w, h); g.fillStyle = "#fff"; g.textAlign = "center"; g.textBaseline = "alphabetic";
+  g.font = "200px IDK"; g.letterSpacing = "-6px";
+  g.font = "150px IDK"; g.fillText("Grau", w / 2, 300); g.fillText("war", w / 2, 450); g.fillText("gestern.", w / 2, 600);
+});
+textTex.encoding = THREE.LinearEncoding;
+
+// ---------- the paint shader: an edge travelling along the unwrapped walls ----------
+const U = { uEdge: { value: -1 }, uWet: { value: .35 } };
+function paintMat(painted, axis, s0, dir, text) {
+  const m = new THREE.MeshStandardMaterial({ map: concrete, roughness: .95, metalness: 0 });
+  m.customProgramCacheKey = () => `paint-${axis}-${s0}-${dir}-${text ? 1 : 0}`;   // one program per wall (else three.js shares them)
+  m.onBeforeCompile = (sh) => {
+    sh.uniforms.uEdge = U.uEdge; sh.uniforms.uWet = U.uWet; sh.uniforms.uPaint = { value: new THREE.Color(painted) };
+    sh.uniforms.uText = { value: textTex }; sh.uniforms.uHasText = { value: text ? 1 : 0 };
+    sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP; varying vec2 vUv0;")
+      .replace("#include <fog_vertex>", "#include <fog_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz; vUv0 = uv;");
+    sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+      varying vec3 vWP; varying vec2 vUv0; uniform float uEdge; uniform float uWet; uniform vec3 uPaint; uniform sampler2D uText; uniform float uHasText;
+      float sPos() { return ${s0.toFixed(3)} + ${dir.toFixed(1)} * vWP.${axis}; }`)
+      .replace("#include <map_fragment>", `#include <map_fragment>
+      float s = sPos();
+      float painted = 1.0 - smoothstep(uEdge - 0.004, uEdge + 0.004, s);
+      float keep = uHasText > 0.5 ? texture2D(uText, vUv0).r : 0.0;              // masked letters stay raw
+      painted *= 1.0 - smoothstep(0.35, 0.65, keep);
+      float wet = painted * (1.0 - smoothstep(0.0, uWet, uEdge - s));            // fresh paint near the edge
+      vec3 paintCol = uPaint * (1.0 - 0.12 * wet);
+      // fine roller stipple so the paint is a surface, not a flat colour
+      float st = fract(sin(dot(floor(vWP.xy * 420.0 + vWP.z * 300.0), vec2(12.9898, 78.233))) * 43758.5453);
+      paintCol *= 0.985 + 0.03 * st;
+      diffuseColor.rgb = mix(diffuseColor.rgb, paintCol, painted);`)
+      .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+      roughnessFactor = mix(roughnessFactor, mix(0.82, 0.32, wet), painted);`);
+  };
+  return m;
+}
+// unwrapped walls: left (x=-2.5, s = -z, 0..5), back (z=-5, s = 5 + x + 2.5), right (x=2.5, s = 10 + z + 5)
+const W = 5, H = 2.7, D = 5;
+const matL = paintMat("#EDE6DA", "z", 0, -1), matB = paintMat("#1E4A57", "x", 7.5, 1, true), matR = paintMat("#EDE6DA", "z", 15, 1);
+function mesh(geo, mat, cast = true) { const m = new THREE.Mesh(geo, mat); m.castShadow = cast; m.receiveShadow = true; scene.add(m); return m; }
+// back wall (with the slogan)
+const back = mesh(new THREE.PlaneGeometry(W, H), matB); back.position.set(0, H / 2, -D);
+// right wall
+const right = mesh(new THREE.PlaneGeometry(D, H), matR); right.rotation.y = -Math.PI / 2; right.position.set(W / 2, H / 2, -D / 2);
+// left wall with a window opening (z -3.7..-2.1, y 0.85..2.25), built from four boxes
+const wz0 = -3.7, wz1 = -2.1, wy0 = .85, wy1 = 2.25, T = .22;
+const box = (z0, z1, y0, y1) => { const b = mesh(new THREE.BoxGeometry(T, y1 - y0, z1 - z0), matL); b.position.set(-W / 2 - T / 2, (y0 + y1) / 2, (z0 + z1) / 2); return b; };
+box(-D, wz0, 0, H); box(wz1, 0, 0, H); box(wz0, wz1, 0, wy0); box(wz0, wz1, wy1, H);
+// window frame and mullions (they draw the shadow pattern)
+const frameMat = new THREE.MeshStandardMaterial({ color: "#d9d6cf", roughness: .6 });
+const fr = (sx, sy, sz, x, y, z) => { const b = mesh(new THREE.BoxGeometry(sx, sy, sz), frameMat); b.position.set(x, y, z); };
+fr(.08, wy1 - wy0, .06, -W / 2 - .08, (wy0 + wy1) / 2, (wz0 + wz1) / 2);   // vertical mullion
+fr(.08, .06, wz1 - wz0, -W / 2 - .08, (wy0 + wy1) / 2 + .15, (wz0 + wz1) / 2); // horizontal
+// floor, ceiling
+const floor = mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshStandardMaterial({ map: wood, roughness: .55 }), false); floor.rotation.x = -Math.PI / 2; floor.position.set(0, 0, -D / 2);
+const ceil = mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshStandardMaterial({ color: "#d8d5ce", roughness: 1 })); ceil.rotation.x = Math.PI / 2; ceil.position.set(0, H, -D / 2);
+// foreground tools: aluminium ladder, paint bucket with the accent colour, roller in a tray
+const alu = new THREE.MeshStandardMaterial({ color: "#c9ccd0", metalness: .85, roughness: .35 });
+const ladder = new THREE.Group(); scene.add(ladder);
+[[-.24, 0], [.24, 0]].forEach(([x]) => { const r = new THREE.Mesh(new THREE.BoxGeometry(.05, 2.1, .07), alu); r.position.set(x, 1.0, 0); r.castShadow = true; ladder.add(r); });
+for (let i = 0; i < 6; i++) { const s = new THREE.Mesh(new THREE.BoxGeometry(.48, .04, .1), alu); s.position.set(0, .3 + i * .32, 0); s.castShadow = true; ladder.add(s); }
+ladder.position.set(1.7, 0, -1.6); ladder.rotation.set(-.12, -.5, 0);
+const bucket = new THREE.Group(); scene.add(bucket);
+const bk = new THREE.Mesh(new THREE.CylinderGeometry(.17, .15, .3, 40, 1, true), new THREE.MeshStandardMaterial({ color: "#e9e9e6", roughness: .4, side: THREE.DoubleSide })); bk.position.y = .15; bk.castShadow = true; bucket.add(bk);
+const pt = new THREE.Mesh(new THREE.CircleGeometry(.165, 40), new THREE.MeshStandardMaterial({ color: "#1E4A57", roughness: .25 })); pt.rotation.x = -Math.PI / 2; pt.position.y = .27; bucket.add(pt);
+bucket.position.set(-.75, 0, -1.9);
+const tray = new THREE.Mesh(new THREE.BoxGeometry(.32, .04, .42), new THREE.MeshStandardMaterial({ color: "#2b2d31", roughness: .5 })); tray.position.set(-.3, .02, -1.65); tray.rotation.y = .4; tray.castShadow = true; tray.receiveShadow = true; scene.add(tray);
+const roll = new THREE.Mesh(new THREE.CylinderGeometry(.045, .045, .25, 24), new THREE.MeshStandardMaterial({ color: "#1E4A57", roughness: .8 })); roll.rotation.z = Math.PI / 2; roll.rotation.y = .4; roll.position.set(-.3, .08, -1.6); roll.castShadow = true; scene.add(roll);
+
+// sky seen through the window (bright exterior, not affected by fog)
+const skyTex = canvasTex(64, 256, (g, w, h) => { const gr = g.createLinearGradient(0, 0, 0, h); gr.addColorStop(0, "#cfe0f2"); gr.addColorStop(.7, "#f3efe6"); gr.addColorStop(1, "#d9d2c4"); g.fillStyle = gr; g.fillRect(0, 0, w, h); });
+const sky = new THREE.Mesh(new THREE.PlaneGeometry(14, 8), new THREE.MeshBasicMaterial({ map: skyTex, fog: false }));
+sky.rotation.y = Math.PI / 2; sky.position.set(-6, 2, -3); scene.add(sky);
+// ---------- light ----------
+const hemi = new THREE.HemisphereLight("#a9b9cf", "#6b6760", .9); scene.add(hemi);
+const sun = new THREE.DirectionalLight("#bcd0ff", 3.2); sun.position.set(-9, 4.6, 2.2); sun.target.position.set(.8, .55, -5); scene.add(sun, sun.target);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; sun.shadow.radius = 4;
+Object.assign(sun.shadow.camera, { left: -6, right: 6, top: 6, bottom: -6, near: 1, far: 25 }); sun.shadow.camera.updateProjectionMatrix();
+const bounce = new THREE.PointLight("#ffd9b0", 0, 9, 2); bounce.position.set(.4, 1.6, -2.4); scene.add(bounce);   // warm bounce once the room is painted
+// dust in the beam
+const N = 260, pos = new Float32Array(N * 3), seed = [];
+for (let i = 0; i < N; i++) { seed.push([R(), R(), R(), R()]); }
+const dustGeo = new THREE.BufferGeometry(); dustGeo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+const dust = new THREE.Points(dustGeo, new THREE.PointsMaterial({ color: "#fff3df", size: .008, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(dust);
+
+// ---------- story timeline ----------
+const S = { edge: -0.5, warm: 0, exp: .95, logo: 0 };
+const tl = gsap.timeline();
+tl.to(S, { exp: 1.0, duration: 2.5, ease: "sine.inOut" }, 0)
+  .to(S, { edge: 5.0, duration: 4.0, ease: "power1.inOut" }, 2.6)       // along the left wall (with the window)
+  .to(S, { edge: 10.05, duration: 3.2, ease: "power1.inOut" }, 6.6)     // across the back wall: the letters stay grey
+  .to(S, { warm: 1, duration: 6.5, ease: "sine.inOut" }, 3.0)
+  .to(S, { exp: 1.12, duration: 3, ease: "sine.inOut" }, 6.5)
+  .to("#logo", { opacity: 1, duration: .5, ease: "sine.out" }, 10.9)
+  .to("#lab", { opacity: 0, duration: .3 }, 10.6);
+tl.to({}, { duration: .01 }, 12.99);
+// camera keyframes: [t, pos, look]
+const K = [
+  [0.0, [1.75, .55, -.15], [-2.5, 1.35, -2.9]],
+  [2.6, [1.45, .78, -.5], [-2.5, 1.35, -1.0]],
+  [5.2, [1.05, 1.0, -1.0], [-2.5, 1.35, -3.9]],
+  [6.8, [.75, 1.15, -1.1], [-1.6, 1.35, -5.0]],
+  [9.8, [0, 1.42, -.55], [0, 1.5, -5.0]],
+  [13.0, [0, 1.45, -1.05], [0, 1.52, -5.0]]];
+const ease = gsap.parseEase("sine.inOut"), v3 = (a) => new THREE.Vector3(...a);
+function cam(t) {
+  let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++;
+  const [t0, p0, l0] = K[i], [t1, p1, l1] = K[i + 1], u = ease(Math.min(1, Math.max(0, (t - t0) / (t1 - t0))));
+  const p = v3(p0).lerp(v3(p1), u), l = v3(l0).lerp(v3(l1), u);
+  p.x += Math.sin(t * .8) * .01; p.y += Math.sin(t * 1.1) * .006;   // breathing, never locked off
+  camera.position.copy(p); camera.lookAt(l);
+}
+const cold = new THREE.Color("#bcd0ff"), hot = new THREE.Color("#ffd8a8");
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: 13.0 };
+tl.pause(0);
+window.seek = (t) => {
+  tl.seek(t, false); cam(t);
+  U.uEdge.value = S.edge;
+  sun.color.copy(cold).lerp(hot, S.warm); sun.intensity = 3.0 + .6 * S.warm;
+  sun.position.set(-9, 3.0 + 2.6 * S.warm, 2.2 + .4 * S.warm);       // the sun rises: the window light slides down the wall (time passes)
+  hemi.intensity = .9 + .15 * S.warm; bounce.intensity = .8 * S.warm;
+  renderer.toneMappingExposure = S.exp;
+  for (let i = 0; i < N; i++) { const [a, b, c, d] = seed[i];
+    pos[i * 3] = -2.3 + a * 1.6 + Math.sin(t * .3 + d * 6) * .05; pos[i * 3 + 1] = .3 + b * 1.9 + Math.sin(t * .25 + c * 6) * .06; pos[i * 3 + 2] = -3.9 + c * 1.8 + (a - .5) * .9; }
+  dustGeo.attributes.position.needsUpdate = true;
+  renderer.render(scene, camera);
+};
+window.READY = true;
+})();
+</script></body></html>

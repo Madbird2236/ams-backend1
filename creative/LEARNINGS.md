@@ -108,3 +108,8 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Compute the physics before drawing (Magnus): the chart is evidence only if its numbers are real; hedge thresholds («ca.», «kann», «über Tage»).
 - Sparse SFX without a bed cannot reach −14 LUFS within true peak: add a light bed and soft-limit transients before `loudnorm.sh`.
 - World-space tags must be placed for the zoomed framing they will be read in, not for the wide shot.
+
+## 2026-10-22 — 3D-1 «Grau war gestern.»
+- Type as negative space (unpainted letters) integrates better than any overlay: the story's mechanism reveals it, and the scene's light and shadow act on it.
+- three.js: materials with identical `onBeforeCompile` share one program → set `customProgramCacheKey`; texture repeat transforms `vUv` → masks use raw `uv`.
+- Every transformation needs a hero moment in close-up; a crisp effect seen small is not yet a climax.

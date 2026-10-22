@@ -26,3 +26,9 @@
 
 ## Self-score (calibrated)
 Clarity 4 · accuracy 4.5 · Vox language (evidence, camera follows the argument) 4 · finish 3.5 · AMS fit 4.
+
+## Adriano's verdict (2026-10-22): approved
+Kept: invisible physics made visible (particles, camera, architectural section, building chart); the 20 °C / 50 % → 12 °C ≈ 83 % calculation is correct. To improve in future explainers:
+1. **High relative humidity ≠ condensation.** At 12 °C the air is humid, not wet: show humidity as density/haze, not as drops; only show water at the dew point (≈ 9 °C here), and label the difference.
+2. **Chart legibility on phones:** numbers and labels ≥ 40 px on screen at the framing where they are read; bigger tick values, fewer labels.
+3. **End cards with impact:** less «presentation slide», more advertising: one strong line, brand layer per the house template, composition with tension (scale contrast, image behind), not centred text on paper.
