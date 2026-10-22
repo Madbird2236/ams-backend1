@@ -1,26 +1,31 @@
 # UGC prototype 01 — «Klebeband» (plan for approval, no credits spent)
 
 ## 1. Concept
-- **One real painting detail:** pull the masking tape off while the paint is still wet, at a flat angle and slowly. If you wait until it is dry, the paint film tears with the tape and the edge frays.
+- **One real painting detail (corrected v2):** remove masking tape after the last coat, before the paint has fully cured, pulling flat and slowly. If the paint is already dry, score the edge with a cutter first, otherwise the paint film tears with the tape.
 - **Why this tip:** it is real, useful for anyone painting at home, and visual in one close-up (a crisp edge vs. a torn one). It continues «Die Kante macht den Meister.»
 - **Audience:** B2C (owners, tenants, DIY).
 - **Objective:** trust and reach; secondary: «the people who know this are the people to call».
 - **KPI:** watch time to 100 %, saves and shares, profile visits.
 - **No offer, no promise.** It is a tip; AMS is the expert, not the seller.
 
-## 2. Script (Swiss Standard German, ~33 words, ~13 s of speech)
+## 2. Script v2 (Swiss Standard German, ~35 words, ~14 s) — technical correction 2026-10-22
+v1 said «pull the tape while the paint is still wet» as a universal rule. **That is not universally correct.**
+- The tape comes off after the **last** coat, before the paint has **fully cured**.
+- With several coats, pulling while wet after coat 1 is wrong.
+- If the paint is already dry, **score the edge with a cutter first**, then pull flat and slowly.
+- Always follow the paint manufacturer's instructions.
+
 | # | Time | Shot | Words (presenter) | Subtitle (discreet) |
 |---|---|---|---|---|
-| 1 | 0.0–2.8 | **A-roll**, medium, phone at chest height. Presenter in white painter's clothes, holding a tape roll, freshly painted wall behind | «Der häufigste Fehler beim Streichen? Das Klebeband.» | Der häufigste Fehler beim Streichen? |
-| 2 | 2.8–6.0 | **B-roll** close-up: roller along the taped edge, wet paint | (VO) «Viele warten, bis die Farbe trocken ist – und ziehen dann ab.» | Viele warten, bis die Farbe trocken ist … |
-| 3 | 6.0–9.0 | **Detail** macro: tape pulled back flat and slowly while still wet; a razor-sharp line appears | (VO) «Besser: noch feucht abziehen. Flach und langsam.» | Besser: noch feucht abziehen. |
-| 4 | 9.0–11.5 | **Detail** comparison: dried tape pulled, the paint film tears and the edge frays | (VO) «Sonst reisst der Farbfilm mit.» | Sonst reisst der Farbfilm mit. |
-| 5 | 11.5–15.0 | **A-roll**, medium: he runs a finger near the crisp edge, looks into the lens, small smile | «Saubere Kante. So einfach.» | Saubere Kante. So einfach. |
+| 1 | 0.0–2.6 | **A-roll**, medium, phone at chest height, tape roll in hand, freshly painted wall | «Häufigster Fehler beim Streichen? Das Klebeband.» | Häufigster Fehler beim Streichen? |
+| 2 | 2.6–5.4 | **B-roll** detail: old, dried tape pulled, the paint film tears, frayed edge | (VO) «Zu lange drauf – und die Farbe reisst mit.» | Zu lange drauf – die Farbe reisst mit. |
+| 3 | 5.4–9.6 | **Detail** macro: after the last coat, tape pulled back flat and slowly; a crisp line appears | (VO) «Nach dem letzten Anstrich abziehen, bevor sie durchtrocknet. Flach und langsam.» | Nach dem letzten Anstrich abziehen – flach und langsam. |
+| 4 | 9.6–12.4 | **Detail**: cutter scoring along the tape edge on dry paint | (VO) «Schon trocken? Erst mit dem Cutter anritzen.» | Schon trocken? Erst anritzen. |
+| 5 | 12.4–15.0 | **A-roll**: finger near the crisp edge, looks into the lens | «Saubere Kante.» | Saubere Kante. |
 
-- **End:** no logo card. Discreet lower line in the last 2 s: «AMS Malergeschäft · Tipps vom Profi».
-- **Labels:** «KI-generiert» (see section 6).
-- **Language check:** «reisst» (ss); «Klebeband» is the common term in Switzerland («Malerabdeckband» is also correct).
-- **Claims check:** a craft tip, no promise.
+- **Lower line (last 2 s):** «AMS Malergeschäft · Tipps vom Profi».
+- **Labels:** «KI-generiert» visible for the whole video.
+- **Craft order:** problem (2) → right timing (3) → fallback for dry paint (4). No promise.
 
 ## 3. Shot rules (from the reference analysis)
 - **Craft order must be correct:** paint → pull wet → result. Comparison (4) is clearly «the wrong way».
@@ -66,7 +71,7 @@ Nothing above was generated. Model capabilities come from Higgsfield's catalogue
 - **Cost:** to be quoted before generation. Order of magnitude from earlier sessions: video models are the expensive part (tens of credits per clip). Start with the 3 s test.
 
 ## 7. Questions for approval
-1. Topic: tape tip (painting) as proposed, or a drywall detail (e.g. boards not standing directly on the floor: keep a gap)?
-2. AI presenter with a «KI-generiert» label, or a real AMS painter on a phone with Julia doing script and post?
+1. ~~Topic~~ decided: Klebeband (Adriano 2026-10-22).
+2. ~~Presenter~~ decided: virtual presenter, clearly labelled as AI (Adriano 2026-10-22).
 3. Voice: Higgsfield TTS or your Voice Studio?
 4. Budget for the 3 s test (shot 1 only): after the quote.

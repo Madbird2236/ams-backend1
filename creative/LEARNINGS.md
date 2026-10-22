@@ -62,3 +62,6 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - a loudness limiter after normalisation, because AAC re-adds peaks.
 
   Limits: assumed camera intrinsics, AI footage morphing, low resolution.
+- 2026-10-22 UGC «Klebeband»: my v1 tip («pull while wet») was presented as a universal rule; Adriano corrected it.
+  - Correct version: remove the tape after the last coat, before full cure. If the paint is dry, score with a cutter first. Follow the manufacturer's instructions.
+  - Lesson: a craft tip in UGC is a technical claim. State the conditions (coats, paint type, drying state); never give a single universal rule.
