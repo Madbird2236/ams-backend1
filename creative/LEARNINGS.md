@@ -76,3 +76,8 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - Imperfection is credibility.
   - Generate one multi-shot clip (Seedance 2.5) instead of stitching posed shots.
   - The reference's presenter is Adriano's own character element.
+
+## 2026-10-22 — UGC re-edit 1 (Trockenbau demo footage, 0 credits)
+- Many generation errors are fixable in the edit: re-order shots to the real craft sequence, punch in to hide continuity errors, leave one shot without text as a breathing pause.
+- Sound can carry the message: «es wird still» is stronger when the room tone actually falls into silence.
+- Limits of post: language of the speech, source resolution and what the image shows stay as generated. Check these before choosing post over a new generation.

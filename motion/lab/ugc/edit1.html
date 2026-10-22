@@ -1,0 +1,44 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../lab.css">
+<style>
+  #stage { width:1080px; height:1920px; background:#000; }
+  #v { position:absolute; inset:0; width:1080px; height:1920px; }
+  .cap { position:absolute; left:50%; top:1250px; transform:translateX(-50%); max-width:900px; text-align:center;
+         font-family:IS; font-size:52px; line-height:1.22; color:#fff; letter-spacing:-.3px;
+         background:rgba(0,0,0,.52); padding:14px 26px 16px; border-radius:16px; opacity:0; white-space:nowrap; }
+  .key { color:#8FD0F2; display:inline-block; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:30px; color:rgba(255,255,255,.92); background:rgba(0,0,0,.35); padding:6px 14px; border-radius:8px; }
+</style></head>
+<body><div id="stage">
+  <img id="v">
+  <div class="cap" id="c1">Warum hört man die Nachbarn<br>durch eine neue Wand?</div>
+  <div class="cap" id="c2">Ohne Dämmung drin …</div>
+  <div class="cap" id="c3">… wirkt die Wand wie eine&nbsp;<span class="key" id="k1">Trommel.</span></div>
+  <div class="cap" id="c4">Volle Dämmung, doppelt beplankt …</div>
+  <div class="cap" id="c5">… und es wird&nbsp;<span class="key" id="k2">still.</span></div>
+  <div id="lab">KI-generiert · Demo-Material, keine AMS-Referenz</div>
+</div>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<script>
+const tl = gsap.timeline();
+// captions follow the spoken phrases (word timings from the transcript, mapped to the new edit)
+[["#c1", .05, 2.45], ["#c2", 6.45, 8.30], ["#c3", 8.30, 10.25], ["#c4", 10.32, 12.58], ["#c5", 12.62, 15.0]].forEach(([id, a, b]) => {
+  tl.fromTo(id, { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .16, ease: "power2.out" }, a);
+  if (b < 15) tl.to(id, { opacity: 0, duration: .1 }, b - .1);
+});
+// «Trommel»: two soft pulses on the two knocks
+tl.to("#k1", { scale: 1.12, duration: .07, yoyo: true, repeat: 1, ease: "power1.out" }, 9.78)
+  .to("#k1", { scale: 1.08, duration: .07, yoyo: true, repeat: 1, ease: "power1.out" }, 9.98);
+// «still»: the word slowly breathes out as the room falls silent
+tl.fromTo("#k2", { letterSpacing: "0px" }, { letterSpacing: "6px", duration: 1.2, ease: "sine.out" }, 13.74)
+  .to("#c5", { opacity: .0, duration: .6, ease: "sine.in" }, 14.4);
+tl.to({}, { duration: .01 }, 14.99);
+tl.pause(0);
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: 15.0 };
+const img = document.getElementById("v");
+window.seek = async (t) => {
+  tl.seek(t, false);
+  const n = Math.min(450, Math.floor(t * 30) + 1), src = `frames/${String(n).padStart(4, "0")}.jpg`;
+  if (img.getAttribute("src") !== src) { img.src = src; await img.decode().catch(() => {}); }
+};
+</script></body></html>
