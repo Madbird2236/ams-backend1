@@ -1,0 +1,211 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<style>
+  #paper { position:absolute; inset:0; background:#EEEAE2; }
+  #night { position:absolute; inset:0; background: radial-gradient(90% 70% at 50% 40%, #24324a, #141c2b); opacity:0; }
+  #grain { position:absolute; inset:0; opacity:.5; mix-blend-mode:multiply; }
+  #gl { position:absolute; inset:0; }
+  #ov { position:absolute; inset:0; }
+  .kick { font-family: JB; font-size: 24px; letter-spacing: 4px; color:#3FA3D6; text-transform: uppercase; }
+  .head { font-family: IDK; color:#1E293B; letter-spacing:-3px; line-height:1; }
+  .mark { position:absolute; left:-8px; right:-8px; bottom:6px; height:34%; background:#3FA3D6; opacity:.35; transform-origin:left; z-index:-1; border-radius:3px; }
+  .lab { position:absolute; transform: translate(-50%,-50%); font-family: IS; font-size: 30px; color:#1E293B; background: rgba(255,255,255,.88); padding: 8px 18px; border-radius: 999px; white-space:nowrap; box-shadow: 0 6px 18px rgba(30,41,59,.15); display:flex; align-items:center; gap:10px; }
+  .lab svg { width: 30px; height: 30px; fill: #3FA3D6; }
+  .city { position:absolute; transform: translate(-50%,-100%); font-family: IS; font-size: 26px; color:#1E293B; white-space:nowrap; text-shadow: 0 0 6px #EEEAE2, 0 0 12px #EEEAE2; }
+  .stat { position:absolute; left:84px; display:flex; align-items:baseline; gap:18px; }
+  .stat b { font-family: JB; font-size: 120px; color:#3FA3D6; font-weight:400; line-height:1; }
+  .stat span { font-family: IS; font-size: 40px; color:#1E293B; }
+  .tag { position:absolute; font-family: JB; font-size: 22px; letter-spacing:3px; color:#1E293B; border:2px dashed #1E293B; padding:6px 12px; text-transform:uppercase; }
+  .ann { position:absolute; display:flex; align-items:center; gap:16px; font-family: IS; font-size: 38px; color:#F1EDE6; }
+  .ann .ic { width: 78px; height: 78px; border-radius: 50%; background:#3FA3D6; display:flex; align-items:center; justify-content:center; }
+  .ann .ic svg { width: 46px; height: 46px; fill: #fff; }
+  .sf { position:absolute; transform: translate(-50%,-100%); width: 44px; height: 44px; border-radius: 10px; background:#1E293B; display:flex; align-items:center; justify-content:center; }
+  .sf svg { width: 28px; height: 28px; fill: #fff; }
+  .src { position:absolute; right:40px; bottom:28px; font-family: JB; font-size: 18px; color:#6b6f78; letter-spacing:1px; }
+</style></head>
+<body><div id="stage">
+  <div id="paper"></div><div id="night"></div>
+  <svg id="grain" width="1080" height="1350"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".8" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .42  0 0 0 0 .38  0 0 0 .35 0"/></filter><rect width="1080" height="1350" filter="url(#g)"/></svg>
+  <canvas id="gl" width="1080" height="1350"></canvas>
+  <svg id="lines" class="abs" width="1080" height="1350" style="inset:0"></svg>
+  <div id="ov"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="../node_modules/three/build/three.min.js"></script>
+<script src="../node_modules/topojson-client/dist/topojson-client.min.js"></script>
+<script src="ch-data.js"></script><script src="icons.js"></script>
+<script src="lablib.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+const OV = document.getElementById("ov"), LN = document.getElementById("lines");
+const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const O = 0.08;
+// ---------- geography (swisstopo data via swiss-maps) ----------
+const LON0 = 8.23, LAT0 = 46.82, KX = 0.684 * 2.4, KY = 2.4;
+const P = (lon, lat) => [(lon - LON0) * KX, (lat - LAT0) * KY];
+const LANG = { 22: "fr", 24: "fr", 25: "fr", 26: "fr", 10: "fr", 23: "fr", 21: "it" }; // majority language, simplified
+const COL = { de: 0xBFE0F2, fr: 0x6FB9DF, it: 0x3FA3D6, base: 0xD9D4CA };
+const cantons = topojson.feature(CH, CH.objects.cantons).features;
+const lakes = topojson.feature(CH, CH.objects.lakes).features;
+const country = topojson.feature(CH, CH.objects.country).features;
+
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, alpha: true, preserveDrawingBuffer: true });
+renderer.setSize(1080, 1350, false); renderer.setClearColor(0x000000, 0);
+const scene = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(30, 1080 / 1350, .1, 200);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x9aa3ad, .9); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xffffff, .8); sun.position.set(-4, -6, 10); scene.add(sun);
+const world = new THREE.Group(); scene.add(world);
+
+function shapesOf(geom) {
+  const polys = geom.type === "Polygon" ? [geom.coordinates] : geom.coordinates;
+  return polys.map((rings) => {
+    const sh = new THREE.Shape(rings[0].map(([a, b]) => new THREE.Vector2(...P(a, b))));
+    rings.slice(1).forEach((h) => sh.holes.push(new THREE.Path(h.map(([a, b]) => new THREE.Vector2(...P(a, b))))));
+    return sh;
+  });
+}
+const regions = { de: [], fr: [], it: [] }, cantonMeshes = [];
+cantons.forEach((f) => {
+  const lang = LANG[f.id] || "de";
+  const geo = new THREE.ExtrudeGeometry(shapesOf(f.geometry), { depth: .12, bevelEnabled: false });
+  const mat = new THREE.MeshStandardMaterial({ color: COL.base, roughness: .85, transparent: true, opacity: 0 });
+  const m = new THREE.Mesh(geo, mat); world.add(m); regions[lang].push(m); cantonMeshes.push(m);
+  const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] : f.geometry.coordinates;
+  polys.forEach((r) => { const g = new THREE.BufferGeometry().setFromPoints(r[0].map(([a, b]) => new THREE.Vector3(...P(a, b), .121)));
+    const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0 })); m.add(l); m.userData.edge = l; });
+});
+const lakeMat = new THREE.MeshStandardMaterial({ color: 0xE8F1F5, roughness: .4, transparent: true, opacity: 0 });
+lakes.forEach((f) => { const m = new THREE.Mesh(new THREE.ShapeGeometry(shapesOf(f.geometry)), lakeMat); m.position.z = .125; world.add(m); });
+
+// cities (real coordinates); the set is an example, not a project list
+const CITIES = [["Basel", 7.5886, 47.5596], ["Zürich", 8.5417, 47.3769], ["Bern", 7.4474, 46.948], ["Lausanne", 6.6323, 46.5197], ["Lugano", 8.9511, 46.0037]];
+const pins = CITIES.map(([n, lo, la]) => {
+  const [x, y] = P(lo, la), g = new THREE.Group(); g.position.set(x, y, .12);
+  const stick = new THREE.Mesh(new THREE.CylinderGeometry(.025, .025, .55, 12), new THREE.MeshStandardMaterial({ color: 0x1E293B }));
+  stick.rotation.x = Math.PI / 2; stick.position.z = .275; g.add(stick);
+  const head = new THREE.Mesh(new THREE.SphereGeometry(.11, 24, 16), new THREE.MeshStandardMaterial({ color: 0x1E293B, emissive: 0x3FA3D6, emissiveIntensity: 0 }));
+  head.position.z = .58; g.add(head); g.scale.set(0.001, 0.001, 0.001); world.add(g);
+  return { n, x, y, g, head };
+});
+const curve = new THREE.CatmullRomCurve3(pins.map((p) => new THREE.Vector3(p.x, p.y, .3)), false, "centripetal");
+const tube = new THREE.Mesh(new THREE.TubeGeometry(curve, 200, .022, 8, false), new THREE.MeshStandardMaterial({ color: 0x3FA3D6, emissive: 0x3FA3D6, emissiveIntensity: .3 }));
+tube.geometry.setDrawRange(0, 0); world.add(tube);
+
+// ---------- camera rig (animated through a proxy so seeking stays exact) ----------
+const C = { px: .15, py: -.9, pz: 21.5, tx: .15, ty: -.9, tz: 0 };
+const L = { lift: 1, light: 1 };
+const fade = { a: 0, edge: 0 };
+const route = { r: 0 };
+const proj = (x, y, z) => { const v = new THREE.Vector3(x, y, z).project(cam); return [(v.x + 1) / 2 * 1080, (1 - v.y) / 2 * 1350]; };
+
+// ---------- overlay elements ----------
+const kick = div("abs kick", "left:84px;top:120px", "Rollout · Schweiz", OV);
+const head = div("abs head", "left:84px;top:170px;font-size:104px;width:920px", "", OV);
+head.innerHTML = 'Ein Rollout <br>in der <span style="position:relative;display:inline-block">Schweiz.<i class="mark"></i></span>';
+const hdWords = [];
+// chapter card words for voice sync
+const outline = svgEl("path", { fill: "none", stroke: "#1E293B", "stroke-width": 3, opacity: .9 }, LN);
+const labs = {
+  de: div("lab", "", ICONS["translate"] + "Deutsch", OV), fr: div("lab", "", ICONS["translate"] + "Français", OV), it: div("lab", "", ICONS["translate"] + "Italiano", OV) };
+const LABPOS = { de: [8.65, 47.25], fr: [6.75, 46.62], it: [8.85, 46.33] };
+const stat3 = div("stat", "top:1060px", "<b>3</b><span>Sprachregionen</span>", OV);
+const stat5 = div("stat", "top:1060px", "<b>5</b><span>Städte</span>", OV);
+const bsp = div("tag", "left:84px;top:1000px", "Beispiel", OV);
+const cityLabs = pins.map((p) => div("city", "", p.n, OV));
+const sfs = pins.map(() => div("sf", "", ICONS["storefront"], OV));
+const annN = div("ann", "left:84px;top:930px", `<div class="ic">${ICONS["moon"]}</div>Nachts`, OV);
+const annW = div("ann", "left:84px;top:1040px", `<div class="ic">${ICONS["calendar-blank"]}</div>am Wochenende`, OV);
+const annB = div("ann", "left:84px;top:1150px", `<div class="ic">${ICONS["users"]}</div>im laufenden Betrieb`, OV);
+const lead = svgEl("path", { fill: "none", stroke: "#F1EDE6", "stroke-width": 3, "stroke-dasharray": "6 8" }, LN);
+const endScrim = div("abs", "left:0;top:860px;width:1080px;height:490px;background:linear-gradient(rgba(238,234,226,0),#EEEAE2 30%)", "", OV);
+const endHead = div("abs head", "left:84px;top:950px;font-size:66px;width:920px", "Maler · Gipser · Ladenbau.<br><span style='color:#3FA3D6'>In allen Sprachregionen.</span>", OV);
+const cta = div("abs", "left:84px;top:1110px;padding:24px 42px;border-radius:999px;background:#1E293B;color:#F1EDE6;font-family:IS;font-size:36px", "Rollout-Gespräch vereinbaren", OV);
+const logo = div("abs", "left:84px;top:1238px", logoSVG(250), OV);
+const src = div("src", "", "Karte: © swisstopo · Sprachregionen vereinfacht · Städte = Beispiel", OV);
+
+// ---------- timeline ----------
+// beat 1 (0–2.4): chapter card, the marker swipes under «Schweiz»
+show(tl, kick, .2); show(tl, head, .35);
+tl.from(kick, { x: -30, opacity: 0, duration: .4 }, .2)
+  .from(head, { y: 50, opacity: 0, duration: .5, ease: "expo.out" }, .35 + O)
+  .from(head.querySelector(".mark"), { scaleX: 0, duration: .45, ease: "power2.out" }, .35 + O + .79);
+// beat 2 (2.3–5.4): headline shrinks to a chapter label; outline draws; cantons appear; three regions tint on the voice
+tl.to(head, { scale: .42, x: -2, y: -78, transformOrigin: "0% 0%", duration: .6, ease: "power3.inOut" }, 2.2)
+  .to(kick, { opacity: 0, duration: .3 }, 2.2);
+tl.set(outline, { drawSVG: "0% 0%" }, 0).to(outline, { drawSVG: "0% 100%", duration: .8, ease: "power2.inOut" }, 2.4)
+  .to(fade, { a: 1, edge: .9, duration: .5 }, 3.0).to(outline, { opacity: 0, duration: .4 }, 3.3);
+const tint = (lang, t) => { const c = new THREE.Color(COL[lang]); regions[lang].forEach((m) => tl.to(m.material.color, { r: c.r, g: c.g, b: c.b, duration: .35, ease: "power2.out" }, t)); };
+const x2 = 3.4 + O; tint("de", x2 + .15); tint("fr", x2 + .55); tint("it", x2 + .95);
+["de", "fr", "it"].forEach((k, i) => { show(tl, labs[k], x2 + .15 + i * .4); tl.from(labs[k], { scale: .4, duration: .35, ease: "back.out(2.5)" }, x2 + .15 + i * .4); });
+show(tl, stat3, x2); tl.from(stat3, { y: 30, opacity: 0, duration: .4 }, x2);
+const cnt = { n: 0 }; tl.fromTo(cnt, { n: 0 }, { n: 3, duration: 1.2, ease: "steps(3)", onUpdate: () => stat3.querySelector("b").textContent = Math.round(cnt.n) }, x2 + .1);
+// beat 3 (5.3–7.9): tilt to 3D, regions lift; pins drop; route draws; «Beispiel» tag
+tl.to(C, { px: 0, py: -13.5, pz: 11.5, tx: 0, ty: .2, tz: 0, duration: 1.3, ease: "power2.inOut" }, 5.2)
+  .to(L, { lift: 2.6, duration: 1.0, ease: "power2.out" }, 5.5)
+  .to([labs.de, labs.fr, labs.it], { opacity: 0, duration: .3 }, 5.3)
+  .to(stat3, { opacity: 0, y: -20, duration: .3 }, 5.7);
+const x3 = 6.0 + O, x3w = [0, .285, .671, .929].map((v) => x3 + v);
+show(tl, bsp, x3w[1]); tl.from(bsp, { x: -20, opacity: 0, duration: .3 }, x3w[1]);
+show(tl, stat5, x3w[2]); tl.from(stat5, { y: 30, opacity: 0, duration: .35 }, x3w[2]).set(bsp, { y: -84 }, x3w[2]);
+pins.forEach((p, i) => {
+  tl.to(p.g.scale, { x: 1, y: 1, z: 1, duration: .45, ease: "back.out(2.5)" }, x3w[2] + i * .12);
+  show(tl, cityLabs[i], x3w[2] + .1 + i * .12); tl.from(cityLabs[i], { y: 16, opacity: 0, duration: .3 }, x3w[2] + .1 + i * .12);
+});
+tl.to(route, { r: 1, duration: .9, ease: "power1.inOut" }, x3w[3]);
+// beat 4 (7.9–8.8): «Ein Standard.» — the same storefront icon pops above every pin at once
+const x4 = 7.95 + O;
+sfs.forEach((s) => { show(tl, s, x4); tl.from(s, { scale: 0, duration: .35, ease: "back.out(3)" }, x4); });
+pins.forEach((p) => tl.to(p.head.material, { emissiveIntensity: .9, duration: .12, yoyo: true, repeat: 1 }, x4));
+// beat 5 (8.8–12.6): push into Lausanne, night falls; annotations on the voice
+const lz = pins[3];
+tl.to([stat5, bsp, kick, head], { opacity: 0, duration: .35 }, 8.8)
+  .to(cityLabs.filter((_, i) => i !== 3).concat(sfs.filter((_, i) => i !== 3)), { opacity: 0, duration: .3 }, 8.8)
+  .to(C, { px: lz.x + .7, py: lz.y - 4.2, pz: 3.4, tx: lz.x + .15, ty: lz.y + .45, tz: .3, duration: 1.4, ease: "power3.inOut" }, 8.8)
+  .to("#night", { opacity: 1, duration: 1.0 }, 9.2)
+  .to(L, { light: .35, duration: 1.0 }, 9.2)
+  .to(lz.head.material, { emissiveIntensity: .75, duration: .6 }, 9.6)
+  .to(cityLabs[3], { color: "#F1EDE6", textShadow: "0 0 8px #141c2b", duration: .6 }, 9.4);
+pins.forEach((p, i) => { if (i !== 3) { tl.to(p.g.scale, { x: .001, y: .001, z: .001, duration: .3, ease: "power2.in" }, 8.8).to(p.g.scale, { x: 1, y: 1, z: 1, duration: .4, ease: "back.out(2)" }, 13.0); } });
+const x5 = 9.6 + O, x6 = 11.25 + O;
+[[annN, x5], [annW, x5 + 1.03], [annB, x6]].forEach(([a, t]) => { show(tl, a, t); tl.from(a, { x: -40, opacity: 0, duration: .35, ease: "expo.out" }, t).from(a.querySelector(".ic"), { scale: 0, duration: .35, ease: "back.out(3)" }, t); });
+tl.set(lead, { drawSVG: "0% 0%" }, 0).to(lead, { drawSVG: "0% 100%", duration: .4 }, x5 + .1).to(lead, { opacity: 0, duration: .3 }, 12.4);
+// beat 6 (12.6–17.5): pull out to the whole map, day returns, all pins lit; end card
+tl.to([annN, annW, annB], { opacity: 0, x: -20, duration: .3, stagger: .05 }, 12.45)
+  .to(C, { px: 0, py: -13.5, pz: 15.5, tx: 0, ty: 3.4, tz: 0, duration: 1.3, ease: "power3.inOut" }, 12.5)
+  .to("#night", { opacity: 0, duration: .8 }, 12.6).to(L, { light: 1, duration: .8 }, 12.6)
+  .to(cityLabs[3], { color: "#1E293B", textShadow: "0 0 6px #EEEAE2", duration: .5 }, 12.7)
+  .to(cityLabs.concat(sfs), { opacity: 1, duration: .4 }, 13.2);
+pins.forEach((p) => tl.to(p.head.material, { emissiveIntensity: .7, duration: .4 }, 13.3));
+const x7 = 12.7 + O;
+show(tl, endScrim, x7 - .2); tl.from(endScrim, { opacity: 0, duration: .4 }, x7 - .2);
+show(tl, endHead, x7); tl.from(endHead, { y: 40, opacity: 0, duration: .5, ease: "expo.out" }, x7);
+show(tl, cta, x7 + 2.4); tl.from(cta, { scale: .85, opacity: 0, transformOrigin: "0% 50%", duration: .4, ease: "back.out(2)" }, x7 + 2.4);
+show(tl, logo, x7 + 2.7); tl.from(logo, { opacity: 0, y: 10, duration: .4 }, x7 + 2.7);
+show(tl, src, 2.4);
+tl.to({}, { duration: .01 }, 17.49);
+
+// ---------- per-frame render ----------
+window.onSeek = () => {
+  cam.position.set(C.px, C.py, C.pz); cam.up.set(0, 1, 0); cam.lookAt(C.tx, C.ty, C.tz); cam.updateMatrixWorld();
+  cantonMeshes.forEach((m) => { m.material.opacity = fade.a; m.scale.z = L.lift; if (m.userData.edge) m.userData.edge.material.opacity = fade.edge; });
+  lakeMat.opacity = fade.a; lakes.length && world.children.forEach((c) => { if (c.material === lakeMat) c.position.z = .121 * L.lift + .004; });
+  hemi.intensity = .9 * L.light; sun.intensity = .8 * L.light;
+  pins.forEach((p) => p.g.position.z = .12 * L.lift);
+  tube.position.z = .12 * (L.lift - 1);
+  tube.geometry.setDrawRange(0, Math.floor(route.r * tube.geometry.index.count / 3) * 3);
+  renderer.render(scene, cam);
+  // overlay follows the 3D map
+  const top = .12 * L.lift;
+  ["de", "fr", "it"].forEach((k) => { const [x, y] = proj(...P(...LABPOS[k]), top); labs[k].style.left = x + "px"; labs[k].style.top = y + "px"; });
+  pins.forEach((p, i) => { const [x, y] = proj(p.x, p.y, top + .75); cityLabs[i].style.left = x + "px"; cityLabs[i].style.top = (y - 6) + "px";
+    const [sx, sy] = proj(p.x, p.y, top + 1.25); sfs[i].style.left = sx + "px"; sfs[i].style.top = (sy - 34) + "px"; });
+  // country outline in screen space (top-down phase)
+  const ring = country[0].geometry.type === "Polygon" ? country[0].geometry.coordinates[0] : country[0].geometry.coordinates[0][0];
+  outline.setAttribute("d", "M" + ring.filter((_, i) => i % 3 === 0).map(([a, b]) => proj(...P(a, b), .12).map((v) => v.toFixed(1)).join(",")).join(" L") + " Z");
+  const [lx, ly] = proj(lz.x, lz.y, top + .58);
+  lead.setAttribute("d", `M${lx},${ly} L${lx - 120},${ly + 160} L170,960`);
+};
+mount(tl, 17.5);
+</script></body></html>

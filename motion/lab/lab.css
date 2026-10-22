@@ -1,0 +1,13 @@
+@font-face { font-family: "Geist"; font-weight: 700; src: url(../assets/fonts/geist-700.woff2); }
+@font-face { font-family: "IDB"; src: url(../assets/fonts/InterDisplay-Bold.otf); }
+@font-face { font-family: "IDK"; src: url(../assets/fonts/InterDisplay-Black.otf); }
+@font-face { font-family: "IDT"; src: url(../assets/fonts/InterDisplay-Thin.otf); }
+@font-face { font-family: "IL"; src: url(../assets/fonts/Inter-Light.otf); }
+@font-face { font-family: "IR"; src: url(../assets/fonts/Inter-Regular.otf); }
+@font-face { font-family: "IS"; src: url(../assets/fonts/Inter-SemiBold.otf); }
+@font-face { font-family: "JB"; src: url(../assets/fonts/jbmono-500.woff2); }
+html, body { margin: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1080px; height: 1350px; overflow: hidden; }
+.abs { position: absolute; }
+.ch { display: inline-block; white-space: pre; }
+.wd { display: inline-block; white-space: nowrap; }

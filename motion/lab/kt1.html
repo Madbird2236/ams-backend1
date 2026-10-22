@@ -1,0 +1,160 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<style>
+  #night { position:absolute; inset:0; background: radial-gradient(120% 90% at 50% 40%, #1b201c 0%, #0c0f0d 60%, #070807 100%); }
+  #cam { position:absolute; inset:0; transform-origin: 540px 675px; }
+  .thin { font-family: IDT; color:#9fb0a6; }
+  .black { font-family: IDK; color:#E9EDE6; letter-spacing:-6px; line-height:.9; }
+  .bold { font-family: IDB; color:#E9EDE6; letter-spacing:-3px; }
+  #paper { position:absolute; inset:0; background:#F1EDE6; clip-path: polygon(0 0,0 0,0 0,0 0); }
+  #paper .navy { font-family: IDK; color:#1E293B; letter-spacing:-5px; line-height:.95; }
+  #paper .reg { font-family: IR; color:#1E293B; font-size:62px; letter-spacing:-1px; }
+  #band { position:absolute; width:340px; height:2600px; left:-500px; top:-600px; background:linear-gradient(90deg,#2f8fc4,#3FA3D6 40%,#6FB9DF); transform: rotate(28deg); box-shadow: 0 0 60px rgba(63,163,214,.6); }
+</style></head>
+<body><div id="stage">
+  <div id="night"></div>
+  <svg id="mould" class="abs" width="1080" height="1350" viewBox="0 0 1080 1350" style="inset:0"></svg>
+  <div id="cam"></div>
+  <svg id="fx" class="abs" width="1080" height="1350" viewBox="0 0 1080 1350" style="inset:0;pointer-events:none"></svg>
+  <div id="paper"></div>
+  <div id="band"></div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="lablib.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+const R = rnd(42), tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const fx = document.getElementById("fx"), M = document.getElementById("mould"), P = document.getElementById("paper");
+cam.prepend(M); // the mould wall moves with the camera
+const O = 0.08; // piper leading silence
+
+// ---------- A: «Jeden Winter» — thin vs. black, frost grows on the letters, they shiver ----------
+const jeden = div("abs thin", "left:90px;top:400px;font-size:84px;letter-spacing:22px", "Jeden", cam);
+const winter = div("abs black", "left:64px;top:490px;font-size:258px", "Winter", cam);
+const wc = chars(winter);
+show(tl, jeden, .4 + O); show(tl, winter, .89 + O);
+tl.from(jeden, { letterSpacing: "60px", opacity: 0, duration: .5, ease: "power2.out" }, .4 + O)
+  .from(wc, { yPercent: -120, opacity: 0, rotation: (i) => (i % 2 ? 8 : -8), duration: .42, ease: "back.out(2.2)", stagger: .035 }, .89 + O)
+  .to(winter, { color: "#DCEFF8", duration: .5 }, 1.15)
+  .to(cam, { scale: 1.05, duration: 1.6, ease: "sine.inOut" }, .3);
+// frost: crystal branches drawn over the word
+const frost = svgEl("g", { stroke: "#E8F6FF", "stroke-width": 2.2, "stroke-linecap": "round", fill: "none", opacity: .95 }, fx);
+for (let i = 0; i < 46; i++) {
+  const x = 80 + R() * 900, y = 500 + R() * 230, a = R() * Math.PI * 2, L = 18 + R() * 34;
+  const p = `M${x},${y} l${Math.cos(a) * L},${Math.sin(a) * L} M${x + Math.cos(a) * L * .5},${y + Math.sin(a) * L * .5} l${Math.cos(a + .8) * L * .4},${Math.sin(a + .8) * L * .4} M${x + Math.cos(a) * L * .5},${y + Math.sin(a) * L * .5} l${Math.cos(a - .8) * L * .4},${Math.sin(a - .8) * L * .4}`;
+  const e = svgEl("path", { d: p }, frost);
+  tl.fromTo(e, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .35, ease: "power1.out" }, 1.05 + R() * .55);
+}
+wc.forEach((c, i) => tl.to(c, { keyframes: [{ x: 2.5, duration: .04 }, { x: -2.5, duration: .04 }, { x: 1.5, duration: .04 }, { x: 0, duration: .05 }], repeat: 2, ease: "none" }, 1.25 + i * .02));
+
+// ---------- B: «komme ich zurück.» — words come out of the depth; «zurück» rewinds ----------
+tl.to([jeden, winter, frost], { scale: .12, opacity: 0, filter: "blur(10px)", transformOrigin: "540px 600px", duration: .42, ease: "power3.in" }, 1.62);
+const komme = div("abs bold", "left:0;width:1080px;text-align:center;top:470px;font-size:120px", "komme", cam);
+const ich = div("abs bold", "left:0;width:1080px;text-align:center;top:470px;font-size:120px", "ich", cam);
+const zur = div("abs black", "left:0;width:1080px;text-align:center;top:640px;font-size:210px;color:#DCEFF8", "zurück.", cam);
+const zc = chars(zur);
+show(tl, komme, 1.75 + O); show(tl, ich, 2.22 + O); show(tl, zur, 2.50 + O);
+tl.fromTo(komme, { scale: .05, filter: "blur(12px)" }, { scale: 1, x: -150, filter: "blur(0px)", duration: .38, ease: "expo.out" }, 1.75 + O)
+  .fromTo(ich, { scale: .05, filter: "blur(12px)" }, { scale: 1, x: 210, filter: "blur(0px)", duration: .32, ease: "expo.out" }, 2.22 + O);
+// rewind: letters arrive right-to-left, overshoot backwards like a tape being rewound
+zc.slice().reverse().forEach((c, k) => tl.fromTo(c, { x: 900, opacity: 0 }, { keyframes: [{ x: -40, opacity: 1, duration: .16, ease: "power3.out" }, { x: 14, duration: .06 }, { x: 0, duration: .06 }] }, 2.50 + O + k * .03));
+tl.to([komme, ich, zur], { scale: 3.2, opacity: 0, filter: "blur(14px)", transformOrigin: "540px 640px", duration: .32, ease: "power3.in", stagger: .03 }, 3.12);
+
+// ---------- C: «Hinter dem Schrank.» — the word IS the wardrobe; it slides and reveals the mould ----------
+const hinter = div("abs", "left:84px;top:250px;font-family:IL;font-size:72px;color:#b8c4bb;letter-spacing:-1px", "Hinter", cam);
+const dem = div("abs", "left:350px;top:250px;font-family:IL;font-size:72px;color:#b8c4bb;letter-spacing:-1px", "dem", cam);
+show(tl, hinter, 3.35 + O); show(tl, dem, 3.73 + O);
+tl.from(hinter, { x: -60, opacity: 0, duration: .3 }, 3.35 + O).from(dem, { x: -40, opacity: 0, duration: .25 }, 3.73 + O);
+// the wall + mould behind the wardrobe
+const spots = [];
+for (let i = 0; i < 70; i++) {
+  const cx = 200 + R() * 520 + (R() < .5 ? 0 : R() * 120), cy = 460 + R() * 640, r = 3 + Math.pow(R(), 2) * 22;
+  const g = svgEl("g", { transform: `translate(${cx},${cy})` }, M);
+  svgEl("circle", { r: r * 1.8, fill: "#4a5641", opacity: .25 }, g); svgEl("circle", { r, fill: "#5f6d52", opacity: .85 }, g);
+  spots.push({ g, cy });
+}
+gsap.set(spots.map((s) => s.g), { scale: 0 });
+const schrank = div("abs", "left:120px;top:420px;width:840px;height:760px;background:linear-gradient(180deg,#2c2a25,#23211d);border-radius:6px;box-shadow:0 40px 80px rgba(0,0,0,.6);overflow:hidden", "", cam);
+div("abs", "left:420px;top:40px;width:3px;height:680px;background:#37342e", "", schrank);
+div("abs", "left:385px;top:330px;width:10px;height:60px;border-radius:5px;background:#5a564d", "", schrank);
+div("abs", "left:445px;top:330px;width:10px;height:60px;border-radius:5px;background:#5a564d", "", schrank);
+const sw = div("abs black", "left:0;width:840px;text-align:center;top:250px;font-size:200px;color:#3d3a33;letter-spacing:-6px;text-shadow:0 2px 0 #1a1916, 0 -1px 0 #4a463e", "Schrank.", schrank);
+show(tl, schrank, 4.05 + O);
+tl.fromTo(schrank, { y: 1000 }, { y: 0, duration: .32, ease: "power4.out" }, 4.05 + O)
+  .to(cam, { keyframes: [{ y: 10, duration: .04 }, { y: -6, duration: .05 }, { y: 0, duration: .08 }] }, 4.37 + O)
+  .to(schrank, { x: 560, rotation: 1.2, duration: .55, ease: "power2.inOut" }, 4.5)           // pushed aside
+  .to(spots.map((s) => s.g), { scale: 1, duration: .5, ease: "back.out(2)", stagger: { each: .006, from: "start" } }, 4.6);
+
+// ---------- D: «Ganz leise.» — tiny text, crash zoom in to read it ----------
+tl.to([hinter, dem, schrank], { opacity: 0, duration: .25 }, 4.92)
+  .to(M, { opacity: .55, duration: .4 }, 4.92);
+const ganz = div("abs", "left:0;width:1080px;text-align:center;top:662px;font-family:IL;font-size:26px;color:#c9d2cb;letter-spacing:.5px", "ganz <span id='leise' style='opacity:0'>leise.</span>", cam);
+show(tl, ganz, 5.0 + O);
+tl.fromTo(cam, { scale: 1.05 }, { scale: 6.2, transformOrigin: "540px 678px", duration: .24, ease: "expo.inOut" }, 5.24)
+  .to("#leise", { opacity: 1, duration: .08 }, 5.35 + O);
+spots.forEach((s, i) => tl.to(s.g, { scale: 1.35 + R() * .6, duration: 1.4, ease: "sine.inOut" }, 5.0)); // silently growing
+
+// ---------- E: «Perfekt.» — crash zoom out, rubber-stamp, smug ----------
+tl.to(cam, { scale: 1, duration: .2, ease: "expo.in" }, 6.0)
+  .to(ganz, { opacity: 0, duration: .05 }, 6.18)
+  .to(M, { opacity: 1, duration: .1 }, 6.2);
+const perf = div("abs black", "left:0;width:1080px;text-align:center;top:520px;font-size:220px;color:#8FA07A;letter-spacing:-8px", "Perfekt.", cam);
+show(tl, perf, 6.25 + O);
+tl.fromTo(perf, { scale: 2.8, rotation: -12 }, { scale: 1, rotation: -5, duration: .2, ease: "power4.in" }, 6.25 + O)
+  .to(perf, { scaleY: .9, scaleX: 1.06, duration: .05, yoyo: true, repeat: 1 }, 6.45 + O)
+  .to(cam, { keyframes: [{ x: 14, duration: .03 }, { x: -10, duration: .03 }, { x: 6, duration: .03 }, { x: 0, duration: .05 }] }, 6.45 + O);
+const ring = svgEl("circle", { cx: 540, cy: 640, r: 60, fill: "none", stroke: "#8FA07A", "stroke-width": 6, opacity: 0 }, fx);
+tl.fromTo(ring, { attr: { r: 80 }, opacity: .9 }, { attr: { r: 620 }, opacity: 0, duration: .6, ease: "expo.out", immediateRender: false }, 6.45 + O);
+
+// ---------- Turn: an AMS-blue roller band sweeps; behind it a clean surface ----------
+const st = { p: 0 };
+const clip = () => { const p = st.p; P.style.clipPath = p >= 1 ? "none" : `polygon(0 0, ${p * 200 - 30}% 0, ${p * 200 - 90}% 100%, 0 100%)`; };
+clip();
+show(tl, "#band", 6.95); tl.set("#band", { autoAlpha: 0 }, 7.6);
+tl.to("#band", { x: 2300, duration: .6, ease: "power2.inOut" }, 6.95)
+  .to(st, { p: 1, duration: .6, ease: "power2.inOut", onUpdate: clip }, 6.95);
+
+// ---------- F: «Schimmel entdeckt?» — calm authority + a drawn circle ----------
+const sch = div("abs navy", "left:84px;top:250px;font-size:158px", "Schimmel", P);
+const ent = div("abs navy", "left:84px;top:410px;font-size:158px", "entdeckt<span id='q' style='display:inline-block;color:#3FA3D6'>?</span>", P);
+show(tl, sch, 7.7 + O); show(tl, ent, 8.14 + O);
+tl.from(sch, { y: 60, opacity: 0, duration: .35, ease: "expo.out" }, 7.7 + O)
+  .from(ent, { y: 60, opacity: 0, duration: .35, ease: "expo.out" }, 8.14 + O)
+  .from("#q", { rotation: -40, scale: .3, transformOrigin: "50% 90%", duration: .5, ease: "elastic.out(1.2,.4)" }, 8.45);
+const circ = svgEl("path", { d: "M70,330 C80,230 760,200 790,320 C810,420 120,440 80,350", fill: "none", stroke: "#3FA3D6", "stroke-width": 7, "stroke-linecap": "round" });
+const csvg = svgEl("svg", { width: 1080, height: 1350, viewBox: "0 0 1080 1350", style: "position:absolute;inset:0" }); csvg.appendChild(circ); P.appendChild(csvg);
+tl.fromTo(circ, { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .45, ease: "power2.inOut" }, 8.2);
+
+// ---------- G: «Wir kümmern uns um die betroffenen Oberflächen.» — word by word; «Oberflächen» lies on a 3D surface ----------
+const a2 = [0, .198, .55, .82, 1.073, 1.253, 1.83].map((x) => 8.9 + O + x);
+const line = div("abs reg", "left:84px;top:640px;width:920px", "", P);
+const ws = ["Wir", "kümmern", "uns", "um", "die", "betroffenen"].map((w, i) => {
+  const s = document.createElement("span"); s.className = "wd"; s.textContent = w; s.style.marginRight = "16px";
+  if (w === "betroffenen") { s.style.fontFamily = "IS"; s.style.color = "#1E293B"; s.style.position = "relative"; }
+  line.appendChild(s); return s; });
+ws.forEach((w, i) => { show(tl, w, a2[i]); tl.from(w, { y: 26, opacity: 0, duration: .28, ease: "power2.out" }, a2[i]); });
+const ul = div("abs", "left:0;bottom:-6px;height:6px;width:100%;background:#3FA3D6;transform-origin:left;border-radius:3px", "", ws[5]);
+tl.from(ul, { scaleX: 0, duration: .3 }, a2[5] + .15);
+const persp = div("abs", "left:0;top:760px;width:1080px;height:420px;perspective:900px", "", P);
+const plane = div("abs", "left:90px;top:40px;width:900px;height:330px;transform-origin:50% 100%;background:linear-gradient(180deg,#e2ddd3,#d5cfc3);border-radius:4px;overflow:hidden;box-shadow:0 30px 60px rgba(30,41,59,.18)", "", persp);
+const ob = div("abs navy", "left:0;width:900px;text-align:center;top:85px;font-size:150px;color:#1E293B", "Oberflächen.", plane);
+const shine = div("abs", "left:-400px;top:0;width:300px;height:330px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.85),rgba(255,255,255,0));transform:skewX(-20deg)", "", plane);
+show(tl, persp, a2[6]);
+tl.fromTo(plane, { rotationX: 88, y: 60 }, { rotationX: 34, y: 0, duration: .55, ease: "power3.out" }, a2[6])
+  .to(shine, { x: 1500, duration: .8, ease: "power2.inOut" }, a2[6] + .45);
+
+// ---------- End card ----------
+tl.to([sch, ent, csvg], { y: -150, opacity: 0, duration: .4, ease: "power2.in" }, 11.45)
+  .to(line, { y: -420, duration: .5, ease: "power3.inOut" }, 11.5)
+  .to(persp, { y: -420, duration: .5, ease: "power3.inOut" }, 11.5);
+const logo = div("abs", "left:84px;top:96px", logoSVG(300), P);
+const claim = div("abs", "left:84px;top:900px;width:900px;font-family:IR;font-size:38px;color:#3a4250;line-height:1.3", "Fachgerechte Schimmelentfernung<br>und Oberflächenbehandlung.", P);
+const cta = div("abs", "left:84px;top:1080px;padding:26px 46px;border-radius:999px;background:#1E293B;color:#F1EDE6;font-family:IS;font-size:40px", "Begehung anfragen", P);
+show(tl, logo, 11.6); show(tl, claim, 11.75); show(tl, cta, 12.0);
+tl.from(logo, { y: -20, opacity: 0, duration: .4 }, 11.6)
+  .from(claim, { y: 20, opacity: 0, duration: .4 }, 11.75)
+  .from(cta, { scale: .8, opacity: 0, transformOrigin: "0% 50%", duration: .45, ease: "back.out(2)" }, 12.0)
+  .to({}, { duration: .01 }, 13.99);
+mount(tl, 14);
+</script></body></html>

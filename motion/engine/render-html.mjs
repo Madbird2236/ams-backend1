@@ -37,13 +37,16 @@ if (args.includes("--preview")) { // contact sheet at the given times or every 0
   ff.stdin.end(); await new Promise((r) => ff.on("close", r)); await browser.close(); console.log("Preview:", png); process.exit(0);
 }
 
-const frames = Math.round(c.duration * c.fps);
-const ffArgs = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(c.fps), "-i", "-"];
+// --blur N: motion blur by supersampling (render N sub-frames per frame and average them)
+const N = Math.max(1, Number(opt("--blur") || 1));
+const frames = Math.round(c.duration * c.fps) * N;
+const ffArgs = ["-y", "-loglevel", "error", "-f", "image2pipe", "-framerate", String(c.fps * N), "-i", "-"];
 if (opt("--audio")) ffArgs.push("-i", resolve(opt("--audio")), "-c:a", "aac", "-b:a", "192k", "-shortest");
+if (N > 1) ffArgs.push("-vf", `tmix=frames=${N},fps=${c.fps}`);
 ffArgs.push("-c:v", "libx264", "-pix_fmt", "yuv420p", "-preset", "slow", "-crf", "17", "-movflags", "+faststart", out);
 const ff = pipe(ffArgs);
 for (let i = 0; i < frames; i++) {
-  await page.evaluate((x) => window.seek(x), i / c.fps);
+  await page.evaluate((x) => window.seek(x), i / (c.fps * N));
   const buf = await shot();
   if (!ff.stdin.write(buf)) await new Promise((r) => ff.stdin.once("drain", r));
 }
