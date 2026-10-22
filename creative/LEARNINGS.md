@@ -30,3 +30,9 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - 2026-10-21: the website SVG is the only official logo. The outlined-triangle wordmark from the 19/10 ads is retired; check every template's logo against the master before reuse.
 - 2026-10-21 Calibration 01 (retro test): check catches claims/culture/brand; missed rule-writing and execution fidelity. New: promise words in B2B (camping, conductor), storyboard drift on carousel slide 4, self-scores ~1 point optimistic. Details: `creative/calibration/01-retro-test.md`.
 - 2026-10-22 Calibration 02 (motion): transformations carry continuity (baton → pole → key, staves → light lines). Lessons: give every line its reading time; measure contrast of type on brand blue (white fails); synthetic audio and TTS are for timing only.
+- 2026-10-22 Calibration 02 **approved as audiovisual calibration** (not final finish). Lessons to keep:
+  - **Legibility:** on-screen text needs reading time (≈ 0.3 s per word + 0.5 s); long approved lines must be shortened for motion or the piece lengthened. Measure contrast of every text/background pair (white on brand blue fails).
+  - **Rhythm:** one beat grid shared by motion, type and sound; every key event on a beat. Keep this method.
+  - **Sound quality:** synthetic sound and TTS are for timing only; final pieces need recorded or licensed sounds and a Swiss voice.
+  - **Music → architecture:** the strongest transition was meaning-driven (staves → ceiling lights, score → Bauprogramm). Seek transitions where the object changes meaning, not just shape.
+  - **Human emotion:** abstract motion proves structure but lacks feeling; final pieces need human beats (faces, hands, a reaction, a joke).
