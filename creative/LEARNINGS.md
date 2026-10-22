@@ -53,3 +53,12 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - VOX-1 finish: map contrast, label size, final composition.
   - Audio was too hot: measured KT-1 −14.3 LUFS / +0.2 dBFS peak, VOX-1 −9.9 LUFS / +0.6 dBFS (clipping), Maestro −11.0 LUFS / +0.7 dBFS. New rule: −14 LUFS, true peak ≤ −1.5 dBTP via `motion/engine/loudnorm.sh` (tested: KT-1 → −14.1 LUFS / −1.5 dB, VOX-1 → −13.9 LUFS / −3.3 dB).
 - Next phase focus (Adriano): visual finish plus hybrid work (photo, real video, type, 3D, animation) in short examples, without paid credits. Quality over quantity of effects.
+- 2026-10-22 HYB-1 hybrid exercise. Learned:
+  - camera solve on a ground plane (KLT + PnP);
+  - depth layers from one photo (sky model, rembg, inpainting);
+  - photo-to-video alignment for an invisible «photo comes alive» cut;
+  - shadows as a multiply pass (a transparent shadow layer shifted the colour to lilac; fixed);
+  - text depth-sorted behind real people via per-frame mattes;
+  - a loudness limiter after normalisation, because AAC re-adds peaks.
+
+  Limits: assumed camera intrinsics, AI footage morphing, low resolution.

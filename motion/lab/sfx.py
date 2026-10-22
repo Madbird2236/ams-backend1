@@ -67,5 +67,33 @@ def vox1():
     add(b, 15.18, bell('A5', 1.8), .2)                               # CTA
     return b
 
+
+def footstep(d=.18):
+    t = t_(d); return (np.sin(2*np.pi*70*t)*env(d, .001, .03) + lp(noise(d), .25)*env(d, .002, .05)*.8)
+def spray(d=.22):
+    t = t_(d); return hp(noise(d), .55) * np.sin(np.pi*t/d)**.6
+def hyb1():
+    b = buf(14.0)
+    add(b, 0.0, lp(noise(3.9), .02)*3*np.linspace(.6, 1, int(SR*3.9)), .18)          # air
+    add(b, 0.0, drone(3.9, 49) * .5, .12)                                              # distant crane hum
+    for k in range(12): add(b, .25 + k*.06, wood(2400 + 40*k, .05), .08)               # grid lines tick in
+    add(b, .55, pluck('E4', .6, .25), .18)                                             # «Erst der»
+    t = t_(.9); add(b, .9, hp(noise(.9), .45)*(.5+.5*np.sin(2*np.pi*11*t))*np.sin(np.pi*t/.9), .12)  # pen draws «Plan.»
+    add(b, 1.75, thump(), .35); add(b, 1.75, strings(['A2', 'E3', 'A3'], 2.4, .3, 1.6, 4), .25)
+    add(b, 3.0, whoosh(.6), .22)
+    add(b, 3.9, lp(noise(4.7), .05)*2*np.minimum(1, t_(4.7)/.3), .2)                  # site ambience comes alive
+    for k in range(9): add(b, 4.2 + k*.3, footstep(), .32, (-1)**k*.2)                 # footsteps
+    for k, tt in enumerate([4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6]): add(b, tt, spray(), .22)  # one sprayed letter per step
+    for k in range(5): add(b, 6.9 + k*.3, footstep(), .22)
+    add(b, 8.43, whoosh(.35), .5)                                                      # whip pan
+    add(b, 8.6, lp(noise(3.75), .04)*2, .16)                                           # dusty evening ambience
+    for k in range(11): add(b, 9.0 + k*.075, pluck(['A4','B4','C#5','E5','F#5','A5','B5','C#6','E6','F#6','A6'][k], .4, .12), .09)
+    add(b, 10.6, scrape(.5), .15)                                                      # van door
+    add(b, 11.0, strings(['A2', 'E3', 'A3', 'C#4', 'E4'], 3.0, .4, 1.8, 5), .28)        # Feierabend warmth
+    add(b, 12.35, boom(.8), .3)
+    for k, n in enumerate(['A4', 'C#5', 'E5']): add(b, 12.5 + k*.3, clack(), .3); add(b, 12.5 + k*.3, pluck(n, .8, .3), .25)
+    add(b, 13.1, bell('A5', 1.0), .15)
+    return b
+
 if __name__ == '__main__':
-    finish({'kt1': kt1, 'vox1': vox1}[sys.argv[1]](), sys.argv[2])
+    finish({'kt1': kt1, 'vox1': vox1, 'hyb1': hyb1}[sys.argv[1]](), sys.argv[2])

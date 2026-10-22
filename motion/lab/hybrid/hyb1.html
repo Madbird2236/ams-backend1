@@ -1,0 +1,204 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../lab.css">
+<style>
+  #stage { width:1080px; height:1920px; background:#000; }
+  .shot { position:absolute; inset:0; overflow:hidden; }
+  .src { position:absolute; left:0; top:-8.14px; width:1080px; height:1936.3px; }
+  .lay { position:absolute; left:0; top:0; width:768px; height:1376px; transform-origin:0 0; }
+  canvas.src { image-rendering:auto; }
+  #grain { position:absolute; inset:0; width:1080px; height:1920px; mix-blend-mode:overlay; opacity:.09; }
+  .kick { position:absolute; font-family:IS; font-size:56px; color:#FFF4E6; letter-spacing:-.5px; text-shadow:0 2px 18px rgba(40,20,0,.45); }
+  .big { position:absolute; font-family:IDK; letter-spacing:-6px; line-height:.9; white-space:nowrap; }
+  .ch { display:inline-block; }
+</style></head>
+<body><div id="stage">
+  <!-- shot 1: photo in depth layers (pull-out), text and grid live between the far plate and the crane -->
+  <div class="shot" id="s1">
+    <div id="cam1" style="position:absolute;left:0;top:0;transform-origin:0 0">
+      <img class="lay" id="L0" src="../../out/lab/hyb/layers/L0_far.jpg">
+      <div class="lay" id="LT" style="width:768px;height:1376px">
+        <svg id="grid" width="768" height="1376" style="position:absolute;inset:0"></svg>
+        <div id="erst" class="kick" style="left:128px;top:196px;font-size:44px;color:#1E293B;text-shadow:none;font-family:IS">Erst der</div>
+        <svg width="768" height="1376" style="position:absolute;inset:0"><text id="plan" x="118" y="440" font-family="IDK" font-size="236" letter-spacing="-6" fill="#1E293B" fill-opacity="0" stroke="#1E293B" stroke-width="2.4">Plan.</text></svg>
+      </div>
+      <img class="lay" id="L1" src="../../out/lab/hyb/layers/L1_crane.png">
+      <img class="lay" id="L2" src="../../out/lab/hyb/layers/L2_mid.png">
+      <img class="lay" id="L3" src="../../out/lab/hyb/layers/L3_fg.png">
+    </div>
+  </div>
+  <!-- shot 2: real footage + camera-tracked 3D bucket (with shadow) + ground-locked painted word -->
+  <div class="shot" id="s2" style="opacity:0">
+    <div id="w2" style="position:absolute;inset:0">
+      <img class="src" id="v1">
+      <canvas class="src" id="gtext" width="560" height="1004" style="mix-blend-mode:multiply"></canvas>
+      <canvas class="src" id="g3d" width="560" height="1004" style="filter:blur(.7px) saturate(.92) contrast(.96)"></canvas>
+      <div class="kick" id="dann" style="left:84px;top:150px">Dann jeder</div>
+    </div>
+  </div>
+  <!-- shot 3: footage + word anchored to the tracked van, the tracked worker walks in front of it -->
+  <div class="shot" id="s3" style="opacity:0">
+    <div id="w3" style="position:absolute;inset:0;transform-origin:540px 960px">
+      <img class="src" id="v4">
+      <div id="fa" class="big" style="font-size:132px;color:#FFF1DE;filter:blur(.5px);opacity:.94;text-shadow:0 0 30px rgba(255,200,140,.35)"></div>
+      <img class="src" id="m4">
+      <div id="shade" style="position:absolute;inset:0;background:#0d0a08;opacity:0"></div>
+    </div>
+  </div>
+  <div id="endtxt" style="position:absolute;left:84px;top:1150px"></div>
+  <div id="note" style="position:absolute;left:84px;bottom:70px;font-family:JB;font-size:28px;color:#E8E2D8;letter-spacing:1px;opacity:0">Übung mit Demo-Material · keine AMS-Referenz</div>
+  <img id="grain" src="../../out/lab/hyb/grain0.png">
+</div>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../../node_modules/gsap/dist/DrawSVGPlugin.min.js"></script>
+<script src="../../node_modules/three/build/three.min.js"></script>
+<script src="tracks.js"></script>
+<script src="../lablib.js"></script>
+<script>
+gsap.registerPlugin(DrawSVGPlugin);
+const $ = (i) => document.getElementById(i);
+const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+const SV = 1080 / 560, OY = -8.14, A = TR.A;                 // footage -> output; photo -> footage (similarity)
+const PS = A[0][0] * SV, PX = A[0][2] * SV, PY = A[1][2] * SV + OY;   // photo -> output at the neutral pose
+
+// ---------------- shot 1: pull-out through depth layers ----------------
+const depth = { L0: .05, LT: .075, L1: .1, L2: .16, L3: .26 };   // near layers move more
+const cam1 = { u: 1, lift: 1 };
+const FX = 455, FY = 470;                                          // focus point (photo px): the sky behind the crane
+function place1() {
+  for (const [id, k] of Object.entries(depth)) {
+    const s = 1 + k * 1.15 * cam1.u, dy = -k * 160 * cam1.lift;     // zoom about the focus + a slight crane-down
+    $(id).style.transform = `translate(${FX * (1 - s)}px, ${FY * (1 - s) + dy}px) scale(${s})`;
+  }
+  $("cam1").style.transform = `translate(${PX}px,${PY}px) scale(${PS})`;
+}
+// blueprint grid in the sky (between far plate and crane)
+const G = $("grid");
+for (let x = 40; x < 768; x += 64) svgEl("line", { x1: x, y1: 60, x2: x, y2: 560, stroke: "#1E293B", "stroke-width": 1.2, opacity: .28, class: "gl" }, G);
+for (let y = 60; y < 560; y += 64) svgEl("line", { x1: 20, y1: y, x2: 748, y2: y, stroke: "#1E293B", "stroke-width": 1.2, opacity: .28, class: "gl" }, G);
+tl.to(cam1, { u: 0, lift: 0, duration: 3.7, ease: "power2.inOut", onUpdate: place1 }, .1)
+  .fromTo(".gl", { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .7, stagger: .015, ease: "power2.out" }, .25)
+  .from("#erst", { opacity: 0, x: -20, duration: .4 }, .55)
+  .fromTo("#plan", { drawSVG: "0% 0%" }, { drawSVG: "0% 100%", duration: .9, ease: "power2.inOut" }, .9)
+  .to("#plan", { attr: { "fill-opacity": .92 }, duration: .35 }, 1.75)
+  .to(["#plan", "#erst"], { opacity: 0, y: -40, duration: .5, ease: "power2.in" }, 3.0)
+  .to(".gl", { opacity: 0, duration: .5 }, 3.0);
+place1();
+
+// ---------------- shot 2: camera solve -> three.js ----------------
+const T1 = TR.t1, K = T1.K, f = K[0][0];
+const r3 = new THREE.WebGLRenderer({ canvas: $("g3d"), antialias: true, alpha: true, preserveDrawingBuffer: true });
+r3.setClearColor(0, 0); r3.shadowMap.enabled = true; r3.shadowMap.type = THREE.PCFSoftShadowMap; r3.outputEncoding = THREE.sRGBEncoding;
+const sc = new THREE.Scene();
+const cam = new THREE.PerspectiveCamera(2 * Math.atan(T1.H / 2 / f) * 180 / Math.PI, T1.W / T1.H, .05, 200);
+cam.matrixAutoUpdate = false;
+const B = new THREE.Vector3(1.1, 7.0, 0);                       // bucket position on the tracked ground (metres)
+const sunDir = new THREE.Vector3(.45, .9, .36).normalize();       // matches the footage: shadows fall towards camera-left
+const sun = new THREE.DirectionalLight(0xffc98a, 4.2); sun.position.copy(B).addScaledVector(sunDir, 12); sun.target.position.copy(B);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -1.5, right: 1.5, top: 1.5, bottom: -1.5, near: 1, far: 30 }); sun.shadow.radius = 3; sun.shadow.bias = -.0005;
+sc.add(sun, sun.target, new THREE.HemisphereLight(0xffb070, 0x8a5a32, .48));
+
+// bucket: lathe profile (metres), white plastic, AMS-blue paint inside and one drip
+const prof = [[0, 0], [.125, 0], [.128, .01], [.142, .30], [.152, .305], [.152, .318], [.138, .318], [.126, .03], [0, .03]].map(([r, y]) => new THREE.Vector2(r, y));
+const bucket = new THREE.Group();
+const body = new THREE.Mesh(new THREE.LatheGeometry(prof, 64), new THREE.MeshStandardMaterial({ color: 0xc4b8a8, roughness: .45, side: THREE.DoubleSide }));
+const paint = new THREE.Mesh(new THREE.CircleGeometry(.137, 48), new THREE.MeshStandardMaterial({ color: 0x3FA3D6, roughness: .25 }));
+paint.rotation.x = -Math.PI / 2; paint.position.y = .27;
+const drip = new THREE.Mesh(new THREE.CapsuleGeometry(.009, .07, 4, 8), new THREE.MeshStandardMaterial({ color: 0x3FA3D6, roughness: .25 }));
+drip.position.set(0, .26, .148);
+const handle = new THREE.Mesh(new THREE.TorusGeometry(.15, .005, 8, 48, Math.PI), new THREE.MeshStandardMaterial({ color: 0x8a8a8a, metalness: .8, roughness: .35 }));
+handle.position.y = .3; handle.rotation.y = .5;
+bucket.add(body, paint, drip, handle); bucket.traverse((o) => { if (o.isMesh) o.castShadow = true; });
+bucket.rotation.x = Math.PI / 2; bucket.rotation.y = Math.PI;      // lathe Y-up -> world Z-up; drip faces the camera
+bucket.position.copy(B); sc.add(bucket);
+// ground-locked painted word (anamorphic, read from the camera), multiplied onto the concrete
+const gtc = document.createElement("canvas"); gtc.width = 1024; gtc.height = 1536;
+const gtx = gtc.getContext("2d"), tex = new THREE.CanvasTexture(gtc); tex.encoding = THREE.sRGBEncoding;
+const word = "SCHRITT.", rs = rnd(9), speck = Array.from({ length: 2600 }, () => [rs() * 1024, rs() * 1536, rs() * 3 + .6]);
+function paintWord(n, fade) {
+  gtx.clearRect(0, 0, 1024, 1536); if (n <= 0) { tex.needsUpdate = true; return; }
+  gtx.save(); gtx.translate(512, 768); gtx.scale(1, 3.1);       // stretched along the ground so it reads at a grazing angle
+  gtx.font = "250px IDK"; gtx.textAlign = "center"; gtx.textBaseline = "middle"; gtx.fillStyle = `rgba(30,120,175,${.95 * fade})`;
+  const full = gtx.measureText(word).width; let x = -full / 2;
+  for (let i = 0; i < Math.min(n, word.length); i++) { const w = gtx.measureText(word[i]).width; gtx.textAlign = "left"; gtx.fillText(word[i], x, 0); x += w; }
+  gtx.restore();
+  gtx.globalCompositeOperation = "destination-out"; speck.forEach(([x, y, r]) => { gtx.beginPath(); gtx.arc(x, y, r, 0, 7); gtx.fill(); }); gtx.globalCompositeOperation = "source-over";
+  tex.needsUpdate = true;
+}
+const s2b = new THREE.Scene();
+const gplane = new THREE.Mesh(new THREE.PlaneGeometry(2.0, 2.9), new THREE.MeshBasicMaterial({ map: tex, transparent: true }));
+gplane.position.set(-.4, 7.05, .002); s2b.add(gplane);
+// shadow pass: an invisible copy of the bucket casts onto a shadow-only ground, multiplied onto the footage
+const sun2 = sun.clone(); sun2.target = new THREE.Object3D(); sun2.target.position.copy(B); s2b.add(sun2, sun2.target);
+const sground = new THREE.Mesh(new THREE.PlaneGeometry(6, 6), new THREE.ShadowMaterial({ color: 0x3a2418, opacity: .58 }));
+sground.position.set(B.x, B.y, .001); sground.receiveShadow = true; s2b.add(sground);
+const ghost = bucket.clone(); ghost.traverse((o) => { if (o.isMesh) { o.material = new THREE.MeshBasicMaterial({ colorWrite: false }); o.castShadow = true; } }); s2b.add(ghost);
+// contact shadow (ambient occlusion) under the base
+const cc = document.createElement("canvas"); cc.width = cc.height = 128; const cx2 = cc.getContext("2d");
+const gr = cx2.createRadialGradient(64, 64, 10, 64, 64, 64); gr.addColorStop(0, "rgba(40,22,10,.75)"); gr.addColorStop(1, "rgba(40,22,10,0)"); cx2.fillStyle = gr; cx2.fillRect(0, 0, 128, 128);
+const ctex = new THREE.CanvasTexture(cc);
+const contact = new THREE.Mesh(new THREE.PlaneGeometry(.42, .42), new THREE.MeshBasicMaterial({ map: ctex, transparent: true, depthWrite: false }));
+contact.position.set(B.x, B.y, .0015); s2b.add(contact);
+const r2 = new THREE.WebGLRenderer({ canvas: $("gtext"), antialias: true, alpha: true, preserveDrawingBuffer: true }); r2.setClearColor(0xffffff, 1); r2.shadowMap.enabled = true; r2.shadowMap.type = THREE.PCFSoftShadowMap; r2.outputEncoding = THREE.sRGBEncoding;
+const W2 = { n: 0, fade: 1 };
+function setCam(p) {
+  const R = p.R, t = p.t; // world->camera (OpenCV). camera->world: Rt, C = -Rt t; flip y,z for three.js
+  const C = [0, 1, 2].map((i) => -(R[0][i] * t[0] + R[1][i] * t[1] + R[2][i] * t[2]));
+  const m = new THREE.Matrix4().set(
+    R[0][0], -R[1][0], -R[2][0], C[0],
+    R[0][1], -R[1][1], -R[2][1], C[1],
+    R[0][2], -R[1][2], -R[2][2], C[2], 0, 0, 0, 1);
+  cam.matrix.copy(m); cam.matrixWorld.copy(m); cam.matrixWorldInverse.copy(m).invert();
+}
+
+// ---------------- shot 3: tracked word behind the tracked worker ----------------
+const fa = $("fa"); "Feierabend.".split("").forEach((c) => { const s = document.createElement("span"); s.className = "ch"; s.textContent = c; fa.appendChild(s); });
+const T4v = TR.t4v.track, V0 = T4v[0];
+
+const WP = { p: 0 }; const whip = () => { gsap.set("#w2", { x: -1080 * WP.p }); gsap.set("#w3", { x: 1080 * (1 - WP.p) }); };
+// ---------------- shot timing ----------------
+const S2 = 3.9, S3 = 8.6, SE = 12.35;
+tl.to("#s2", { opacity: 1, duration: .28, ease: "none" }, S2)            // the photo comes alive (same framing)
+  .to("#s1", { opacity: 0, duration: .01 }, S2 + .3)
+  .from("#dann", { opacity: 0, y: 20, duration: .4 }, 4.25);
+[4.5, 4.8, 5.1, 5.4, 5.7, 6.0, 6.3, 6.6].forEach((t, i) => tl.to(W2, { n: i + 1, duration: .01, ease: "none" }, t));   // one letter per footstep
+tl.to("#dann", { opacity: 0, duration: .3 }, 8.1)
+  // whip pan out of shot 2, into shot 3
+  .to("#s3", { opacity: 1, duration: .01 }, S3 - .18)
+  .fromTo(WP, { p: 0 }, { p: 1, duration: .36, ease: "power3.inOut", onUpdate: whip }, S3 - .18)   // one continuous whip: both shots move together
+  .to("#s2", { opacity: 0, duration: .01 }, S3 + .2);
+const faChars = [...fa.children];
+faChars.forEach((c, i) => tl.from(c, { yPercent: 70, opacity: 0, duration: .35, ease: "back.out(2)" }, 9.0 + i * .075));
+tl.to(faChars, { y: -6, duration: .3, yoyo: true, repeat: 1, stagger: .03, ease: "sine.inOut" }, 11.0);
+// end: freeze, push, darken, recap
+const ET = $("endtxt"), recap = ["Plan.", "Schritt.", "Feierabend."].map((w, i) => div("big", `position:relative;left:0;top:0;display:block;font-size:${i === 2 ? 118 : 118}px;color:${i === 2 ? "#6FB9DF" : "#FFF4E6"};letter-spacing:-4px;line-height:1.02`, w, ET));
+tl.to("#w3", { scale: 1.05, duration: 1.7, ease: "sine.out" }, SE)
+  .to("#shade", { opacity: .62, duration: .4 }, SE)
+  .to(fa, { opacity: 0, duration: .25 }, SE);
+recap.forEach((r, i) => { tl.set(r, { autoAlpha: 0 }, 0).fromTo(r, { autoAlpha: 0, x: -40 }, { autoAlpha: 1, x: 0, duration: .3, ease: "expo.out", immediateRender: false }, SE + .15 + i * .3); });
+tl.to("#note", { opacity: 1, duration: .4 }, SE + .5).to({}, { duration: .01 }, 13.99);
+
+// ---------------- per-frame update (async: waits for footage frames to decode) ----------------
+const load = (img, src) => img.getAttribute("src") === src ? Promise.resolve() : (img.src = src, img.decode().catch(() => {}));
+const pad = (n) => String(n).padStart(4, "0");
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: 14 };
+tl.pause(0);
+window.seek = async (t) => {
+  tl.seek(t, false);
+  const jobs = [];
+  $("grain").src = `../../out/lab/hyb/grain${Math.floor(t * 30) % 4}.png`;
+  if (t >= S2 - .05 && t < S3 + .1) {
+    const i1 = Math.min(110, Math.max(1, 1 + Math.floor((t - S2) * 24)));
+    jobs.push(load($("v1"), `../../out/lab/hyb/f1/${pad(i1)}.png`));
+    setCam(T1.poses[i1 - 1]); paintWord(W2.n, W2.fade);
+    r3.render(sc, cam); r2.render(s2b, cam);
+  }
+  if (t >= S3 - .2) {
+    const k = Math.min(91, Math.max(0, Math.floor((Math.min(t, SE) - S3) * 24))), fr = 40 + k;
+    jobs.push(load($("v4"), `../../out/lab/hyb/f4/${pad(fr)}.png`), load($("m4"), `../../out/lab/hyb/m4/${pad(fr)}.png`));
+    const v = T4v[k], s = v[2] / V0[2];                                            // anchor: van box, scale with the van
+    fa.style.left = (v[0] * SV - 780 * s) + "px"; fa.style.top = ((v[1] - 40 * s) * SV + OY - 150 * s) + "px";
+    fa.style.transform = `scale(${s})`; fa.style.transformOrigin = "0 0";
+  }
+  await Promise.all(jobs);
+};
+</script></body></html>
