@@ -52,7 +52,7 @@ The emotional driver is **control from a distance**.
 **Idea in one sentence:** The best fit-out in a running centre is the one nobody notices, so the only witness is the night guard.
 
 - **Headline:** «Der Einzige, der uns gesehen hat.»
-- **Sub:** «Ladenbau im laufenden Betrieb: sauber, leise, abgestimmt mit dem Center-Management.» ⚠
+- **Sub:** «Ladenbau im laufenden Betrieb: sauber, leise, abgestimmt mit dem Center-Management.» (night/weekend work confirmed 2026-10-22)
 - **CTA:** «Rollout-Gespräch vereinbaren»
 - **Visual:**
   - A shopping centre at night, empty.
@@ -64,7 +64,7 @@ The emotional driver is **control from a distance**.
   - The human face carries the joke.
   - Centre managers, a secondary audience, recognise their own fear.
 - **Pre-flight:**
-  - ⚠ «im laufenden Betrieb» and night work: does AMS work outside opening hours in operating centres? Confirm before use. Fallback sub without night work: «Ladenbau, der den Betrieb nicht stört – abgestimmt mit allen anderen Gewerken.»
+  - ✓ «im laufenden Betrieb» and night work confirmed by Adriano (2026-10-22).
   - ✓ No cliché.
   - Culture: a Swiss centre (signage in German, CHF prices in neighbouring windows).
 - **Scores (discounted):** Surprise 4 · Clarity 4 · Ownability 3.5 · Premium 4 · Feasibility 4.
@@ -86,7 +86,7 @@ The emotional driver is **control from a distance**.
   - The transitions change meaning: the same detail stands for the same standard across cities.
   - It shows AMS's ambition (multi-region, later Europe) without claiming it.
 - **Pre-flight:**
-  - ⚠ Does AMS execute in Romandie and Ticino? If not yet, use only cities AMS serves; the logic works with three cities too.
+  - ✓ Romandie and Ticino coverage confirmed (2026-10-22): the five-city, three-language journey is accurate.
   - «Eine Handschrift» is a metaphor for a consistent standard, not a guarantee.
   - The end-card sub keeps the scope B wording.
   - Reading time: the end card has 2 lines and 2.5 s minimum, so the card holds 4 s.
@@ -122,7 +122,5 @@ The emotional driver is **control from a distance**.
 ## What I learned from repeating the exercise
 - In B2B the strongest emotion is **relief** (control, no surprises), not laughter. Humour works only when it shows a professional virtue (B).
 - Scope discipline shaped the ideas: I avoided every metaphor that implies «we do everything» (puzzle, conductor, relay).
-- Open questions for Adriano:
-  1. Night/weekend work in operating centres?
-  2. Romandie/Ticino coverage?
-  3. Real rollout photos for A?
+- Answered 2026-10-22: night/weekend work in operating centres yes; Romandie and Ticino yes; real rollout photos yes.
+  - A should use real photos instead of AI images, after checking each client's permission to show the store.

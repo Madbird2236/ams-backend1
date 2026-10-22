@@ -42,3 +42,4 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - C (the mould as villain-narrator): the most creative; **kept in the repertoire** as a reusable device (an antagonist narrator removes the client's shame).
   - Precision: never imply a surface treatment ends mould for good when moisture causes remain.
   - Calibrated claims rule: distinguish **contractual commitments** (need proof) from **legitimate advertising expressions** (keep). Excess caution kills good lines.
+- 2026-10-22 Service facts confirmed: night/weekend work in operating centres; all Swiss language regions; real rollout photos available (client permission per store). Real proof beats AI images in B2B.
