@@ -1,0 +1,134 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../lab.css">
+<!-- KT-UGC-1: voice-synced kinetic typography on realistic UGC footage (demo material, 0 credits).
+     German = meaning units (timed to the English unit that carries the meaning).
+     English = literal word-by-word layer (real word timestamps). -->
+<style>
+  #stage { width:1080px; height:1920px; background:#000; }
+  #world { position:absolute; left:0; top:0; width:720px; height:1280px; transform-origin:0 0; }
+  #world img.v { position:absolute; left:0; top:0; width:720px; height:1280px; }
+  #plane { position:absolute; left:0; top:0; width:1000px; height:2000px; transform-origin:0 0; }
+  #studWrap { position:absolute; left:0; top:0; width:720px; height:1280px; opacity:0; }
+  #q { position:absolute; left:70px; top:210px; font-family:IDB; font-size:66px; line-height:1.08; color:#1E293B; letter-spacing:-1.2px; }
+  .u { display:inline-block; overflow:hidden; vertical-align:bottom; padding-bottom:6px; margin-bottom:-6px; }
+  .u > span { display:inline-block; }
+  #wand { position:relative; }
+  #mark { position:absolute; left:0; bottom:4px; height:12px; width:100%; background:#3FA3D6; transform-origin:0 50%; transform:scaleX(0); z-index:-1; }
+  #low { position:absolute; left:0; width:1080px; top:1336px; text-align:center; font-family:IS; font-size:50px; color:#fff; letter-spacing:-.4px; text-shadow:0 2px 14px rgba(0,0,0,.5); }
+  #trom { position:absolute; left:0; width:1080px; top:1400px; text-align:center; font-family:IDK; font-size:150px; letter-spacing:-4px; color:#BFE0F2; text-shadow:0 4px 30px rgba(0,0,0,.45); }
+  #trom .ch { display:inline-block; }
+  .en { position:absolute; left:84px; top:1612px; font-family:IR; font-size:30px; color:#fff; white-space:nowrap;
+        background:rgba(0,0,0,.42); padding:7px 16px 9px; border-radius:10px; opacity:0; }
+  .en .tag { font-family:JB; font-size:20px; color:#BFE0F2; margin-right:12px; vertical-align:2px; }
+  .en .w { display:none; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:30px; color:rgba(255,255,255,.92); background:rgba(0,0,0,.35); padding:6px 14px; border-radius:8px; }
+</style></head>
+<body><div id="stage">
+  <div id="world">
+    <img class="v" id="v">
+    <div id="plane">
+      <svg width="1000" height="2000" viewBox="0 0 1000 2000" style="overflow:visible">
+        <rect id="outline" x="8" y="8" width="984" height="1984" fill="none" stroke="#3FA3D6" stroke-width="14" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/>
+        <g id="rings" fill="none" stroke="#3FA3D6"></g>
+        <g id="ohne" opacity="0" font-family="IDK" font-size="280" letter-spacing="-8" fill="#1E293B">
+          <text x="425" y="560" text-anchor="end">OH</text><text x="600" y="560">NE</text></g>
+        <g id="daem" font-family="IDK" font-size="128" letter-spacing="-2" fill="none" stroke="#1E293B" stroke-width="11" stroke-dasharray="700" stroke-dashoffset="700">
+          <text class="dm" x="420" y="830" text-anchor="end">DÄM</text><text class="dm" x="640" y="830">MUNG</text></g>
+        <text id="drin" x="790" y="1060" text-anchor="middle" font-family="IS" font-size="120" fill="#1E293B" opacity="0">drin.</text>
+      </svg>
+    </div>
+    <svg id="dim" width="720" height="1280" style="position:absolute;left:0;top:0;opacity:0"><path id="dimp" fill="rgba(8,10,16,.58)" fill-rule="evenodd"/></svg>
+    <div id="studWrap"><img class="v" src="kt2fr/freeze.jpg" style="clip-path:polygon(483px 222px,515px 222px,503px 660px,471px 660px)"></div>
+  </div>
+  <div id="q"><span class="u"><span id="q1">Warum hört man</span></span><br><span class="u"><span id="q2">die Nachbarn</span></span><br><span class="u"><span id="q3">durch eine neue&nbsp;</span></span><span class="u"><span id="q4"><span id="wand">Wand?<i id="mark"></i></span></span></span></div>
+  <div id="low"><span id="l1" style="opacity:0">wirkt die Wand</span> <span id="l2" style="opacity:0">wie eine …</span></div>
+  <div id="trom">Trommel.</div>
+  <div class="en" id="enA"><span class="tag">EN</span></div><div class="en" id="enB"><span class="tag">EN</span></div>
+  <div id="lab">KI-generiert · Demo-Material, keine AMS-Referenz</div>
+</div>
+<script src="../../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="../lablib.js"></script>
+<script src="ktugc1-tracks.js"></script>
+<script>
+// ---------- real word timestamps (output timeline; source A 0–2.45 s, source B shifted −1.90 s) ----------
+const EN_A = [["Why",.24],["can",.38],["you",.56],["hear",.68],["your",.84],["neighbours",1.02],["through",1.26],["a",1.64],["new",1.78],["wall?",1.94]];
+const EN_B = [["No",2.72],["insulation",2.92],["inside,",3.56],["and",4.62],["the",4.76],["wall",4.86],["works",5.12],["like",5.42],["a",5.66],["drum.",5.82]];
+const FREEZE = 2.4167, PUSH0 = 2.30, PUSH1 = 3.10;
+const tl = gsap.timeline();
+const mk = (arr, host) => arr.map(([w]) => { const s = document.createElement("span"); s.className = "w"; s.textContent = w + " "; document.getElementById(host).appendChild(s); return s; });
+const wa = mk(EN_A, "enA"), wb = mk(EN_B, "enB");
+// literal English layer: each word lights up exactly on its timestamp, previous words dim
+tl.to("#enA", { opacity: 1, duration: .15 }, .2).to("#enB", { opacity: 1, duration: .15 }, 2.62);
+[[EN_A, wa], [EN_B, wb]].forEach(([arr, els]) => arr.forEach(([w, t], i) => {
+  tl.set(els[i], { display: "inline", color: "#BFE0F2" }, t).set(els[i], { color: "#ffffff" }, (arr[i + 1] || [0, t + .35])[1]);
+}));
+tl.to("#enA", { opacity: 0, duration: .15 }, 2.38);
+tl.to("#enB", { opacity: 0, duration: .3 }, 6.75);
+
+// German, unit 1–4: discreet line reveal on the ceiling, one meaning unit per English unit
+[["#q1", .24], ["#q2", .84], ["#q3", 1.26], ["#q4", 1.94]].forEach(([id, t]) => tl.fromTo(id, { yPercent: 105 }, { yPercent: 0, duration: .28, ease: "power3.out" }, t));
+// «Wand?» = the key word: blue marker + the wall itself gets outlined (tracked, in perspective)
+tl.to("#mark", { scaleX: 1, duration: .3, ease: "power2.out" }, 1.98)
+  .to("#outline", { attr: { "stroke-dashoffset": 0 }, duration: .55, ease: "power2.inOut" }, 1.96);
+// pause before the answer: question leaves, the shot freezes and pushes into the empty cavity
+tl.to(["#q1", "#q2", "#q3", "#q4"], { yPercent: -105, duration: .3, ease: "power2.in", stagger: .04 }, 2.30)
+  .to("#dim", { opacity: 1, duration: .55, ease: "sine.inOut" }, 2.35)
+  .set("#studWrap", { opacity: 1 }, FREEZE)
+  .to("#outline", { attr: { "stroke-width": 6 }, opacity: .55, duration: .6 }, 2.6);
+// «Ohne» lands on the board; «Dämmung» is drawn hollow (the word is as empty as the wall); «drin.» quiet
+tl.fromTo("#ohne", { opacity: 0, scale: 1.18, svgOrigin: "512 470" }, { opacity: 1, scale: 1, duration: .22, ease: "back.out(2)" }, 2.72)
+  .to("#daem", { attr: { "stroke-dashoffset": 0 }, duration: .55, ease: "power1.inOut" }, 2.92)
+  .fromTo("#drin", { opacity: 0, y: -30 }, { opacity: 1, y: 0, duration: .25, ease: "power2.out" }, 3.56);
+// unit 8–9: discreet line under the wall
+tl.fromTo("#l1", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .2 }, 4.62)
+  .fromTo("#l2", { opacity: 0, y: 14 }, { opacity: 1, y: 0, duration: .2 }, 5.42);
+// unit 10: «Trommel.» – the hero word drops in on «drum», then shakes with each knock
+const tch = chars(document.getElementById("trom"));
+gsap.set("#trom", { opacity: 0 });
+tl.set("#trom", { opacity: 1 }, 5.82)
+  .fromTo(tch, { yPercent: -60, opacity: 0 }, { yPercent: 0, opacity: 1, duration: .32, ease: "bounce.out", stagger: .025 }, 5.82)
+  .to("#l2", { opacity: .55, duration: .2 }, 5.9);
+// knocks at 6.28 and 6.50: rings in the wall plane, hollow letters vibrate, hero letters jump
+const rings = document.getElementById("rings");
+[[6.28, 1], [6.50, .75]].forEach(([t, k]) => {
+  for (let r = 0; r < 2; r++) {
+    const c = svgEl("circle", { cx: 500, cy: 820, r: 40, "stroke-width": 16, opacity: 0 }, rings);
+    tl.set(c, { attr: { r: 40, "stroke-width": 16 }, opacity: .95 * k }, t + r * .07)
+      .to(c, { attr: { r: 620 + r * 160, "stroke-width": 2 }, opacity: 0, duration: .75 + r * .2, ease: "power2.out" }, t + r * .07);
+  }
+  tl.fromTo("#daem", { attr: { "stroke-width": 11 } }, { attr: { "stroke-width": 22 }, duration: .06, yoyo: true, repeat: 3, ease: "none" }, t)
+    .fromTo(tch, { y: 0 }, { y: -18 * k, duration: .07, yoyo: true, repeat: 1, ease: "power1.out", stagger: .015 }, t);
+});
+// visual pause: everything holds, the outline fades, silence
+tl.to("#outline", { opacity: 0, duration: .5 }, 6.85);
+tl.to({}, { duration: .01 }, 7.39);
+
+// ---------- camera, tracking, perspective ----------
+const T = window.TRK, Hp = T.Hp;
+const mul = (A, B) => A.map((r, i) => [0, 1, 2].map(j => r[0] * B[0][j] + r[1] * B[1][j] + r[2] * B[2][j]));
+const ap = (H, [x, y]) => { const w = H[2][0] * x + H[2][1] * y + H[2][2]; return [(H[0][0] * x + H[0][1] * y + H[0][2]) / w, (H[1][0] * x + H[1][1] * y + H[1][2]) / w]; };
+const m3d = (H) => { const n = H.map(r => r.map(v => v / H[2][2])); return `matrix3d(${n[0][0]},${n[1][0]},0,${n[2][0]},${n[0][1]},${n[1][1]},0,${n[2][1]},0,0,1,0,${n[0][2]},${n[1][2]},0,${n[2][2]})`; };
+const F = [495, 440], ease = gsap.parseEase("power3.inOut"), shake = gsap.parseEase("none");
+const world = document.getElementById("world"), plane = document.getElementById("plane"), img = document.getElementById("v"), dimp = document.getElementById("dimp");
+function camera(t) {
+  const p = ease(gsap.utils.clamp(0, 1, (t - PUSH0) / (PUSH1 - PUSH0)));
+  let s = 1.5 * Math.pow(1.8, p);                                   // 1.5 (fit) → 2.7 (push-in)
+  if (t > 5.82) s *= 1 + .025 * Math.exp(-(t - 5.82) * 4);          // micro punch on «Trommel»
+  const sx = gsap.utils.interpolate(1.5 * F[0], 540, p), sy = gsap.utils.interpolate(1.5 * F[1], 760, p);
+  let jx = 0, jy = 0;                                                // wall shake on knocks
+  [[6.28, 1], [6.50, .75]].forEach(([k, a]) => { const d = t - k; if (d > 0 && d < .3) { const e = Math.exp(-d * 18) * a; jx += Math.sin(d * 140) * 5 * e; jy += Math.cos(d * 120) * 3 * e; } });
+  world.style.transform = `translate(${sx - s * F[0] + jx}px,${sy - s * F[1] + jy}px) scale(${s})`;
+}
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: 7.4 };
+tl.pause(0);
+window.seek = async (t) => {
+  tl.seek(t, false); camera(t);
+  const live = t < FREEZE, n = Math.min(59, Math.floor(t * 24) + 1);
+  const Hn = live ? T.H[n - 1] : T.H[58];
+  plane.style.transform = m3d(mul(Hn, Hp));
+  const q = T.Q.map(pt => ap(Hn, pt));
+  dimp.setAttribute("d", `M0 0H720V1280H0Z M${q.map(p => p.join(" ")).join(" L")}Z`);
+  const src = live ? `kt2fr/${String(n).padStart(4, "0")}.jpg` : "kt2fr/freeze.jpg";
+  if (img.getAttribute("src") !== src) { img.src = src; await img.decode().catch(() => {}); }
+};
+</script></body></html>

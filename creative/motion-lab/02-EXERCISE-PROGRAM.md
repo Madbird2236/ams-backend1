@@ -37,6 +37,7 @@ The content is always AMS-relevant and claims-safe (confirmed facts only), so th
 | HYB-1 | Real project photo + parallax + annotations + VO + SFX | One real AMS photo (with permission), a VO file (Voice Studio, optional) |
 | VOX-3 | Store manual → executed detail (B2B evidence) | A real rollout photo with client permission |
 | HYB-2 | Footage + type integrated in the scene | A short real clip from a site |
+| KT-UGC-1 | Voice-synced kinetic type on UGC (done 2026-10-22): literal EN layer + German meaning units, tracked type in the wall, masks, SFX | Existing demo UGC (0 credits) |
 
 ## How each exercise is judged
 1. Run the script checker: duration, reading time, VO pace.

@@ -83,3 +83,10 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Limits of post: language of the speech, source resolution and what the image shows stay as generated. Check these before choosing post over a new generation.
 - Adriano's verdict (2026-10-22): valid as a post-production demo. Two permanent rules added to the pre-flight: 6g (narration must match the image before any publication) and 6h (technically better ≠ memorable; judge the idea first).
 - Adriano's second review (2026-10-22) found two defects my QA missed: (1) «Ohne Dämmung drin» plays over insulation being fitted: I checked subtitles against the *audio*, not against the *image* under them; (2) «und es wird still» overclaims acoustic performance, and my sound design (fade to true silence, weighted «still») made it worse; «doppelt beplankt» was noted but not treated as blocking. Fix: pre-flight 6g now runs voice–image, technical precision and visual proof **line by line**, and effects must follow the true statement. Exercise closed as a post-production demo; kept: continuity fixes, action-led cutting (match on action), sound design that serves meaning.
+
+## 2026-10-22 — KT-UGC-1 (voice-synced kinetic typography on UGC)
+- Two layers, two syncs: literal word-by-word in the audio's language (English), translated meaning units timed to the onset of the English unit that carries the meaning. Never fake word-level sync across languages.
+- Transcript timestamps drift (first run put «No» 0.34 s early): verify onsets against the audio (voicing analysis) before animating.
+- Choosing the passage is part of the type design: playing «no insulation» over the empty cavity fixed the voice–image error before a single letter moved.
+- Type in the scene must respect the scene: lay words out so occluders (the stud) fall in the gaps, or the key word becomes unreadable.
+- `fromTo` before its start time shows the *from* state: hidden elements (rings) must use `set` at their start, not `fromTo`.
