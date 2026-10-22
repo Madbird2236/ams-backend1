@@ -103,3 +103,8 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Status: concept approved, animatic v2 complete, ready for production. Real filming preferred, opportunistic on a running job only.
 - Correction: «0 credits» is not «free». Team time, preparation, travel and site access are costs; compare full cost.
 - One project's route is never a general rule: route decided per project (new section «Production route» in the competencies).
+
+## 2026-10-22 — VOX-2 (mould in winter, explainer)
+- Compute the physics before drawing (Magnus): the chart is evidence only if its numbers are real; hedge thresholds («ca.», «kann», «über Tage»).
+- Sparse SFX without a bed cannot reach −14 LUFS within true peak: add a light bed and soft-limit transients before `loudnorm.sh`.
+- World-space tags must be placed for the zoomed framing they will be read in, not for the wide shot.

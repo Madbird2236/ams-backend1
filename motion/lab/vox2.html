@@ -1,0 +1,157 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<!-- VOX-2 «Warum wächst Schimmel im Winter?» Editorial explainer: paper collage + building chart, camera follows the argument.
+     Physics (Magnus): room 20 °C / 50 % → at a 12 °C wall the air reaches ≈ 83 % RH; 80 % at ≈ 12.6 °C; dew point ≈ 9.3 °C.
+     AMS role (claims register): removal and surface treatment only. Silent-first: one reading layer. -->
+<style>
+  #stage { width:1080px; height:1920px; background:#EFE9DF; }
+  #cam { position:absolute; left:0; top:0; transform-origin:0 0; }
+  #head { position:absolute; left:70px; right:70px; top:190px; font-family:IDB; font-size:76px; line-height:1.04; letter-spacing:-1.8px; color:#1E293B; }
+  .beat { position:absolute; left:70px; right:70px; top:200px; font-family:IDB; font-size:62px; line-height:1.08; letter-spacing:-1.2px; color:#1E293B; opacity:0; }
+  .beat b { color:#1E96CF; font-family:IDB; font-weight:normal; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:26px; color:#1E293B; opacity:.55; }
+  .ch { display:inline-block; }
+</style></head>
+<body><div id="stage">
+<svg id="cam" width="2600" height="2400" viewBox="0 0 2600 2400">
+  <defs>
+    <filter id="paper" x="-5%" y="-5%" width="110%" height="110%"><feDropShadow dx="0" dy="6" stdDeviation="7" flood-color="#5A4A35" flood-opacity=".22"/></filter>
+    <filter id="grainP" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="2" seed="2"/><feColorMatrix values="0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .07 0"/></filter>
+    <pattern id="hatch" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="22" height="22" fill="#D9D0C2"/><rect width="5" height="22" fill="#B9AE9C"/></pattern>
+    <radialGradient id="warm"><stop offset="0" stop-color="#F6C98A" stop-opacity=".55"/><stop offset="1" stop-color="#F6C98A" stop-opacity="0"/></radialGradient>
+  </defs>
+  <rect width="2600" height="2400" fill="#EFE9DF"/><rect width="2600" height="2400" filter="url(#grainP)"/>
+
+  <!-- ===== the section: warm room | wall | cold outside ===== -->
+  <g id="section">
+    <g filter="url(#paper)">
+      <rect x="40" y="560" width="680" height="980" fill="#FBF7F1" stroke="#fff" stroke-width="10"/>
+      <rect x="720" y="560" width="130" height="980" fill="url(#hatch)" stroke="#fff" stroke-width="10"/>
+      <rect x="850" y="560" width="300" height="980" fill="#9FB3BE" stroke="#fff" stroke-width="10"/>
+      <rect x="20" y="1540" width="1140" height="40" fill="#CDBFA9" stroke="#fff" stroke-width="8"/>
+    </g>
+    <ellipse cx="260" cy="1100" rx="380" ry="420" fill="url(#warm)" id="warmGlow"/>
+    <!-- radiator -->
+    <g filter="url(#paper)"><rect x="80" y="1290" width="160" height="200" rx="10" fill="#FFFFFF" stroke="#D8D0C4" stroke-width="4"/>
+      <path d="M110 1300v180M140 1300v180M170 1300v180M200 1300v180" stroke="#D8D0C4" stroke-width="5"/></g>
+    <!-- wardrobe against the wall: the classic cold corner behind it -->
+    <g id="wardrobe" filter="url(#paper)"><rect x="520" y="860" width="180" height="680" fill="#C9A77E" stroke="#fff" stroke-width="8"/>
+      <rect x="605" y="1160" width="10" height="90" rx="5" fill="#8A6A44"/></g>
+    <!-- snow outside -->
+    <g id="snow" fill="#fff"></g>
+    <!-- labels on the section (paper tags with leader lines) -->
+    <g id="tRoom" opacity="0" filter="url(#paper)"><rect x="120" y="640" width="300" height="110" rx="10" fill="#fff"/>
+      <text x="270" y="690" text-anchor="middle" font-family="IDB" font-size="50" fill="#1E293B">20 °C</text>
+      <text x="270" y="732" text-anchor="middle" font-family="IR" font-size="30" fill="#1E293B">50 % Luftfeuchte</text></g>
+    <g id="tOut" opacity="0" filter="url(#paper)"><rect x="880" y="640" width="240" height="90" rx="10" fill="#fff"/>
+      <text x="1000" y="700" text-anchor="middle" font-family="IDB" font-size="50" fill="#1E293B">−5 °C</text></g>
+    <g id="tWall" opacity="0"><path d="M712 1240 L 470 1330" stroke="#1E96CF" stroke-width="5" fill="none"/><circle cx="712" cy="1240" r="9" fill="#1E96CF"/>
+      <g filter="url(#paper)"><rect x="300" y="1300" width="250" height="96" rx="10" fill="#fff"/>
+      <text x="425" y="1366" text-anchor="middle" font-family="IDB" font-size="54" fill="#1E96CF">12 °C</text></g></g>
+    <!-- moisture: drifting particles -->
+    <g id="drops" fill="#3FA3D6"></g>
+    <!-- mould where the moist air collected -->
+    <g id="mould" fill="#3E4A3C"></g>
+  </g>
+
+  <!-- ===== the chart, to the right on the desk ===== -->
+  <g id="chart" transform="translate(1400,520)">
+    <g filter="url(#paper)"><rect x="-60" y="-80" width="1140" height="1160" fill="#FBF7F1" stroke="#fff" stroke-width="10"/></g>
+    <g id="axes" opacity="0" stroke="#1E293B" stroke-width="4" fill="none"><path d="M120 900 H 980 M120 900 V 120"/></g>
+    <g id="ticks" opacity="0" font-family="IR" font-size="30" fill="#1E293B">
+      <text x="120" y="950" text-anchor="middle">20°</text><text x="478" y="950" text-anchor="middle">15°</text><text x="837" y="950" text-anchor="middle">10°</text>
+      <text x="100" y="910" text-anchor="end">50 %</text><text x="100" y="440" text-anchor="end">80 %</text><text x="100" y="130" text-anchor="end">100 %</text>
+      <text x="550" y="1010" text-anchor="middle" font-family="IS" font-size="32">Temperatur der Wand</text>
+      <text x="120" y="70" font-family="IS" font-size="32">Luftfeuchte an der Wand</text>
+    </g>
+    <rect id="band" x="120" y="120" width="860" height="312" fill="#1E96CF" opacity="0"/>
+    <line id="l80" x1="120" y1="432" x2="980" y2="432" stroke="#1E96CF" stroke-width="4" stroke-dasharray="14 10" opacity="0"/>
+    <text id="t80" x="150" y="190" font-family="IS" font-size="36" fill="#1E96CF" opacity="0"><tspan x="150">ab ca. 80 % über Tage:</tspan><tspan x="150" dy="46">Schimmel kann wachsen</tspan></text>
+    <path id="curve" fill="none" stroke="#1E293B" stroke-width="7" stroke-linecap="round"/>
+    <circle id="dot" r="16" fill="#1E96CF" opacity="0"/>
+    <g id="dotTag" opacity="0"><rect x="0" y="0" width="210" height="74" rx="10" fill="#fff" filter="url(#paper)"/><text id="dotTxt" x="105" y="51" text-anchor="middle" font-family="IDB" font-size="40" fill="#1E293B"></text></g>
+    <text id="tDew" x="975" y="100" text-anchor="end" font-family="IR" font-size="30" fill="#1E293B" opacity="0">≈ 9 °C: Tauwasser</text>
+  </g>
+</svg>
+
+<div id="head">Warum wächst Schimmel im Winter?</div>
+<div class="beat" id="b2">Warme Luft trägt <b>Feuchtigkeit</b>.</div>
+<div class="beat" id="b3">An der kalten Wand kühlt sie ab.</div>
+<div class="beat" id="b4">Kühlere Luft, <b>höhere</b> Feuchte an der Wand.</div>
+<div class="beat" id="b5">Dort beginnt es.</div>
+<div class="beat" id="b6" style="top:1380px;text-align:center;font-size:66px;left:60px;right:60px">Schimmel entdeckt?<br><span style="font-family:IS;font-size:46px;letter-spacing:-.4px;line-height:1.3">Wir kümmern uns um die betroffenen Oberflächen.</span></div>
+<div id="logo" style="position:absolute;left:330px;top:1620px;opacity:0"></div>
+<div id="lab">Lab · VOX-2</div>
+</div>
+<script src="../node_modules/gsap/dist/gsap.min.js"></script>
+<script src="lablib.js"></script>
+<script>
+document.getElementById("logo").innerHTML = logoSVG(420);
+const R = rnd(7);
+// physics for the chart (Magnus): room 20 °C, 50 %
+const es = T => 6.112 * Math.exp(17.62 * T / (243.12 + T)), e = .5 * es(20);
+const X = T => 120 + (20 - T) / 12 * 860, Y = rh => 900 - (rh - 50) / 50 * 780;
+let d = ""; for (let T = 20; T >= 9.3; T -= .1) d += (d ? " L" : "M") + X(T).toFixed(1) + " " + Y(100 * e / es(T)).toFixed(1);
+const curve = document.getElementById("curve"); curve.setAttribute("d", d);
+const LEN = curve.getTotalLength(); curve.style.strokeDasharray = LEN; curve.style.strokeDashoffset = LEN;
+// particles
+const drops = [], dg = document.getElementById("drops");
+for (let i = 0; i < 70; i++) {
+  const c = svgEl("circle", { r: 7 + R() * 5, opacity: .75 }, dg);
+  drops.push({ c, x: 70 + R() * 600, y: 600 + R() * 900, ph: R() * 6.28, sp: .4 + R() * .6, tx: 712 - R() * 10, ty: 960 + R() * 520 });
+}
+const snow = []; for (let i = 0; i < 26; i++) snow.push({ c: svgEl("circle", { r: 4 + R() * 5, opacity: .9 }, document.getElementById("snow")), x: 870 + R() * 260, y: R() * 1000, s: 40 + R() * 60 });
+const spots = []; for (let i = 0; i < 26; i++) spots.push(svgEl("circle", { cx: 712 - R() * 12, cy: 980 + R() * 500, r: 0, opacity: .85 }, document.getElementById("mould")));
+
+const tl = gsap.timeline(), S = { gather: 0, chartDot: 0 };
+// 0–2.2 hook: the question is on screen from frame 0
+tl.from("#head", { y: 20, opacity: 0, duration: .25, ease: "power2.out" }, 0)
+  .to("#head", { opacity: 0, y: -20, duration: .25 }, 2.1);
+// 2.2–5.0 warm air carries moisture
+tl.fromTo("#b2", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .25 }, 2.3).to("#b2", { opacity: 0, duration: .2 }, 4.8)
+  .to("#tRoom", { opacity: 1, duration: .25 }, 2.5).to("#tOut", { opacity: 1, duration: .25 }, 3.1);
+// 5.0–8.3 the cold corner: camera pushes in behind the wardrobe, moist air collects there
+tl.fromTo("#b3", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .25 }, 5.1).to("#b3", { opacity: 0, duration: .2 }, 8.1)
+  .to(S, { gather: 1, duration: 2.6, ease: "sine.inOut" }, 5.3)
+  .to("#tWall", { opacity: 1, duration: .3 }, 6.0)
+  .to(["#tRoom", "#tOut"], { opacity: 0, duration: .3 }, 5.4);
+// 8.3–12.6 the chart builds: axes, line, the 80 % threshold, the dot slides to 12 °C
+tl.fromTo("#b4", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .25 }, 8.6).to("#b4", { opacity: 0, duration: .2 }, 12.4)
+  .to(["#axes", "#ticks"], { opacity: 1, duration: .3 }, 8.7)
+  .to(curve, { strokeDashoffset: 0, duration: 1.2, ease: "power1.inOut" }, 9.0)
+  .to("#l80", { opacity: 1, duration: .2 }, 10.2).to("#band", { opacity: .1, duration: .3 }, 10.2).to("#t80", { opacity: 1, duration: .25 }, 10.3)
+  .to("#dot", { opacity: 1, duration: .15 }, 10.9).to("#dotTag", { opacity: 1, duration: .2 }, 10.9)
+  .to(S, { chartDot: 1, duration: 1.2, ease: "power2.inOut" }, 10.95)
+  .to("#tDew", { opacity: .8, duration: .3 }, 11.6).set("#tWall", { opacity: 0 }, 9.0).to("#tWall", { opacity: 1, duration: .2 }, 12.9);
+// 12.6–14.4 back to the corner: mould appears exactly where the moist air collected
+tl.fromTo("#b5", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .25 }, 12.9).to("#b5", { opacity: 0, duration: .2 }, 14.3);
+spots.forEach((s, i) => tl.to(s, { attr: { r: 6 + (i % 5) * 4 }, duration: .5, ease: "power2.out" }, 13.0 + i * .03));
+// 14.4–17.4 AMS role + logo
+tl.fromTo("#b6", { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: .3 }, 14.6).to("#logo", { opacity: 1, duration: .35 }, 15.0);
+tl.to({}, { duration: .01 }, 17.39);
+
+// camera keyframes: [time, centreX, centreY, scale] in world units; the move follows the argument
+const K = [[0, 600, 1060, .92], [2.2, 600, 1060, .95], [5.0, 600, 1060, .97], [6.6, 570, 1210, 1.75], [8.3, 580, 1210, 1.8], [9.1, 1930, 1000, .98], [12.5, 1930, 1000, 1.02], [13.3, 570, 1220, 1.65], [14.4, 600, 1240, 1.1], [17.4, 600, 1260, 1.0]];
+const E = gsap.parseEase("power2.inOut"), cam = document.getElementById("cam");
+function camAt(t) {
+  let i = 0; while (i < K.length - 2 && t > K[i + 1][0]) i++;
+  const [t0, x0, y0, s0] = K[i], [t1, x1, y1, s1] = K[i + 1], u = E(Math.min(1, Math.max(0, (t - t0) / (t1 - t0))));
+  const s = s0 * Math.pow(s1 / s0, u), x = x0 + (x1 - x0) * u, y = y0 + (y1 - y0) * u;
+  const dx = Math.sin(t * .9) * 4, dy = Math.cos(t * .7) * 3;               // breathing drift: never a frozen frame
+  cam.style.transform = `translate(${540 - x * s + dx}px, ${1000 - y * s + dy}px) scale(${s})`;
+}
+function life(t) {
+  camAt(t);
+  drops.forEach(p => { const fx = p.x + Math.sin(t * p.sp + p.ph) * 40, fy = p.y + Math.cos(t * p.sp * .8 + p.ph) * 30;
+    const g = S.gather * (p.x > 380 ? 1 : .25);                              // the air near the wall collects there
+    p.c.setAttribute("cx", fx + (p.tx - fx) * g); p.c.setAttribute("cy", fy + (p.ty - fy) * g); p.c.setAttribute("opacity", .75 - (t > 13 ? Math.min(.6, (t - 13) * .8) : 0)); });
+  snow.forEach(f => { f.c.setAttribute("cx", f.x + Math.sin(t + f.y) * 8); f.c.setAttribute("cy", 560 + ((f.y + t * f.s) % 980)); });
+  const T = 20 - 8 * S.chartDot, rh = 100 * e / es(T);
+  document.getElementById("dot").setAttribute("cx", X(T)); document.getElementById("dot").setAttribute("cy", Y(rh));
+  document.getElementById("dotTag").setAttribute("transform", `translate(${X(T) - 230} ${Y(rh) - 40})`);
+  document.getElementById("dotTxt").textContent = `${T.toFixed(0)} °C · ${rh.toFixed(0)} %`;
+}
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: 17.4 };
+tl.pause(0);
+window.seek = (t) => { tl.seek(t, false); life(t); };
+</script></body></html>
