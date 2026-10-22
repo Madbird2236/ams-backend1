@@ -19,5 +19,12 @@
 - «double boards» is spoken while one board is shown.
 - Still a presenter-led clip. It shows what editing can do, not concept C («Chef, wann?»).
 
+## Adriano's review (2026-10-22): closed as a post-production demo, not for publication
+Open defects my QA missed:
+- «Ohne Dämmung drin …» plays over insulation already being fitted (voice ≠ image).
+- «… und es wird still.» overclaims acoustic performance; the fade-to-silence sound design amplified it. True frame: «deutlich leiser».
+- «doppelt beplankt» is not visibly demonstrated (blocking, not just a limit).
+Kept: continuity fixes, action-led cutting, sound design that serves meaning. Rules added: pre-flight 6g.
+
 ## Self-score (before Adriano's verdict)
 Order/continuity 4 · rhythm 4 · clarity 4 · sound 3.5 · honesty/labelling 5.
