@@ -3,7 +3,7 @@
 Every new instruction **adds** to this repertoire; nothing here is dropped when a new rule arrives. When two rules seem to conflict, keep both and ask Adriano which applies in which context.
 Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) and the website are other agents' responsibilities.
 
-## The seven competencies and the standard for each
+## The competencies and the standard for each
 | # | Competency | Standard (what "good" means at AMS) | Approved references | Known errors to avoid |
 |---|---|---|---|---|
 | 1 | Creative direction | One original idea per piece; surprise + clarity in 3 s; no 1st- or 2nd-level clichés | Snowman, Conductor, Camping queue | Post box (conventional + British red box), tracing paper (architecture cliché) |
@@ -12,8 +12,8 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 | 4 | Motion design | Every movement serves the story: rhythm, reveal, match cut, text timing | Calibration 02: Maestro animatic + 3 transition studies (approved as calibration, 2026-10-22). Keep: object-to-object transformations, one beat grid | Text on screen shorter than reading time; white on brand blue (2.8:1); abstract without human emotion; synthetic sound as final |
 | 5 | Carousels | A story across slides with transitions, never variants; logo only on the last slide | Conductor carousel v2 (score → schedule turn) | v1 without transitions; CTA/logo collisions |
 | 6 | Art direction | Composition, light and typography first; official logo per the brand rules; contrast measured | 19/10 direct template; snowman with mono dark | Unofficial logo in the 19/10 ads; white boxes; dark text on a dark sleeve; mono light without a dark zone |
-| 8 | **UGC (presenter)** | One person, one real tip, phone grammar, correct craft order; face only where eye contact matters; discreet subtitles; AI presenters labelled | UGC reference 01 (drywall): structure A-roll → B-roll → detail → A-roll | Wrong craft order; identity drift (hair) across shots; effects in UGC; posing as a real employee |
 | 7 | Versatility | Style chosen by objective: direct (conversion), conceptual (attention/positioning), cinematic (trust/brand); audiovisual language chosen by function (cinematic, explainer, motion graphics, UGC — `creative/ugc/00-LANGUAGES.md`) | 19/10 series (direct), Snowman (conceptual), Sinfonie (cinematic) | Banning direct ads after the conceptual brief (overcorrection) |
+| 8 | **UGC (presenter)** | One person, one real tip, phone grammar, correct craft order; face only where eye contact matters; discreet subtitles; AI presenters labelled | UGC reference 01 (drywall): structure A-roll → B-roll → detail → A-roll | Wrong craft order; identity drift (hair) across shots; effects in UGC; posing as a real employee |
 
 ## Pre-flight check (before any credit is spent)
 1. **Objective → style:** is the style justified by the objective and the KPI?
