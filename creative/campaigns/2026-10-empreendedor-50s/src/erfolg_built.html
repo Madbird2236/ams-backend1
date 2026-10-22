@@ -1,0 +1,296 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- «Erfolg wird gebaut» — 50 s, 1080×1920, 30 fps. Canvas 2D + DOM kinetic type. Every frame = pure function of t.
+     One blue line carries the whole story: ? → bulb → knot → straight line → block → promise bar → revenue column
+     → profit → heartbeat → network → maze → timeline → growth chart with falls → fork → steps → days built. -->
+<style>
+@font-face { font-family: IB; src: url(fonts/inter-latin-900-normal.woff2); }
+@font-face { font-family: IS; src: url(fonts/inter-latin-600-normal.woff2); }
+@font-face { font-family: JB; src: url(fonts/jetbrains-mono-latin-500-normal.woff2); }
+html, body { margin:0; background:#101318; overflow:hidden; }
+#stage { position:relative; width:1080px; height:1920px; overflow:hidden; background:#101318; }
+#cv { position:absolute; inset:0; }
+#cap { position:absolute; left:80px; top:190px; width:920px; }
+.grp { position:absolute; left:0; top:0; width:920px; font-family:IB; font-size:86px; line-height:1.12; letter-spacing:-.035em; color:#F2EEE6; }
+.m { display:inline-block; overflow:hidden; vertical-align:top; padding:0 .03em .24em 0; margin-bottom:-.24em; }
+.w { display:inline-block; will-change:transform; }
+.b { color:#3FA3D6; } .c { color:#E5674E; }
+#end { position:absolute; left:260px; top:500px; opacity:0; }
+</style></head>
+<body><div id="stage"><canvas id="cv" width="1080" height="1920"></canvas><div id="cap"></div><div id="end"></div></div>
+<script>
+// ===================== timing (voice word onsets, already edited; shifted for the two dramatic pauses) =====================
+const RAW = [[0.0, 0.21, "Was"], [0.21, 0.495, "macht"], [0.495, 1.124, "jemanden"], [1.124, 1.467, "wirklich"], [1.467, 1.924, "zu"], [1.924, 2.114, "einem"], [2.114, 2.99, "erfolgreichen"], [2.99, 3.695, "Unternehmer?"], [3.981, 4.21, "Nicht"], [4.21, 4.438, "die"], [4.438, 4.838, "geniale"], [4.838, 5.314, "Idee,"], [5.6, 5.886, "sondern"], [5.886, 6.152, "die"], [6.152, 6.895, "Fähigkeit,"], [7.2, 7.619, "Probleme"], [7.619, 8.114, "besser"], [8.114, 8.419, "zu"], [8.419, 8.857, "lösen"], [8.857, 9.295, "als"], [9.295, 9.79, "andere."], [10.076, 10.343, "Fang"], [10.343, 10.686, "klein"], [10.686, 11.048, "an."], [11.333, 11.771, "Versteh"], [11.771, 11.943, "deine"], [11.943, 12.419, "Kunden."], [12.705, 13.162, "Liefere"], [13.162, 13.505, "mehr,"], [13.676, 13.848, "als"], [13.848, 14.019, "du"], [14.019, 14.552, "versprochen"], [14.552, 14.971, "hast."], [15.257, 15.619, "Lerne,"], [15.867, 16.0, "mit"], [16.0, 16.267, "Geld"], [16.267, 17.143, "umzugehen."], [17.429, 17.638, "Denn"], [17.638, 18.114, "Umsatz"], [18.114, 19.048, "beeindruckt."], [19.314, 19.505, "Aber"], [19.505, 19.81, "erst"], [19.81, 19.981, "der"], [19.981, 20.419, "Gewinn"], [20.419, 20.99, "hält"], [20.99, 21.181, "ein"], [21.181, 21.733, "Unternehmen"], [21.733, 21.981, "am"], [21.981, 22.305, "Leben."], [22.59, 23.048, "Umgib"], [23.048, 23.238, "dich"], [23.238, 23.448, "mit"], [23.448, 23.829, "klugen"], [23.829, 24.286, "Menschen."], [24.571, 24.952, "Lerne"], [24.952, 25.219, "aus"], [25.219, 25.486, "deinen"], [25.486, 26.019, "Fehlern."], [26.305, 26.533, "Und"], [26.533, 26.857, "warte"], [26.857, 27.124, "nicht"], [27.124, 27.352, "auf"], [27.352, 27.486, "den"], [27.486, 28.095, "perfekten"], [28.095, 28.419, "Moment."], [28.705, 28.933, "Wirst"], [28.933, 29.105, "du"], [29.105, 29.638, "scheitern?"], [29.924, 30.381, "Natürlich."], [30.667, 30.762, "Mehr"], [30.762, 30.99, "als"], [30.99, 31.39, "einmal."], [31.676, 31.886, "Aber"], [31.886, 32.019, "der"], [32.019, 32.514, "Unterschied"], [32.514, 32.952, "zwischen"], [32.952, 33.257, "denen,"], [33.486, 33.524, "die"], [33.524, 34.133, "aufgeben"], [34.133, 34.914, "und"], [34.914, 35.257, "denen,"], [35.486, 35.486, "die"], [35.486, 36.552, "außergewöhnliches"], [36.552, 37.162, "aufbauen,"], [37.448, 37.676, "liegt"], [37.676, 37.886, "in"], [37.886, 38.152, "drei"], [38.152, 38.514, "Dingen."], [38.8, 39.276, "Lernen,"], [39.562, 40.019, "anpassen,"], [40.019, 41.352, "weitermachen."], [41.638, 42.038, "Erfolg"], [42.038, 42.362, "ist"], [42.362, 42.571, "kein"], [42.571, 43.2, "Zufall."], [43.486, 43.562, "Er"], [43.562, 43.733, "wird"], [43.733, 44.0, "jeden"], [44.0, 44.362, "Tag"], [44.362, 44.743, "gebaut."]];
+const VO = 0.35, P1 = 28.70, P2 = 41.60, PAD = 0.6;
+const sh = (x) => x + VO + (x >= P1 ? PAD : 0) + (x >= P2 ? PAD : 0);
+const WD = RAW.map(([s, e, w]) => ({ s: sh(s), e: sh(e), w }));
+const w = (i) => WD[i].s, we = (i) => WD[i].e;
+const D = 50.0;
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: D };
+
+// ===================== helpers =====================
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, s, d) => clamp((t - s) / d);
+const lerp = (a, b, k) => a + (b - a) * k;
+const spring = (k, wn = 7) => { k = clamp(k); return k >= 1 ? 1 : 1 - (1 + wn * k) * Math.exp(-wn * k) * (1 - k); };   // critically damped, lands at k=1
+const io = (k) => { k = clamp(k); return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+const oc = (k) => 1 - Math.pow(1 - clamp(k), 3);
+const ic = (k) => Math.pow(clamp(k), 3);
+const BG = "#101318", BONE = "#F2EEE6", BLUE = "#3FA3D6", CORAL = "#E5674E", GREY = "#8A93A3", DIM = "#2A2F38";
+const cv = document.getElementById("cv"), g = cv.getContext("2d");
+const N = 320;
+function resample(pts, n = N) {
+  const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const T = L[L.length - 1] || 1, out = []; let j = 1;
+  for (let k = 0; k < n; k++) { const s = T * k / (n - 1); while (j < L.length - 1 && L[j] < s) j++; const u = (s - L[j - 1]) / ((L[j] - L[j - 1]) || 1); out.push([lerp(pts[j - 1][0], pts[j][0], u), lerp(pts[j - 1][1], pts[j][1], u)]); }
+  return out;
+}
+const mix = (A, B, k) => A.map((p, i) => [lerp(p[0], B[i][0], k), lerp(p[1], B[i][1], k)]);
+const mixW = (A, B, t0, span, dur) => A.map((p, i) => { const k = spring(prog(tNow, t0 + span * i / A.length, dur)); return [lerp(p[0], B[i][0], k), lerp(p[1], B[i][1], k)]; });
+let tNow = 0;
+function line(pts, wdt = 8, col = BLUE, frac = 1) {
+  const n = Math.max(2, Math.floor(pts.length * clamp(frac))); if (frac <= 0) return;
+  g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < n; i++) g.lineTo(pts[i][0], pts[i][1]);
+  g.lineWidth = wdt; g.strokeStyle = col; g.lineCap = "round"; g.lineJoin = "round"; g.stroke();
+}
+const dot = (x, y, r, col = BLUE) => { g.beginPath(); g.arc(x, y, r, 0, 7); g.fillStyle = col; g.fill(); };
+const label = (txt, x, y, col = BONE, size = 40, align = "left", a = 1) => { if (a <= 0) return; const pa = g.globalAlpha; g.globalAlpha = pa * a; g.font = `${Math.max(40, size)}px JB`; g.fillStyle = col; g.textAlign = align; g.fillText(txt, x, y); g.globalAlpha = pa; g.textAlign = "left"; };
+function rect(x, y, wd, ht, col) { g.fillStyle = col; g.fillRect(x, y, wd, ht); }
+const CX = 540, CY = 1150;
+
+// ===================== shapes =====================
+const QM = (() => { const p = []; for (let i = 0; i <= 60; i++) { const a = Math.PI * 1.08 - i / 60 * Math.PI * 1.45; p.push([CX + 190 * Math.cos(a), 960 - 190 * Math.sin(a)]); }
+  const e = p[p.length - 1]; for (let i = 1; i <= 30; i++) { const u = i / 30; p.push([lerp(e[0], CX, u) + Math.sin(u * Math.PI) * 30, lerp(e[1], 1290, u)]); } return resample(p); })();
+const BULB = (() => { const p = [[585, 1340], [585, 1265]]; const c = [CX, 1050], r = 205;
+  for (let i = 0; i <= 80; i++) { const a = -0.3 * Math.PI + i / 80 * 1.6 * Math.PI; p.push([c[0] + r * Math.cos(a), c[1] - r * Math.sin(a)]); }
+  p.push([495, 1265], [495, 1340], [585, 1340]); return resample(p); })();
+const KNOT = (cx, cy, s) => { const p = []; for (let i = 0; i <= 400; i++) { const u = i / 400 * Math.PI * 2; p.push([cx + s * (Math.sin(u) + 2 * Math.sin(2 * u)), cy + s * (Math.cos(u) - 2 * Math.cos(2 * u))]); } return resample(p); };
+const K1 = KNOT(380, CY, 72), K2 = KNOT(800, CY + 20, 34);
+const HL = resample([[150, CY], [930, CY]]);
+const SQ = (cx, cy, h) => resample([[cx - h, cy - h], [cx + h, cy - h], [cx + h, cy + h], [cx - h, cy + h], [cx - h, cy - h]]);
+const BLOCK = SQ(360, CY, 46);
+
+// ===================== captions =====================
+const GROUPS = [[0, 7], [8, 11], [12, 20], [21, 23], [24, 26], [27, 32], [33, 36], [37, 39], [40, 48], [49, 53], [54, 57], [58, 64], [65, 67], [68, 71], [72, 78], [79, 83], [84, 87], [88, 90], [91, 94], [95, 99]];
+const BLUEW = new Set([7, 15, 18, 22, 26, 28, 35, 43, 48, 52, 57, 83, 88, 89, 90, 99]);
+const CORALW = new Set([8, 67, 78]);
+const FIX = { "außergewöhnliches": "Aussergewöhnliches" };     // Swiss spelling, capitalised noun
+const cap = document.getElementById("cap");
+const G = GROUPS.map(([a, b], gi) => {
+  const el = document.createElement("div"); el.className = "grp"; if (b - a >= 7) el.style.fontSize = "80px";
+  const ws = [];
+  for (let i = a; i <= b; i++) { const m = document.createElement("span"); m.className = "m"; const s = document.createElement("span"); s.className = "w" + (BLUEW.has(i) ? " b" : CORALW.has(i) ? " c" : ""); s.textContent = FIX[WD[i].w] || WD[i].w; m.appendChild(s); el.appendChild(m); el.appendChild(document.createTextNode(" ")); ws.push({ s, i }); }
+  cap.appendChild(el);
+  return { el, ws, t0: gi === 0 ? -1 : w(a) - .1, t1: gi < GROUPS.length - 1 ? w(GROUPS[gi + 1][0]) - .27 : D + 1 };
+});
+document.getElementById("end").innerHTML = `<svg viewBox="0 0 252 48" style="display:block;width:560px"><path d="M24 4 L24 21 L13.5 38 L3 44 Z" fill="#BFE0F2"/><path d="M24 4 L24 21 L34.5 38 L45 44 Z" fill="#6FB9DF"/><path d="M3 44 L13.5 38 L34.5 38 L45 44 Z" fill="#3FA3D6"/><rect x="58" y="9" width="2.4" height="30" rx="1.2" fill="#1E96CF"/><text x="72" y="22" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="17" letter-spacing="-0.3" fill="#FFFFFF">AMS</text><text x="72" y="40" font-family="Arial, Helvetica, sans-serif" font-weight="700" font-size="17" letter-spacing="-0.4" fill="#FFFFFF">Malergeschäft</text></svg>`;
+function captions(t) {
+  G.forEach((gr) => {
+    const vis = t >= gr.t0 && t < gr.t1 + .16;
+    gr.el.style.display = vis ? "block" : "none"; if (!vis) return;
+    const out = ic(prog(t, gr.t1, .15));
+    gr.el.style.transform = `translateY(${-50 * out}px)`; gr.el.style.opacity = 1 - out;
+    gr.ws.forEach(({ s, i }) => { const k = i === 0 ? spring(prog(t, -.2, .45), 8) : spring(prog(t, w(i) - .07, .34), 8); s.style.transform = `translateY(${(1 - k) * 135}%)`; });
+  });
+}
+
+// ===================== scenes =====================
+function scene(t) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = BG; g.fillRect(0, 0, 1080, 1920);
+  // faint baseline grid gives depth and keeps holds alive (drifts slowly)
+  g.setTransform(1.16, 0, 0, 1.16, 540 * (1 - 1.16), 1150 * (1 - 1.16));
+  g.globalAlpha = .5; g.strokeStyle = "#171B22"; g.lineWidth = 2; const off = (t * 14) % 120;
+  for (let y = 640 - off; y < 1760; y += 120) { g.beginPath(); g.moveTo(0, y); g.lineTo(1080, y); g.stroke(); } g.globalAlpha = 1;
+
+  // ---- A: question mark (0 → «Nicht») → bulb («geniale Idee») → knot («sondern») ----
+  if (t < w(21) + .6) {
+    const tA = w(8) - .1, tB = w(12) - .05;
+    let P = QM, frac = t < tA ? .3 + .7 * oc(prog(t, 0, w(7))) : 1;
+    if (t >= tA) P = mixW(QM, BULB, tA, .35, .55);
+    if (t >= tB) P = mixW(BULB, K1, tB, .5, .7);
+    if (t >= w(18) - .1) P = mixW(K1, HL, w(18) - .1, .35, .6);
+    // bulb glow-free «lit» fill: warm bone fill inside the bulb on «geniale», drains on «sondern»
+    const fillA = prog(t, w(10), .3) * (1 - prog(t, tB - .05, .2));
+    if (fillA > 0) { g.globalAlpha = .16 * fillA; g.beginPath(); g.arc(CX, 1050, 200, 0, 7); g.fillStyle = BONE; g.fill(); g.globalAlpha = 1; }
+    if (fillA > 0) line([[510, 1368], [570, 1368]], 8, BONE);
+    // «Nicht»: a coral strike through the bulb, then the bulb is still drawn but crossed
+    const st = spring(prog(t, w(8) + .55, .3)) * (1 - prog(t, tB - .1, .15));
+    if (st > 0) line([[330, 1300], [330 + 420 * st, 1300 - 420 * st]], 10, CORAL);
+    // the other knot («andere») appears with the knot scene and stays tangled
+    const ak = spring(prog(t, tB + .3, .5)) * (1 - prog(t, w(21) - .2, .3));
+    if (ak > 0) { g.globalAlpha = ak; const loose = mix(K2, KNOT(800, CY + 20, 37), prog(t, w(18), .6)); line(loose, 6, GREY); label("ANDERE", 800, CY + 190, GREY, 40, "center"); g.globalAlpha = 1; }
+    if (t >= tB + .3 && t < w(21)) label("DU", 380, CY + 250, BONE, 44, "center", prog(t, tB + .4, .3) * (1 - prog(t, w(18), .3)));
+    // straight line contracts into a small block on «klein»
+    if (t >= w(21) - .1) P = mixW(HL, BLOCK, w(21) - .1, .2, .55);
+    line(P, t >= w(18) ? 10 : 8, BLUE, frac);
+    // question-mark dot
+    const qd = 1 - spring(prog(t, tA - .1, .25)); if (qd > 0) dot(CX, 1385, 24 * qd);
+  }
+  // ---- B: block → customer → promise bar → beyond ----
+  if (t >= w(21) + .6 && t < w(33) + .5) {
+    // customer: a circle on «Kunden»
+    const ck = spring(prog(t, w(24) - .05, .45)), cx = 760;
+    const bridge = oc(prog(t, w(25), .5));
+    const bar = prog(t, w(27) - .1, .1) > 0;
+    if (!bar) {
+      line(BLOCK, 10, BLUE);
+      if (ck > 0) { g.globalAlpha = ck; line(resample(Array.from({ length: 61 }, (_, i) => [cx + 46 * ck * Math.cos(i / 60 * 6.283), CY + 46 * ck * Math.sin(i / 60 * 6.283)])), 8, BONE); g.globalAlpha = 1; label("KUNDE", cx, CY + 116, BONE, 40, "center", ck); }
+      if (bridge > 0) { g.setLineDash([2, 18]); line([[406, CY], [lerp(406, cx - 60, bridge), CY]], 8, BLUE); g.setLineDash([]); }
+    } else {
+      // promise bar: frame 180→780 (100 %), fill overshoots to 940 on «hast»
+      const fill = lerp(0, 600, io(prog(t, w(27), we(31) - w(27)))) + 160 * spring(prog(t, w(32) - .05, .45));
+      const ex = 1 - prog(t, w(33) - .2, .25);
+      g.globalAlpha = ex;
+      g.strokeStyle = GREY; g.lineWidth = 3; g.strokeRect(180, CY - 30, 600, 60);
+      rect(180, CY - 30, Math.min(fill, 600), 60, BLUE);
+      if (fill > 600) rect(780, CY - 30, fill - 600, 60, BONE);
+      line([[780, CY - 70], [780, CY + 70]], 4, BONE);            // the promise (where the customer stood)
+      label("VERSPROCHEN", 780, CY - 96, BONE, 40, "center");
+      if (fill > 610) label("+ MEHR", 180 + fill, CY + 118, BLUE, 44, "right", prog(t, w(32) + .1, .2));
+      g.globalAlpha = 1;
+    }
+  }
+  // ---- C: money: revenue column → costs fall → profit → heartbeat ----
+  if (t >= w(33) - .05 && t < w(49) + .4) {
+    const base = 1620, colW = 260, x0 = CX - colW / 2;
+    const rise = io(prog(t, w(37) - .1, we(39) - w(37) + .1));
+    const H = lerp(20, 880, rise);
+    const appear = spring(prog(t, w(33) - .05, .4));
+    const split = prog(t, w(40) - .05, .01) > 0, keep = 140;
+    const ecg = prog(t, w(44) - .15, .2) > 0;
+    // label + counter (CHF, Swiss separators)
+    const fmt = (v) => Math.round(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+    if (!split) {
+      // coins: one per beat of «mit Geld umzugehen», stacking on the base line; they turn into the column on «Umsatz»
+      const melt = prog(t, w(37) - .1, .35);
+      for (let c = 0; c < 6; c++) {
+        const ck = spring(prog(t, w(33) + .05 + c * .27, .4)); if (ck <= 0 || melt >= 1) continue;
+        const cy = lerp(700, base - 18 - c * 36, ck);
+        g.globalAlpha = 1 - melt; g.fillStyle = BG; g.strokeStyle = BONE; g.lineWidth = 5;
+        g.beginPath(); g.ellipse(CX, cy, 110, 18, 0, 0, 7); g.fill(); g.stroke(); g.globalAlpha = 1;
+      }
+      if (prog(t, w(35), .2) > 0 && melt < 1) label("CHF", CX + 140, base - 40, BONE, 40, "left", prog(t, w(35), .2) * (1 - melt));
+      if (melt > 0) { g.globalAlpha = Math.min(1, melt * 1.5); rect(x0, base - H, colW, H, BLUE); g.globalAlpha = 1; }
+      line([[120, base], [960, base]], 4, GREY);
+      label("UMSATZ", CX, base + 64, BONE, 40, "center", prog(t, w(38) - .05, .25));
+      if (rise > 0) { g.font = "64px IB"; g.fillStyle = BONE; g.textAlign = "center"; g.fillText("CHF " + fmt(1250000 * io(prog(Math.round(t * 30) / 30, w(37) - .1, we(39) - w(37) + .1))), CX, base - H - 34); g.textAlign = "left"; }
+    } else {
+      // costs: the upper part turns coral and falls out to the right
+      const fall = prog(t, w(41), 1.0), gx = 600 * ic(fall), gy = 1400 * ic(fall), rot = fall * .5;
+      const wipe = prog(t, w(40) - .05, .15);
+      if (fall < 1) { g.save(); g.translate(x0 + colW / 2 + gx, base - keep - (H - keep) / 2 + gy); g.rotate(rot); rect(-colW / 2, -(H - keep) / 2, colW, H - keep - 6, BLUE); rect(-colW / 2, -(H - keep) / 2, colW, (H - keep - 6) * wipe, CORAL); g.font = "40px JB"; g.fillStyle = BG; g.textAlign = "center"; g.globalAlpha = wipe; g.fillText("KOSTEN", 0, 0); g.globalAlpha = 1; g.restore(); g.textAlign = "left"; }
+      line([[120, base], [960, base]], 4, GREY);
+      if (!ecg) { rect(x0, base - keep, colW, keep, BLUE); label("GEWINN", CX, base + 64, BLUE, 44, "center"); }
+      else {
+        // heartbeat: the profit's top edge stretches into a life line, beats on «Unternehmen» and «Leben»
+        const y0 = base - keep, beats = [w(46), w(48)];
+        const head = lerp(x0, 1000, prog(t, w(44) - .15, we(48) - w(44) + .3));
+        const sq = 1 - spring(prog(t, w(49) - .15, .5));   // collapses into the network centre
+        g.globalAlpha = 1; rect(x0, base - keep, colW, keep * (1 - prog(t, w(44), .3)), BLUE);
+        const E = []; for (let x = 80; x <= head; x += 4) { let y = y0; beats.forEach((b) => { const bx2 = lerp(x0, 1000, prog(b, w(44) - .15, we(48) - w(44) + .3)); const d = x - bx2; if (d > -24 && d < 0) y -= (d + 24) * 10; else if (d >= 0 && d < 24) y -= (24 - d) * 10 - 0; else if (d >= 24 && d < 52) y += (52 - d) * 2.5 * (d < 38 ? (d - 24) / 14 : 1); }); E.push([x, y]); }
+        const C = E.map(([x, y]) => [lerp(CX, x, sq), lerp(CY, y, sq)]);
+        line(C, 8, BLUE); if (sq > .02 && C.length) dot(C[C.length - 1][0], C[C.length - 1][1], 12 * sq);
+        label("AM LEBEN", 960, y0 + 96, BLUE, 44, "right", prog(t, w(48), .2) * sq);
+      }
+    }
+  }
+  // ---- D: network of smart people → maze with a wrong turn → timeline chasing «perfekt» ----
+  if (t >= w(49) - .2 && t < w(65) + .05) {
+    const n0 = w(49) - .15, R = 250;
+    const people = Array.from({ length: 6 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 3; return [CX + R * Math.cos(a), CY + R * Math.sin(a), i]; });
+    const out = spring(prog(t, w(54) - .2, .45));     // network collapses into the start of the maze
+    people.forEach(([x, y, i]) => {
+      const k = spring(prog(t, n0 + .25 + i * .09, .45)), sx = x + (x - CX) * 2.2 * (1 - k), sy = y + (y - CY) * 2.2 * (1 - k);
+      const px = lerp(sx, 200, out), py = lerp(sy, CY, out);
+      if (k > 0 && out < 1) { const c = spring(prog(t, w(52), .4)); if (c > 0) { g.globalAlpha = .9 * (1 - out); line([[lerp(CX, 200, out), lerp(CY, CY, out)], [lerp(CX, px, c), lerp(CY, py, c)]], 3, GREY); const j = people[(i + 1) % 6]; line([[px, py], [lerp(px, j[0], c), lerp(py, j[1], c)]], 3, DIM); g.globalAlpha = 1; } dot(px, py, 20 * (1 - out * .6), BONE); }
+    });
+    // the centre: «dich»
+    if (out < 1) dot(lerp(CX, 200, out), CY, 26, BLUE);
+    // maze (walls) and the path with one wrong turn
+    const mz = prog(t, w(54) - .1, .3);
+    if (mz > 0) {
+      const ex = 1 - prog(t, w(58) - .1, .3);
+      g.globalAlpha = mz * ex; [[[600, 990], [600, 1310]], [[120, 990], [480, 990]], [[600, 990], [960, 990]], [[120, 1310], [960, 1310]], [[700, 820], [700, 990]]].forEach((s) => line(s, 6, GREY)); g.globalAlpha = 1;
+      const path = resample([[200, CY], [560, CY], [480, CY], [480, 900], [960, 900]], 400);
+      const hit = prog(t, w(54), w(57) - w(54));               // runs into the wall on «Fehlern»
+      const back = prog(t, w(57) + .25, .9);
+      const f = hit < 1 ? .37 * oc(hit) : .37 + .63 * io(back);
+      if (ex > 0) { g.globalAlpha = ex; line(path, 8, BLUE, f); g.globalAlpha = 1; }
+      const xk = spring(prog(t, w(57), .3)) * (1 - prog(t, w(57) + .9, .3));
+      if (xk > 0) { g.save(); g.translate(600, CY); g.scale(xk, xk); line([[-26, -26], [26, 26]], 9, CORAL); line([[-26, 26], [26, -26]], 9, CORAL); g.restore(); }
+    }
+    // timeline: «perfekt» keeps sliding away; the dot stops waiting and goes up: «jetzt»
+    const tl = prog(t, w(58) + .2, .3);
+    if (tl > 0) {
+      const y = 1150, head = lerp(120, 560, io(prog(t, w(58) + .2, w(63) - w(58) - .2)));
+      const flag = 820 + 320 * io(prog(t, w(61), w(64) - w(61) + .2));
+      g.globalAlpha = tl; line([[120, y], [1000, y]], 3, DIM); g.globalAlpha = 1;
+      line([[120, y], [head, y]], 8, BLUE);
+      const up = spring(prog(t, w(64) + .05, .5));
+      line([[head, y], [head + 260 * up, y - 520 * up]], 8, BLUE, up > .01 ? 1 : 0);
+      dot(head + 260 * up, y - 520 * up, 16);
+      if (flag < 1100) { line([[flag, y], [flag, y - 120]], 4, GREY); g.fillStyle = GREY; g.beginPath(); g.moveTo(flag, y - 120); g.lineTo(flag + 70, y - 100); g.lineTo(flag, y - 80); g.fill(); label("PERFEKT", flag, y + 66, GREY, 40, "center"); }
+      label("JETZT", head, y + 66, BLUE, 44, "center", prog(t, w(64), .2) * (1 - prog(t, w(65) - .1, .2)));
+    }
+  }
+  // ---- E: growth with falls → fork (aufgeben / aufbauen) → three steps ----
+  if (t >= w(65) - .1 && t < w(91) - .05) {
+    // world camera: centres the fork and the steps after the falls
+    const c1 = io(prog(t, w(66), w(71) - w(66))), c2 = io(prog(t, w(72) - .3, w(74) + .5 - w(72) + .3)), camX = 300 * c1 + 700 * c2, camY = -400 * c2;
+    g.save(); g.translate(-camX, -camY);
+    const hist = 1 - .7 * prog(t, w(76), .8);                     // the past dims once the fork is the subject
+    g.globalAlpha = hist; line([[120, 1150], [560, 1150], [820, 630]], 8, BLUE); g.globalAlpha = 1;
+    // growth: rises, falls on «scheitern?», recovers on «Natürlich», falls again on «einmal», recovers
+    const KP = [[820, 630, w(67) - .05], [820, 1060, w(67) + .2], [1060, 820, w(71) - .1], [1060, 1160, w(71) + .15], [1300, 900, w(72) + .2]];
+    for (let i = 1; i < KP.length; i++) {
+      const [x0, y0, ta] = KP[i - 1], [x1, y1, tb] = KP[i]; const k = (y1 > y0) ? spring(prog(t, ta, tb - ta), 9) : io(prog(t, ta, tb - ta)); if (k <= 0) break;
+      const fall = y1 > y0; g.globalAlpha = hist; line([[x0, y0], [lerp(x0, x1, k), lerp(y0, y1, k)]], 10, fall ? CORAL : BLUE);
+      if (fall && k > .9) dot(x1, y1, 10, CORAL); g.globalAlpha = 1;
+    }
+    const ax = 1300, ay = 900;
+    const fk = prog(t, w(74) - .1, .5);
+    if (fk > 0) {
+      // «aufgeben»: a branch drops and goes flat, stops, turns grey
+      const lowL = 380 * oc(prog(t, w(76), w(78) - w(76) + .3)), giveUp = prog(t, w(78), .4);
+      line([[ax, ay], [ax + 100, ay + 130], [ax + 100 + lowL, ay + 130]], 9, giveUp > .5 ? GREY : BLUE, oc(fk));
+      if (giveUp > .5) { dot(ax + 100 + lowL, ay + 130, 14, GREY); label("AUFGEBEN", ax + 100 + lowL, ay + 210, GREY, 40, "right", giveUp); }
+      // «aufbauen»: three steps, ghosted on «drei Dingen», built one per word
+      const S = 200, st = (k) => [[ax + k * S, ay - k * S], [ax + k * S, ay - (k + 1) * S], [ax + (k + 1) * S, ay - (k + 1) * S]];
+      const steps = [].concat(...[0, 1, 2].map(st));
+      const ghost = prog(t, w(84), .5);
+      if (ghost > 0) { g.setLineDash([10, 16]); g.globalAlpha = ghost; line(steps, 4, GREY); g.setLineDash([]); g.globalAlpha = 1; }
+      const up0 = spring(prog(t, w(83) - .05, .5));
+      if (up0 > 0 && prog(t, w(88) - .08, .1) === 0) { line([[ax, ay], [ax, ay - 70 * up0]], 10, BLUE); label("AUFBAUEN", ax + 24, ay - 30, BLUE, 40, "left", up0); }
+      const sOn = [w(88), w(89), w(90)], words = ["LERNEN", "ANPASSEN", "WEITERMACHEN"];
+      [0, 1, 2].forEach((k) => { const kk = spring(prog(t, sOn[k] - .08, .45)); if (kk <= 0) return; line(st(k), 11, BLUE, kk); label(words[k], ax + k * S + S / 2 + 20, ay - (k + 1) * S - 28, BONE, 40, "center", kk); });
+      if (prog(t, w(90), .3) > 0) dot(ax + 3 * S, ay - 3 * S, 14 * spring(prog(t, w(90) + .25, .4)), BONE);
+    }
+    g.restore();
+  }
+  // ---- F: «kein Zufall» (a die is thrown out) → «jeden Tag gebaut» (days stack into a block) ----
+  if (t >= w(91) - .1) {
+    const pi = 1 + .06 * io(prog(t, D - 3.2, 3.2)); g.save(); g.translate(CX, 1250); g.scale(pi, pi); g.translate(-CX, -1250);
+    const dk = spring(prog(t, w(91) - .1, .45)), dOut = ic(prog(t, w(93), .8));
+    if (dOut < 1) { g.save(); g.translate(CX + 700 * dOut, CY - 40 + 900 * dOut * dOut); g.rotate(.25 + dOut * 3.5); g.globalAlpha = dk; g.strokeStyle = BONE; g.lineWidth = 6; const s = 150 * dk; g.strokeRect(-s / 2, -s / 2, s, s); [[-.25, -.25], [.25, .25], [0, 0], [-.25, .25], [.25, -.25]].forEach(([a, b]) => dot(a * s, b * s, 10 * dk, BONE)); g.restore(); g.globalAlpha = 1; }
+    if (dk > .5) label("ZUFALL", CX, CY + 200, GREY, 44, "center", (1 - dOut) * dk);
+    // days: 7 columns, rows build up one day at a time from «Er wird jeden Tag»
+    const t0 = w(95) - .1, cols = 7, cs = 62, gap = 10, rows = 9, total = cols * rows, x0 = CX - (cols * (cs + gap) - gap) / 2, base = 1560;
+    const built = (t - t0) / (D - 3.2 - t0) * total, builtF = (Math.round(t * 30) / 30 - t0) / (D - 3.2 - t0) * total;
+    for (let n = 0; n < total; n++) {
+      const k = spring(clamp(built - n), 6); if (k <= 0) break;
+      const r = Math.floor(n / cols), c = n % cols, x = x0 + c * (cs + gap), y = base - (r + 1) * (cs + gap);
+      g.globalAlpha = k; rect(x, y - (1 - k) * 60, cs, cs, n === Math.floor(built) ? BONE : BLUE); g.globalAlpha = 1;
+    }
+    const days = Math.round(1000 * Math.pow(clamp(builtF / total), 1.6));
+    g.restore(); label("TAG " + String(Math.max(1, days)).replace(/\B(?=(\d{3})+(?!\d))/g, "'"), CX, base + 70, BONE, 44, "center", prog(t, t0, .3));
+  }
+}
+
+const FONTS = Promise.all(["40px JB", "64px IB", "86px IB", "40px IS"].map((f) => document.fonts.load(f)));
+window.seek = async (t) => {
+  await FONTS; tNow = t; scene(t); captions(t);
+  const e = document.getElementById("end"), k = spring(prog(t, D - 3.0, .6));
+  e.style.opacity = k; e.style.transform = `translateY(${(1 - k) * 24}px)`;
+};
+document.fonts.ready.then(() => window.seek(0));
+</script></body></html>

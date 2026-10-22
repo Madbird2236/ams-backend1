@@ -1,0 +1,170 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<!-- TAKT-1 «Eine Linie. Ein Takt.» — brief: creative/motion-lab/03-exercises/TAKT-1-BRIEF.md
+     2D programmatic: Canvas (map, staff, notes) + DOM type. Every frame = pure function of t. 120 BPM. -->
+<style>
+  #stage { width:1080px; height:1920px; background:#EEEAE2; }
+  #cv { position:absolute; inset:0; }
+  #grain { position:absolute; inset:0; opacity:.45; mix-blend-mode:multiply; pointer-events:none; }
+  .mask { position:absolute; left:0; width:1080px; overflow:hidden; }
+  .hd { position:absolute; left:84px; font-family:IDK; color:#1E293B; letter-spacing:-.035em; line-height:1; white-space:nowrap; will-change:transform; }
+  .lb { position:absolute; transform:translate(-50%,0); font-family:JB; font-size:28px; letter-spacing:.14em; color:#1E293B; white-space:nowrap; }
+  #src { position:absolute; right:56px; bottom:64px; font-family:JB; font-size:22px; letter-spacing:.06em; color:#5b6170; }
+  #logo { position:absolute; left:84px; top:1262px; }
+</style></head>
+<body><div id="stage">
+  <canvas id="cv" width="1080" height="1920"></canvas>
+  <svg id="grain" width="1080" height="1920"><filter id="g"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" seed="9"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .42  0 0 0 0 .38  0 0 0 .32 0"/></filter><rect width="1080" height="1920" filter="url(#g)"/></svg>
+  <div class="mask" id="m1" style="top:150px;height:170px"><div class="hd" id="h1" style="top:20px;font-size:132px">Eine Linie.</div></div>
+  <div class="mask" id="m2" style="top:150px;height:170px"><div class="hd" id="h2" style="top:20px;font-size:132px">Ein Takt.</div></div>
+  <div class="mask" id="m3" style="top:0;height:1179px">
+    <div class="hd w" style="top:925px;left:84px;font-size:124px">Auf</div>
+    <div class="hd w" style="top:925px;left:352px;font-size:124px">den</div>
+    <div class="hd w" style="top:925px;left:612px;font-size:124px">Takt</div>
+    <div class="hd w" style="top:1046px;left:84px;font-size:124px;color:#3FA3D6">genau.</div>
+  </div>
+  <div id="labels"></div>
+  <div id="logo"></div>
+  <div id="src">Karte: BFS GEOSTAT / swisstopo</div>
+</div>
+<script src="../node_modules/topojson-client/dist/topojson-client.min.js"></script>
+<script src="ch-data.js"></script>
+<script src="lablib.js"></script>
+<script>
+const W = 1080, H = 1920, D = 8.0;
+window.COMP = { width: W, height: H, fps: 30, duration: D };
+const cv = document.getElementById("cv"), g = cv.getContext("2d");
+const INK = "#1E293B", BLUE = "#3FA3D6", PALE = "#BFE0F2", PAPER = "#EEEAE2";
+// ---------- time helpers (closed form, deterministic) ----------
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const prog = (t, s, d) => clamp((t - s) / d);
+const lerp = (a, b, k) => a + (b - a) * k;
+const spring = (k) => { k = clamp(k); const w = 7.5; return k >= 1 ? 1 : 1 - (1 + w * k) * Math.exp(-w * k) * (1 - k) - 0 * k; }; // critically damped, no overshoot, lands exactly at k=1
+const inOut = (k) => { k = clamp(k); return k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2; };
+const outC = (k) => 1 - Math.pow(1 - clamp(k), 3);
+const inC = (k) => Math.pow(clamp(k), 3);
+
+// ---------- geography: swisstopo via swiss-maps (same data as VOX-1) ----------
+const KX = Math.cos(46.8 * Math.PI / 180);
+const P = ([lon, lat]) => [(lon - 8.23) * KX, -(lat - 46.8)];
+const country = topojson.feature(CH, CH.objects.country).features[0].geometry;
+const polys = country.type === "Polygon" ? [country.coordinates] : country.coordinates;
+let ring = polys.map((p) => p[0]).sort((a, b) => b.length - a.length)[0].map(P);
+const GENF = P([6.143, 46.204]);
+let i0 = 0, best = 1e9; ring.forEach((p, i) => { const d = Math.hypot(p[0] - GENF[0], p[1] - GENF[1]); if (d < best) { best = d; i0 = i; } });
+ring = ring.slice(i0).concat(ring.slice(0, i0)); ring.push(ring[0]);
+// resample by arc length
+function resample(pts, n) {
+  const L = [0]; for (let i = 1; i < pts.length; i++) L.push(L[i - 1] + Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]));
+  const out = []; let j = 1;
+  for (let k = 0; k < n; k++) { const s = L[L.length - 1] * k / (n - 1); while (j < L.length - 1 && L[j] < s) j++; const u = (s - L[j - 1]) / (L[j] - L[j - 1] || 1); out.push([lerp(pts[j - 1][0], pts[j][0], u), lerp(pts[j - 1][1], pts[j][1], u)]); }
+  return out;
+}
+const N = 1200, R = resample(ring, N);
+const inner = topojson.mesh(CH, CH.objects.cantons, (a, b) => a !== b).coordinates.map((l) => l.map(P));
+inner.forEach((l) => { let cx = 0, cy = 0; l.forEach(([x, y]) => { cx += x; cy += y; }); l.c = [cx / l.length, cy / l.length]; l.d = Math.hypot(l.c[0] - GENF[0], l.c[1] - GENF[1]); });
+const dMax = Math.max(...inner.map((l) => l.d));
+// map frame
+let mnx = 1e9, mxx = -1e9, mny = 1e9, mxy = -1e9; R.forEach(([x, y]) => { mnx = Math.min(mnx, x); mxx = Math.max(mxx, x); mny = Math.min(mny, y); mxy = Math.max(mxy, y); });
+const FIT = 920 / (mxx - mnx), MC = [(mnx + mxx) / 2, (mny + mxy) / 2], SC = [540, 840];
+
+// ---------- staff + notes (x = longitude, y = latitude snapped to line/space) ----------
+const ST = { x0: 110, x1: 970, y: 760, gap: 52 };            // top line y, 5 lines
+const rowY = (r) => ST.y + r * ST.gap;
+const CITIES = [["GENF", 6.143, 46.204], ["LAUSANNE", 6.633, 46.52], ["BERN", 7.447, 46.948], ["BASEL", 7.589, 47.56], ["ZÜRICH", 8.542, 47.377]];
+const notes = CITIES.map(([n, lo, la], i) => {
+  const x = 220 + i * 160, m = P([lo, la]);
+  const step = Math.round((la - 46.204) / (47.56 - 46.204) * 7);   // 0..7 half-gaps from bottom line upwards
+  const y = rowY(4) - step * ST.gap / 2;
+  return { n, x, y, m, t: 3.45 + i * .25, i, pop: i === 0 ? -1 : 2.375 + i * .125 };
+});
+const labelsEl = document.getElementById("labels");
+notes.forEach((o) => { o.el = div("lb", `left:${o.x}px;top:${rowY(4) + 92}px`, o.n, labelsEl); });
+document.getElementById("logo").innerHTML = logoSVG(330);
+const LINE_Y = 1180;
+
+// ---------- draw ----------
+function camAt(t) {  // follow the pen head close, then pull out to the whole country
+  let fx = 0, fy = 0; const S = 14;
+  for (let j = 0; j < S; j++) { const p = R[Math.min(N - 1, Math.max(0, Math.floor(penU(t - .35 * j / (S - 1)) * (N - 1))))]; fx += p[0]; fy += p[1]; }
+  const f = [fx / S, fy / S];
+  const k = inOut(prog(t, .9, 1.4));
+  return { c: [lerp(f[0], MC[0], k), lerp(f[1], MC[1], k)], z: FIT * lerp(2.5, 1, k) };
+}
+const penU = (t) => { const k = prog(t, .05, 2.3); return k < .5 ? 2 * k * k : 1 - Math.pow(-2 * k + 2, 2) / 2; };
+const toS = (p, cam) => [SC[0] + (p[0] - cam.c[0]) * cam.z, SC[1] + (p[1] - cam.c[1]) * cam.z];
+
+function stroke(pts, w, col) { if (pts.length < 2) return; g.beginPath(); g.moveTo(pts[0][0], pts[0][1]); for (let i = 1; i < pts.length; i++) g.lineTo(pts[i][0], pts[i][1]); g.lineWidth = w; g.strokeStyle = col; g.stroke(); }
+
+window.seek = (t) => {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
+  g.lineCap = "round"; g.lineJoin = "round";
+  // a slow global drift keeps every hold alive
+  const drift = 1 + .018 * t / D; g.setTransform(drift, 0, 0, drift, W / 2 * (1 - drift), H * .45 * (1 - drift));
+  const cam = camAt(Math.min(t, 3.0));
+  const u = penU(t), nDraw = Math.max(1, Math.floor(u * (N - 1)) + 1);
+
+  // --- canton borders: draw in from Geneva outwards, retract during the unravel ---
+  const cIn = (l) => prog(t, .9 + 1.3 * l.d / dMax, .55), cOut = 1 - prog(t, 2.95, .45);
+  if (cOut > 0) inner.forEach((l) => { const k = outC(cIn(l)) * cOut; if (k <= 0) return; const n = Math.max(2, Math.floor(l.length * k)); stroke(l.slice(0, n).map((p) => toS(p, cam)), 2, "rgba(30,41,59,.38)"); });
+
+  // --- the line: border → staff (wave), then staff → one line ---
+  const mStart = 3.0, mDur = .62, mWave = .42;
+  const conv = (r) => spring(prog(t, 5.38 + r * .035, .5));          // staff rows → single line
+  const pts = []; const rowOf = [];
+  for (let i = 0; i < N; i++) {
+    const s = toS(R[i], cam);
+    const r = Math.min(4, Math.floor(i * 5 / N)), f = (i * 5 / N) - r;
+    const k = spring(prog(t, mStart + mWave * (i / N), mDur));
+    const ty = lerp(rowY(r), LINE_Y, conv(r));
+    pts.push([lerp(s[0], lerp(ST.x0, ST.x1, f), k), lerp(s[1], ty, k)]); rowOf.push(r);
+  }
+  const lineW = lerp(7, 4, prog(t, 2.9, .6)) + 3 * prog(t, 5.4, .5);
+  if (t < mStart) stroke(pts.slice(0, nDraw), lineW, BLUE);
+  else for (let r = 0; r < 5; r++) { const seg = []; for (let i = 0; i < N; i++) if (rowOf[i] === r) seg.push(pts[i]); stroke(seg, lineW, BLUE); }
+  // pen head
+  if (t < 2.45) { const h = pts[nDraw - 1], a = 1 - prog(t, 2.25, .2); g.fillStyle = BLUE; g.globalAlpha = a; g.beginPath(); g.arc(h[0], h[1], 13, 0, 7); g.fill(); g.globalAlpha = 1; }
+  // Geneva start dot (first frame is complete)
+  if (t < 2.25) { const s = toS(GENF, cam), a = 1 - prog(t, 1.9, .35); g.globalAlpha = a; g.fillStyle = INK; g.font = "28px JB"; g.fillText("GENF", s[0] + 24, s[1] + 10); g.globalAlpha = 1; }
+
+  // --- notes ---
+  notes.forEach((o) => {
+    const pk = o.pop < 0 ? 1 : spring(prog(t, o.pop, .3));
+    if (pk <= 0 || t < o.t) { o.el.style.opacity = 0; } 
+    if (pk <= 0) return;
+    const ms = toS(o.m, cam);                                   // its place on the map
+    const k = spring(prog(t, o.t - .05, .42));                  // travel map -> staff
+    const c = conv(2);
+    const bx = lerp(ms[0], o.x, k), by = lerp(ms[1], o.y, k) - Math.sin(Math.PI * k) * 60;
+    const ny = lerp(by, LINE_Y, c), r = lerp(lerp(.42, 1, k) * pk, .42, c);
+    const nx = bx;
+    const lit = prog(t, 4.75 + (o.x - ST.x0) / (ST.x1 - ST.x0) * .55, .08);
+    g.save(); g.translate(nx, ny); g.rotate(-.33 * k); g.scale(r, r);
+    g.fillStyle = lit > 0 ? (lit >= 1 ? BLUE : INK) : INK; if (lit > 0 && lit < 1) g.fillStyle = lit > .5 ? BLUE : INK;
+    g.beginPath(); g.ellipse(0, 0, lerp(24, 30, k), lerp(24, 21, k), 0, 0, 7); g.fill(); g.restore();
+    // stem (retracts into the line)
+    const sl = 150 * (1 - c) * spring(prog(t, o.t + .2, .3));
+    if (sl > 1) stroke([[nx + 27, ny - 8], [nx + 27, ny - 8 - sl]], 5, g.fillStyle);
+    // label: rises out of a mask under the staff, leaves with the convergence
+    const lk = outC(prog(t, o.t + .02, .3)), lo = 1 - prog(t, 5.3, .25);
+    o.el.style.opacity = lo; o.el.style.clipPath = `inset(0 0 ${(1 - lk) * 100}% 0)`; o.el.style.transform = `translate(-50%, ${(1 - lk) * 34}px)`;
+  });
+  // playhead
+  if (t > 4.7 && t < 5.4) { const k = inOut(prog(t, 4.72, .62)), x = lerp(ST.x0, ST.x1, k); g.globalAlpha = 1 - prog(t, 5.25, .12); stroke([[x, rowY(0) - 70], [x, rowY(4) + 70]], 4, BLUE); g.globalAlpha = 1; }
+
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  // --- type (DOM): masked rises, landing on beats ---
+  const h1 = document.getElementById("h1"), h2 = document.getElementById("h2");
+  h1.style.transform = `translateY(${-(1 - 0) * 0 + (-170) * inC(prog(t, 2.2, .35))}px)`;
+  const k2 = spring(prog(t, 2.95, .4)), o2 = inC(prog(t, 5.15, .3));
+  h2.style.transform = `translateY(${(1 - k2) * 170 - 170 * o2}px)`;
+  document.querySelectorAll("#m3 .w").forEach((w, i) => { const k = spring(prog(t, 5.70 + i * .25, .42)); w.style.transform = `translateY(${(1 - k) * (i < 3 ? 280 : 160)}px)`; });
+  const lg = document.getElementById("logo"), kl = spring(prog(t, 6.55, .5));
+  lg.style.opacity = clamp(kl * 1.4); lg.style.transform = `translateY(${(1 - kl) * 30}px)`;
+  document.getElementById("src").style.opacity = .9 * prog(t, 6.7, .4);
+  // slow drift on DOM layers too (same as canvas)
+  ["m1", "m2", "m3", "labels", "logo"].forEach((id) => { document.getElementById(id).style.scale = ""; });
+  document.getElementById("stage").style.transform = "";
+};
+document.fonts.ready.then(() => window.seek(0));
+</script></body></html>

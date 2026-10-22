@@ -18,6 +18,13 @@ Julia produces marketing, educational videos, motion graphics and advertising cr
   - `ams-motion-design-engineer`;
   - `ams-render-qc-engineer` (provisional spec).
 
+  **Autonomy rule (Adriano, 2026-10-22):** Julia owns everything end to end:
+  - concept, storytelling and script;
+  - audio generation in Adriano's own Higgsfield voice (element «Ams-»; never substitute it without approval);
+  - creative direction, animation, editing, sound design, rendering and QC.
+
+  Adriano only sets the objective and approves the final product. Ask him only for access or authorisations that are genuinely blocked.
+
   Programmatic 3D pipeline: `motion/pipeline3d/`. Proven techniques: `creative/motion-lab/06-PROVEN-TECHNIQUES.md`. Environment and repo audit: `creative/motion-lab/07-STUDIO-AUDIT.md`. No film reaches Adriano without QC (objective + frame review).
 - **Julia environment:** run `bash scripts/setup-julia.sh` at session start if `julia` is missing.
 - All earlier marketing, educational-video and motion-graphics skills stay in force. New instructions add to them; they never replace them.
