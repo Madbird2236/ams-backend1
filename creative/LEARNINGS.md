@@ -65,3 +65,7 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - 2026-10-22 UGC «Klebeband»: my v1 tip («pull while wet») was presented as a universal rule; Adriano corrected it.
   - Correct version: remove the tape after the last coat, before full cure. If the paint is dry, score with a cutter first. Follow the manufacturer's instructions.
   - Lesson: a craft tip in UGC is a technical claim. State the conditions (coats, paint type, drying state); never give a single universal rule.
+- 2026-10-22 UGC script v3: checked against tape manufacturers.
+  - tesa: pull once *angetrocknet*, ~45°, slowly. 3M ScotchBlue 2090: dry to the touch, 45°. Manufacturers differ in detail.
+  - The cutter tip was trade practice, not manufacturer guidance, so it was dropped.
+  - Lesson: verify craft tips against the manufacturer before scripting.

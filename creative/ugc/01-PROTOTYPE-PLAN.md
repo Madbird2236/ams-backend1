@@ -1,31 +1,30 @@
 # UGC prototype 01 — «Klebeband» (plan for approval, no credits spent)
 
 ## 1. Concept
-- **One real painting detail (corrected v2):** remove masking tape after the last coat, before the paint has fully cured, pulling flat and slowly. If the paint is already dry, score the edge with a cutter first, otherwise the paint film tears with the tape.
+- **One real painting detail (v3, manufacturer-aligned):** too early (wet) smears the edge, too late (hard) tears the paint film. Right: once the paint is touch-dry, pull slowly at about 45°.
 - **Why this tip:** it is real, useful for anyone painting at home, and visual in one close-up (a crisp edge vs. a torn one). It continues «Die Kante macht den Meister.»
 - **Audience:** B2C (owners, tenants, DIY).
 - **Objective:** trust and reach; secondary: «the people who know this are the people to call».
 - **KPI:** watch time to 100 %, saves and shares, profile visits.
 - **No offer, no promise.** It is a tip; AMS is the expert, not the seller.
 
-## 2. Script v2 (Swiss Standard German, ~35 words, ~14 s) — technical correction 2026-10-22
-v1 said «pull the tape while the paint is still wet» as a universal rule. **That is not universally correct.**
-- The tape comes off after the **last** coat, before the paint has **fully cured**.
-- With several coats, pulling while wet after coat 1 is wrong.
-- If the paint is already dry, **score the edge with a cutter first**, then pull flat and slowly.
-- Always follow the paint manufacturer's instructions.
+## 2. Script v3 — aligned with tape manufacturers (2026-10-22)
+**What the manufacturers say (web check):**
+- **tesa:** pull the tape directly after the paint has *angetrocknet* (set / touch-dry), before it fully cures; ~45° (pages range 30–90°, 45° most consistent); slowly and evenly; work above 5 °C.
+- **3M ScotchBlue 2090 (US page):** remove when the paint is dry to the touch; pull back on itself at 45°. The Canadian page says «completely dry», so manufacturers differ in detail.
+- **Consequence:** «still wet» (v1) is wrong, and «flat» (v2) contradicts the ~45° guidance. The safe common denominator is **touch-dry, slowly, about 45°**. A small «Herstellerangaben beachten» note covers product differences.
+- **The cutter tip** (v2) is trade practice, not manufacturer guidance, so it is dropped from the script.
 
-| # | Time | Shot | Words (presenter) | Subtitle (discreet) |
+| # | Time | Shot | Words | Subtitle |
 |---|---|---|---|---|
-| 1 | 0.0–2.6 | **A-roll**, medium, phone at chest height, tape roll in hand, freshly painted wall | «Häufigster Fehler beim Streichen? Das Klebeband.» | Häufigster Fehler beim Streichen? |
-| 2 | 2.6–5.4 | **B-roll** detail: old, dried tape pulled, the paint film tears, frayed edge | (VO) «Zu lange drauf – und die Farbe reisst mit.» | Zu lange drauf – die Farbe reisst mit. |
-| 3 | 5.4–9.6 | **Detail** macro: after the last coat, tape pulled back flat and slowly; a crisp line appears | (VO) «Nach dem letzten Anstrich abziehen, bevor sie durchtrocknet. Flach und langsam.» | Nach dem letzten Anstrich abziehen – flach und langsam. |
-| 4 | 9.6–12.4 | **Detail**: cutter scoring along the tape edge on dry paint | (VO) «Schon trocken? Erst mit dem Cutter anritzen.» | Schon trocken? Erst anritzen. |
-| 5 | 12.4–15.0 | **A-roll**: finger near the crisp edge, looks into the lens | «Saubere Kante.» | Saubere Kante. |
+| 1 | 0.0–2.8 | **A-roll** medium, phone at chest height, tape roll in hand, freshly painted wall | «Häufigster Fehler beim Streichen? Das Klebeband.» | Häufigster Fehler beim Streichen? |
+| 2 | 2.8–5.6 | **B-roll** detail: tape pulled while the paint is still wet; the edge smears | (VO) «Zu früh abgezogen, verschmiert die Kante.» | Zu früh: die Kante verschmiert. |
+| 3 | 5.6–8.2 | **B-roll** detail: old tape on hard paint; the paint film tears | (VO) «Zu spät – und die Farbe reisst mit.» | Zu spät: die Farbe reisst mit. |
+| 4 | 8.2–12.4 | **Detail** macro: touch-dry paint, the tape pulled slowly at about 45°; a crisp line | (VO) «Richtig: sobald die Farbe angetrocknet ist. Langsam, im Winkel von etwa 45 Grad.» | Angetrocknet · langsam · ca. 45° |
+| 5 | 12.4–15.0 | **A-roll**: finger near the crisp edge, eye contact, small smile | «Saubere Kante.» | Saubere Kante. |
 
-- **Lower line (last 2 s):** «AMS Malergeschäft · Tipps vom Profi».
-- **Labels:** «KI-generiert» visible for the whole video.
-- **Craft order:** problem (2) → right timing (3) → fallback for dry paint (4). No promise.
+- **Small notes:** «KI-generiert» for the whole video; «Herstellerangaben beachten» in shots 4–5; «AMS Malergeschäft · Tipps vom Profi» in the last 2 s.
+- **Word count:** ~32 words, ≈ 13 s of speech; every subtitle has at least its reading time.
 
 ## 3. Shot rules (from the reference analysis)
 - **Craft order must be correct:** paint → pull wet → result. Comparison (4) is clearly «the wrong way».
@@ -75,3 +74,28 @@ Nothing above was generated. Model capabilities come from Higgsfield's catalogue
 2. ~~Presenter~~ decided: virtual presenter, clearly labelled as AI (Adriano 2026-10-22).
 3. Voice: Higgsfield TTS or your Voice Studio?
 4. Budget for the 3 s test (shot 1 only): after the quote.
+
+## 8. Budget and generation strategy (quotes from Higgsfield, 2026-10-22, nothing generated)
+Balance: 1'130.59 credits (Ultra).
+
+| Item | Model | Quote |
+|---|---|---|
+| Presenter identity image (face sheet), 9:16, 2k high | gpt_image_2_5 | 2.75 credits |
+| Alternative UGC portrait | soul_2 | ~1 credit |
+| Voice-over, full text, AMS custom voice («Ams-», reference element in the account) | text2speech_v2 / ElevenLabs | 0.75 credits |
+| Same, Seed Audio | seed_audio | 1.5 credits |
+| **Shot 1, 3 s**, image + voice → lip-synced video | **Wan 2.7, 720p** | **4.5 credits** |
+| Shot 1, 3 s, 1080p | Wan 2.7 | 7.5 credits |
+| Shot 1, 3 s, native audio (own voice; cannot take the AMS voice) | Kling 3.0 pro | 6 credits |
+| Shot 1, minimum 4 s, best identity/reference control | Seedance 2.0, 720p / 1080p | 18 / 48 credits |
+
+The video quotes were taken without media attached. The price with an image and audio reference must be re-checked right before submitting (same `get_cost` call).
+
+**Recommended 3 s test (Gate 1):**
+1. Identity image (2.75).
+2. Line 1 with the AMS voice (≤ 0.75; the quote covered the full text).
+3. Wan 2.7 3 s at 1080p with start image + audio reference (7.5).
+
+**≈ 11 credits.** Optional comparison: the same shot with Seedance 2.0 720p at 4 s (+18).
+
+**Full 15 s afterwards (estimate, before retakes):** ≈ 35–40 credits; with one retake per shot ≈ 75.
