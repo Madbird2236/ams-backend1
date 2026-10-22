@@ -173,7 +173,7 @@ function scene(t) {
       if (melt > 0) { g.globalAlpha = Math.min(1, melt * 1.5); rect(x0, base - H, colW, H, BLUE); g.globalAlpha = 1; }
       line([[120, base], [960, base]], 4, GREY);
       label("UMSATZ", CX, base + 64, BONE, 40, "center", prog(t, w(38) - .05, .25));
-      if (rise > 0) { g.font = "64px IB"; g.fillStyle = BONE; g.textAlign = "center"; g.fillText("CHF " + fmt(1250000 * io(prog(Math.round(t * 30) / 30, w(37) - .1, we(39) - w(37) + .1))), CX, base - H - 34); g.textAlign = "left"; }
+      if (rise > 0) { g.font = "64px IB"; g.fillStyle = BONE; g.textAlign = "center"; const rq = io(prog(Math.round(t * 30) / 30, w(37) - .1, we(39) - w(37) + .1)); g.fillText("CHF " + fmt(1250000 * rq), CX, base - lerp(20, 880, rq) - 34); g.textAlign = "left"; }
     } else {
       // costs: the upper part turns coral and falls out to the right
       const fall = prog(t, w(41), 1.0), gx = 600 * ic(fall), gy = 1400 * ic(fall), rot = fall * .5;
