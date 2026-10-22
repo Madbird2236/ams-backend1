@@ -25,7 +25,7 @@ Hybrid: AI presenter (Adriano's digital twin, labelled «KI-generiert») + AI B-
 | B-roll roller, 4 s 1080p | Seedance 2.5 t2v | ≈ 64 |
 | Presenter base frames ×2, winter image ×1 | Nano Banana | ≈ 6 |
 | German TTS ×6 (custom voice «Ams-») | ElevenLabs via text2speech_v2 | 0.9 |
-No generation was discarded except one presenter base frame (the first element, «Adriano dos Santos», gave a less faithful face) and one TTS line that was too long. Wan was not used (Adriano's instruction).
+No generation was discarded except one presenter base frame (the first element, «Adriano dos Santos», gave a less faithful face) and one TTS line that was too long. Wan was not used: all AI video is Seedance 2.5 (permanent rule, CLAUDE.md).
 
 ## Assets (job ids)
 Presenter base frame `70694f13-166c-4c57-ab78-03305e67ca79` (element «Adriano» `15d2e59f-…`) · S1 `70b71ffa-…` · S2 `0c25dd2b-…` · S3 `780c888b-…` · S5 `2ef9b2d1-…` · B-roll `f93b831b-…` · winter image `d0d41ed3-…` · VO line 4 (TTS) `64759991-…`.
