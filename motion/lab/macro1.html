@@ -1,0 +1,125 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="lab.css">
+<!-- MACRO-1: a paint edge advancing over an old wall, in macro. Units: centimetres.
+     One idea only: light meeting two surfaces (old plaster vs fresh paint) and a perfectly sharp edge between them. -->
+<style> #stage { width:1080px; height:1920px; background:#000; } #gl { position:absolute; inset:0; width:1080px; height:1920px; }
+  #lab { position:absolute; right:44px; top:96px; font-family:IS; font-size:26px; color:#fff; opacity:.5; } </style>
+</head>
+<body><div id="stage"><canvas id="gl" width="1080" height="1920"></canvas><div id="lab">Lab · Makro-Studie</div></div>
+<script src="../node_modules/three/build/three.min.js"></script>
+<script>
+
+// ---------- procedural plaster (height, albedo, normal), 1024² tile = 20 × 20 cm ----------
+let seed = 11; const R = () => { seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+const S = 1024, Hh = new Float32Array(S * S);
+const lat = (n) => { const g = new Float32Array(n * n); for (let i = 0; i < g.length; i++) g[i] = R(); return g; };
+function vnoise(g, n, x, y) { const xi = Math.floor(x), yi = Math.floor(y), fx = x - xi, fy = y - yi; const s = (t) => t * t * (3 - 2 * t);
+  const a = g[((yi % n + n) % n) * n + ((xi % n + n) % n)], b = g[((yi % n + n) % n) * n + (((xi + 1) % n + n) % n)], c = g[(((yi + 1) % n + n) % n) * n + ((xi % n + n) % n)], d = g[(((yi + 1) % n + n) % n) * n + (((xi + 1) % n + n) % n)];
+  return a + (b - a) * s(fx) + (c - a) * s(fy) + (a - b - c + d) * s(fx) * s(fy); }
+const oct = [8, 16, 32, 64, 128, 256].map(n => ({ n, g: lat(n) })), amp = [.5, .28, .16, .1, .07, .05];
+for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { let h = 0; oct.forEach((o, k) => h += amp[k] * vnoise(o.g, o.n, x / S * o.n, y / S * o.n)); Hh[y * S + x] = h; }
+// pits and hairline cracks (lower)
+for (let i = 0; i < 380; i++) { const cx = R() * S | 0, cy = R() * S | 0, r = 1 + R() * 3; for (let dy = -4; dy <= 4; dy++) for (let dx = -4; dx <= 4; dx++) { const d = Math.hypot(dx, dy); if (d < r) Hh[((cy + dy + S) % S) * S + ((cx + dx + S) % S)] -= .16 * (1 - d / r); } }
+const crack = []; for (let c = 0; c < 3; c++) { let x = R() * S, y = R() * S, a = R() * 6.28; for (let k = 0; k < 900; k++) { a += (R() - .5) * .25; x += Math.cos(a) * .7; y += Math.sin(a) * .7; for (let w = -1; w <= 1; w++) Hh[((((y | 0) + w) % S + S) % S) * S + (((x | 0) % S + S) % S)] -= .06 * (w ? .5 : 1); crack.push([x | 0, y | 0]); } }
+const cv = (draw) => { const c = document.createElement("canvas"); c.width = c.height = S; const g = c.getContext("2d"); const im = g.createImageData(S, S); draw(im.data); g.putImageData(im, 0, 0); return c; };
+let mn = 1e9, mx = -1e9; for (const v of Hh) { mn = Math.min(mn, v); mx = Math.max(mx, v); }
+const hN = (x, y) => (Hh[((y + S) % S) * S + ((x + S) % S)] - mn) / (mx - mn);
+const albedoC = cv((d) => { for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const h = hN(x, y), i = (y * S + x) * 4;
+  const dirt = (1 - h) * .3, k = .9 - dirt * .35 + (R() - .5) * .015;   // old off-white, a little dirt in the pits
+  d[i] = 222 * k + 14; d[i + 1] = 217 * k + 14; d[i + 2] = 205 * k + 12; d[i + 3] = 255; }
+  for (const [x, y] of crack) for (let w = -1; w <= 1; w++) { const i = ((((y + w) % S + S) % S) * S + ((x % S + S) % S)) * 4; d[i] *= .72; d[i + 1] *= .72; d[i + 2] *= .72; } });
+const normalC = cv((d) => { const st = 5.5; for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const i = (y * S + x) * 4;
+  const dx = (hN(x + 1, y) - hN(x - 1, y)) * st, dy = (hN(x, y + 1) - hN(x, y - 1)) * st; const l = Math.hypot(dx, dy, 1);
+  d[i] = (-dx / l * .5 + .5) * 255; d[i + 1] = (dy / l * .5 + .5) * 255; d[i + 2] = (1 / l * .5 + .5) * 255; d[i + 3] = 255; } });
+const heightC = cv((d) => { for (let y = 0; y < S; y++) for (let x = 0; x < S; x++) { const i = (y * S + x) * 4, v = hN(x, y) * 255; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; } });
+const tex = (c, srgb) => { const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(12, 150); t.anisotropy = 16; t.encoding = srgb ? THREE.sRGBEncoding : THREE.LinearEncoding; return t; };
+const albedo = tex(albedoC, true), normal = tex(normalC, false), height = tex(heightC, false);
+
+// ---------- renderer, scene ----------
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById("gl"), antialias: true, preserveDrawingBuffer: true });
+renderer.setPixelRatio(1); renderer.setSize(1080, 1920, false);
+renderer.outputEncoding = THREE.LinearEncoding; renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+const scene = new THREE.Scene(); scene.background = new THREE.Color("#5a534b");
+const camera = new THREE.PerspectiveCamera(38, 1080 / 1920, .5, 4000);
+
+const U = { uEdge: { value: -4 } };
+const mat = new THREE.MeshStandardMaterial({ map: albedo, normalMap: normal, normalScale: new THREE.Vector2(.55, .55), roughness: .9, metalness: 0 });
+mat.onBeforeCompile = (sh) => {
+  sh.uniforms.uEdge = U.uEdge; sh.uniforms.uH = { value: height }; sh.uniforms.uPaint = { value: new THREE.Color("#174450") };
+  sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nvarying vec3 vWP;")
+    .replace("#include <fog_vertex>", "#include <fog_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;");
+  sh.fragmentShader = sh.fragmentShader.replace("#include <common>", `#include <common>
+    varying vec3 vWP; uniform float uEdge; uniform sampler2D uH; uniform vec3 uPaint;
+    float gPaint; float gWet; float gD;`)
+    .replace("#include <map_fragment>", `#include <map_fragment>
+    float hh = texture2D(uH, vUv).r;
+    float e = uEdge + (hh - 0.5) * 0.05 + sin(vWP.y * 0.9) * 0.012;      // the edge follows the relief by half a millimetre: crisp, not CG-straight
+    gD = e - vWP.x;                                                      // distance behind the edge (cm)
+    gPaint = smoothstep(-0.006, 0.006, gD);
+    gWet = gPaint * (1.0 - smoothstep(0.0, 4.5, gD));                    // wet front, drying behind
+    vec3 pc = uPaint * (1.0 - 0.18 * gWet) * (0.97 + 0.06 * hh);
+    diffuseColor.rgb = mix(diffuseColor.rgb, pc, gPaint);`)
+    .replace("#include <normal_fragment_maps>", `#include <normal_fragment_maps>
+    normal = normalize(mix(normal, geometryNormal, 0.86 * gPaint));      // paint fills the micro-relief
+    vec3 xv = normalize((viewMatrix * vec4(1.0, 0.0, 0.0, 0.0)).xyz);
+    float rd = (gD - 0.035) / 0.022; float ridge = -2.0 * rd * exp(-rd * rd) * 0.9 * gPaint;   // a thin raised lip at the edge
+    normal = normalize(normal + xv * ridge);`)
+    .replace("#include <roughnessmap_fragment>", `#include <roughnessmap_fragment>
+    roughnessFactor = mix(roughnessFactor, mix(0.55, 0.09, gWet), gPaint);`);
+};
+const wall = new THREE.Mesh(new THREE.PlaneGeometry(240, 3000), mat); scene.add(wall);
+// the room behind (for depth): a floor edge and a far window glow, both far out of focus
+const room = new THREE.Mesh(new THREE.PlaneGeometry(400, 400), new THREE.MeshStandardMaterial({ color: "#3a3631", roughness: 1 })); room.rotation.x = -Math.PI / 2; room.position.set(0, -52, 60); scene.add(room);
+
+// ---------- light: one raking key (late warm sun), a cool soft fill ----------
+const key = new THREE.DirectionalLight("#ffd9b0", 3.4); key.position.set(-70, 26, 16); key.target.position.set(0, 0, 0); scene.add(key, key.target);
+const fill = new THREE.HemisphereLight("#b3c4dc", "#3b352f", .55); scene.add(fill);
+const kick = new THREE.PointLight("#fff1dc", 0, 60, 2); kick.position.set(14, 8, 10); scene.add(kick);
+
+// ---------- depth of field (own pass: scene → colour+depth target → bokeh, ACES, sRGB) ----------
+const rt = new THREE.WebGLRenderTarget(1080, 1920, { type: THREE.HalfFloatType });
+rt.depthTexture = new THREE.DepthTexture(1080, 1920); rt.depthTexture.type = THREE.UnsignedIntType;
+const post = new THREE.ShaderMaterial({ toneMapped: false, depthTest: false, depthWrite: false,
+  uniforms: { tColor: { value: rt.texture }, tDepth: { value: rt.depthTexture }, focus: { value: 14 }, aperture: { value: .006 }, maxblur: { value: .016 },
+    nearClip: { value: camera.near }, farClip: { value: camera.far }, aspect: { value: 1080 / 1920 }, exposure: { value: 1.0 } },
+  vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = vec4(position.xy, 0.0, 1.0); }",
+  fragmentShader: `#include <packing>
+  varying vec2 vUv; uniform sampler2D tColor, tDepth; uniform float focus, aperture, maxblur, nearClip, farClip, aspect, exposure;
+  float viewZ(vec2 uv){ return -perspectiveDepthToViewZ(texture2D(tDepth, uv).x, nearClip, farClip); }
+  vec3 aces(vec3 x){ x *= 0.6; return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), 0.0, 1.0); }
+  void main(){
+    vec2 ar = vec2(1.0, aspect);
+    float f = (viewZ(vUv) - focus) / viewZ(vUv);
+    vec2 blur = vec2(clamp(f * aperture * 6.0, -maxblur, maxblur));
+    vec3 col = vec3(0.0); float w = 0.0;
+    for (int r = 0; r < 4; r++) { float rr = float(r + 1) / 4.0;
+      for (int a = 0; a < 12; a++) { float an = float(a) * 0.5236 + float(r) * 0.26;
+        vec2 o = vec2(cos(an), sin(an) * ar.y / ar.x) * blur * rr; col += texture2D(tColor, vUv + o).rgb; w += 1.0; } }
+    col = (col + texture2D(tColor, vUv).rgb * 2.0) / (w + 2.0);
+    col = aces(col * exposure);
+    gl_FragColor = vec4(pow(col, vec3(1.0 / 2.2)), 1.0);
+  }` });
+const quadScene = new THREE.Scene(), quadCam = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+quadScene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), post));
+renderer.toneMapping = THREE.NoToneMapping;
+const bokeh = { uniforms: post.uniforms };
+function draw() { renderer.setRenderTarget(rt); renderer.render(scene, camera); renderer.setRenderTarget(null); renderer.render(quadScene, quadCam); }
+
+// ---------- direction: the camera anticipates, meets the edge, travels with it, then lets it go ----------
+const D = 6.5, ease = (t) => t * t * (3 - 2 * t);
+function edgeAt(t) { const u = t / D; return -4.5 + 9.5 * (u + .06 * Math.sin(u * Math.PI)); }   // steady, a touch faster mid-shot
+function shot(t) {
+  const u = Math.min(1, t / D), e = edgeAt(t);
+  // low camera looking up along the wall: the edge recedes into soft focus; the camera drifts slower than the edge,
+  // so the edge crosses the frame (left third -> right third) instead of being nailed to it
+  const cx = -2.2 + 5.6 * ease(u), fy = 4.0 + 1.2 * u;
+  camera.position.set(cx + 2.4, -9.5 + 1.0 * u, 5.4 - .5 * u);
+  camera.lookAt(cx + .4, fy, 0);
+  bokeh.uniforms.focus.value = camera.position.distanceTo(new THREE.Vector3(e, 1.0, 0));
+  U.uEdge.value = e;
+  key.intensity = 3.4 + .15 * Math.sin(t * .7);
+  kick.intensity = 0;
+}
+window.COMP = { width: 1080, height: 1920, fps: 30, duration: D };
+window.seek = (t) => { shot(t); draw(); };
+</script></body></html>

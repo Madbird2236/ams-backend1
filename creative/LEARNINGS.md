@@ -113,3 +113,9 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Type as negative space (unpainted letters) integrates better than any overlay: the story's mechanism reveals it, and the scene's light and shadow act on it.
 - three.js: materials with identical `onBeforeCompile` share one program → set `customProgramCacheKey`; texture repeat transforms `vUv` → masks use raw `uv`.
 - Every transformation needs a hero moment in close-up; a crisp effect seen small is not yet a climax.
+
+## 2026-10-22 — MACRO-1 (paint edge in macro)
+- Building a scene ≠ directing a moment: one idea, one move, the change fills the frame.
+- Look *along* a surface (grazing camera + raking light) to reveal material; depth of field turns perspective into depth.
+- Let the subject cross the frame (camera slower than the subject) instead of pinning it.
+- Headless Chromium blocks ES modules over file://: write post-processing passes as classic scripts (own bokeh pass from the depth buffer).
