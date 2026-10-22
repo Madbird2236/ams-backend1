@@ -4,7 +4,7 @@
 - **Audience:** B2C: owners and tenants in the Zürich area (private landlords included).
 - **Commercial objective:** winter leads for mould remediation (Schimmelsanierung): Begehungen in Nov–Feb, team utilisation.
 - **KPI:** site-visit requests (Begehung), cost per lead, request → offer rate in AMS OS.
-- **Service:** Schimmel is in AMS's service list. Approved wording: «fachgerecht saniert».
+- **Service (confirmed by Adriano 2026-10-22):** mould removal and treatment of the affected surfaces. Not structural moisture diagnosis, thermal bridges or leaks. Approved wording: «Fachgerechte Schimmelentfernung und Oberflächenbehandlung.» / «Schimmel entdeckt? Wir kümmern uns um die betroffenen Oberflächen.» Never promise it won't return.
 - **Consumer insight:**
   1. Mould peaks in winter. Warm, humid indoor air condenses on cold spots: outer walls, corners, behind furniture.
   2. People notice it late, because it grows where nobody looks.
@@ -24,7 +24,7 @@ The test: three **different ideas**, each with its own creative logic, not one i
 **Idea in one sentence:** The ad gives the reader a 10-second task. If they find something, AMS is the next step.
 
 - **Headline:** «Schauen Sie mal hinter den Schrank.»
-- **Sub:** «Im Winter wächst Schimmel dort, wo niemand hinschaut. Wir sanieren fachgerecht.»
+- **Sub (v2):** «Im Winter wächst Schimmel dort, wo niemand hinschaut. Schimmel entdeckt? Wir kümmern uns um die betroffenen Oberflächen.»
 - **CTA:** «Begehung anfragen». Small print: «Offerte innert 24 Stunden · werktags, nach der Besichtigung».
 - **Visual (19/10 house template):**
   - A tidy, bright bedroom. A wardrobe has been pulled about 30 cm away from the outer wall.
@@ -45,7 +45,7 @@ The test: three **different ideas**, each with its own creative logic, not one i
 - **Headline:** «Ihre Wand hat kalte Füsse.»
   - Literal: cold feet. Idiom: «kalte Füsse bekommen» = getting nervous.
   - The wall is cold *and* there is something to worry about.
-- **Sub:** «An kalten Stellen kondensiert Feuchtigkeit – dort wächst Schimmel. Wir sanieren fachgerecht.»
+- **Sub (v2):** «An kalten Stellen kondensiert Feuchtigkeit – dort wächst Schimmel. Fachgerechte Schimmelentfernung und Oberflächenbehandlung.» (Explaining the cause is education; AMS's role stays the surfaces.)
 - **CTA:** «Begehung anfragen».
 - **Visual:**
   - The lower corner of a calm, elegant room, where two outer walls meet the floor.
@@ -75,19 +75,19 @@ Why this logic:
 | 3–9 s | From the corner's POV: the family's evening. Pasta water steaming, a hot shower, laundry on a rack, the window fogging | «Sie kochen. Sie duschen. Sie trocknen Wäsche. Ich liebe diese Familie.» | Warm home sounds, muffled |
 | 9–14 s | The wardrobe against the outer wall; the camera slides into the gap. Grey spots spread in time-lapse as calendar days pass on the wall | «Und den Schrank haben sie direkt an die Aussenwand gestellt. Perfekt.» | A slow, smug cello note |
 | 14–18 s | Turn: the mother pulls the wardrobe away; her face; the daughter peeks in | «… Oh.» | Silence, then a doorbell |
-| 18–25 s | The AMS team arrives: covers furniture, works with care, calm and clean. The mould's voice gets nervous | «Moment. Was machen die? Die schauen sich ja alles genau an …» ⚠ | Precise, rhythmic work sounds |
-| 25–30 s | The finished corner, the wardrobe back with a gap; the daughter opens the window for a few minutes in the cold morning and laughs | (no voice; the villain is gone) | Morning birds |
-| End card | «Schimmel kommt jeden Winter wieder. Wir nicht.»* / CTA «Begehung anfragen» | — | Chime |
+| 18–25 s | The AMS team arrives: covers furniture, protects the floor, removes the mould and treats the surface with care, calm and clean. The mould's voice gets nervous | «Moment. Was machen die? … Die nehmen mich einfach weg!» | Precise, rhythmic work sounds |
+| 25–30 s | The finished corner, the wardrobe back with a gap; the daughter opens the window for a few minutes in the cold morning and laughs | Mould, fading, one last whisper: «… und wenn die jetzt auch noch richtig lüften …» (honest: the outcome also depends on the household, said with humour) | Morning birds |
+| End card | «Schimmel entdeckt? Wir kümmern uns um die betroffenen Oberflächen.» / CTA «Begehung anfragen» | — | Chime |
 
-*End line check:
-- «Wir nicht» means AMS doesn't need to come back, which implies a lasting result: **⚠ guarantee risk** under pre-flight 3.
-- Safer alternatives: «Schimmel hat einen Grund. Wir nehmen ihn ernst.» or «Fachgerecht saniert. Bevor er sich wohlfühlt.»
-- Julia's recommendation: «Fachgerecht saniert. Bevor er sich wohlfühlt.» It keeps the villain's tone without promising permanence.
+*End line history:
+- v1 «Schimmel kommt jeden Winter wieder. Wir nicht.» was rejected by the check: it implies a lasting result.
+- v1b «Fachgerecht saniert. Bevor er sich wohlfühlt.» was replaced after the 2026-10-22 scope decision, because «saniert» can suggest fixing the cause.
+- v2 is the approved service line. The villain's last whisper carries the honesty with humour: the result also depends on airing.
 
 - **Pre-flight:**
   - Must not become disgusting or horror: no face on the mould, voice only.
   - No health claims.
-  - ⚠ VO at 18–25 s implies a diagnosis; keep it only if AMS does cause analysis.
+  - VO 18–25 s now shows removal, not diagnosis (scope confirmed).
 - **Scores (discounted):** Surprise 4 · Clarity 4 · Ownability 4 · Premium 4 · Feasibility 2.5 (Reel production, a family cast, a Swiss voice).
 
 ---
@@ -110,4 +110,4 @@ Why this logic:
 - A is the safest and least original; its surprise comes from the task, not the image.
 - B depends on one image working at small size; the main risk is clarity, not originality.
 - C is the strongest idea and the most expensive; its end line was my first draft with a guarantee risk, caught by the check.
-- Open question for Adriano: does AMS measure moisture or diagnose the cause? It changes B's sub and C's 18–25 s.
+- Answered 2026-10-22: surface removal and treatment only. B's sub, A's sub and C's 18–30 s and end card updated; creativity unchanged.

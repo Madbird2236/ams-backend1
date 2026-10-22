@@ -36,3 +36,9 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - **Sound quality:** synthetic sound and TTS are for timing only; final pieces need recorded or licensed sounds and a Swiss voice.
   - **Music → architecture:** the strongest transition was meaning-driven (staves → ceiling lights, score → Bauprogramm). Seek transitions where the object changes meaning, not just shape.
   - **Human emotion:** abstract motion proves structure but lacks feeling; final pieces need human beats (faces, hands, a reaction, a joke).
+- 2026-10-22 Calibration 03 (mould ×3) **approved as concept exercise.**
+  - A (self-check «Schauen Sie mal hinter den Schrank.»): strong commercial logic; needs clearer hierarchy and a more evident mould discovery.
+  - B («Ihre Wand hat kalte Füsse.»): the words beat the picture. Lesson: a visual metaphor must pass the **silent test** (understood without the headline).
+  - C (the mould as villain-narrator): the most creative; **kept in the repertoire** as a reusable device (an antagonist narrator removes the client's shame).
+  - Precision: never imply a surface treatment ends mould for good when moisture causes remain.
+  - Calibrated claims rule: distinguish **contractual commitments** (need proof) from **legitimate advertising expressions** (keep). Excess caution kills good lines.

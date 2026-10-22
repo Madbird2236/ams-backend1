@@ -17,7 +17,12 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 ## Pre-flight check (before any credit is spent)
 1. **Objective → style:** is the style justified by the objective and the KPI?
 2. **Idea:** can it be said in one sentence? Would a stranger stop scrolling? Is there a 2nd-level cliché?
-3. **Claims:** every promise checked against the claims register (`advertising-storytelling` skill): scope, time, guarantee words (dauerhaft, garantiert, immer, alle, jede, am geplanten Tag, termingerecht, pünktlich, auf den Takt genau). Each needs a proof source or a softer frame; in B2B always.
+2b. **Silent test (visual metaphors):** cover the headline. Does the image alone show the idea? If the metaphor only lives in the words, the image needs a stronger visual cue (exaggeration, a recognisable object in the wrong place, a familiar gesture). Hierarchy: within 1 s, is the key element (e.g. the mould) the first thing the eye finds?
+3. **Claims, two kinds (calibrated 2026-10-22):**
+   - **Contractual commitment:** a statement a client could hold AMS to, such as a date, a deadline, a duration, permanence of a result, a scope of services, or a number. It needs proof or a softer frame. Examples: «am geplanten Tag», «dauerhaft», «nie wieder», «alle Gewerke», «innert 24 Stunden» (B2B).
+   - **Legitimate advertising expression:** figurative, evaluative or tonal language that no reasonable reader takes as a contract. Keep it. Examples: «Auf den Takt genau.», «Eine Handschrift.», «Die Kante macht den Meister.»
+   - The promise-word list triggers a **review**, not an automatic deletion. Ask: «Could a client sue or claim a discount on this sentence?» If not, keep the good line. Don't kill strong copy out of excess caution.
+   - Service facts are always checked against the claims register (e.g. mould = surface removal and treatment only).
 4. **Culture and season:** Swiss details (yellow post boxes, CHF, ss not ß); can AMS actually execute it in this season?
 5. **Composition plan:** where do the headline, subject, CTA and logo sit? Is a clean zone reserved for the logo, and which variant?
 6. **Brand:** official logo only; no invented colours; no boxes; brand name once per layout (logo *or* kicker).
