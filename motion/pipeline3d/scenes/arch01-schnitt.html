@@ -1,0 +1,222 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<!-- ARCH-01 «Der Schnitt» — 6 s, 1080×1920, 30 fps. Brief: ../briefs/ARCH-01-BRIEF.md
+     A section line runs through a raw retail shell; behind it the store is finished.
+     Units: metres. Store: x −4..4, y 0..3.6, z −12 (back wall) .. +2 (shop window). -->
+<style>
+@font-face { font-family: IDB; src: url(../../assets/fonts/InterDisplay-Bold.otf); }
+@font-face { font-family: IS; src: url(../../assets/fonts/Inter-SemiBold.otf); }
+html, body { margin: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; }
+#gl { position: absolute; inset: 0; width: 1080px; height: 1920px; }
+#shade { position: absolute; left: 0; right: 0; bottom: 0; height: 760px; background: linear-gradient(to top, rgba(8,9,11,.78), rgba(8,9,11,0)); opacity: 0; }
+#lab { position: absolute; left: 64px; top: 92px; font: 26px IS; color: #fff; opacity: .55; letter-spacing: .02em; }
+#claim { position: absolute; left: 64px; right: 64px; bottom: 300px; font: 104px/1.02 IDB; color: #F4F1EC; letter-spacing: -.02em; }
+#claim .w { display: inline-block; white-space: nowrap; opacity: 0; will-change: transform; }
+</style></head>
+<body><div id="stage"><canvas id="gl" width="1080" height="1920"></canvas>
+<div id="shade"></div><div id="lab">AMS · 3D-Pipeline · ARCH-01</div>
+<div id="claim"><span class="w">Vom</span> <span class="w">Rohbau</span><br><span class="w">zur</span> <span class="w">Eröffnung.</span></div></div>
+<script src="../../node_modules/three/build/three.min.js"></script>
+<script src="../lib/ams3d.js"></script>
+<script>
+const A = AMS3D, W = 1080, H = 1920;
+window.COMP = { width: W, height: H, fps: 30, duration: 6 };
+
+const renderer = A.renderer(document.getElementById("gl"), W, H);
+const post = new A.Post(renderer, W, H, { bloom: .55, threshold: 1.1, exposure: 1.0, vignette: .38, grain: .03, ca: .008, lift: .012 });
+const scene = new THREE.Scene();
+scene.background = new THREE.Color("#0b0b0c");
+const envTex = A.env(renderer, { strength: 1 });
+scene.environment = envTex;
+const camera = new THREE.PerspectiveCamera(66, W / H, .05, 60);
+
+// ---------- timing (single source of truth) ----------
+const TL = { lineIn: .6, lineOut: 4.4, z0: -12.3, z1: 2.6, claim: 4.45, D: 6 };
+const lineZ = (t) => A.lerp(TL.z0, TL.z1, A.smooth(A.prog(t, TL.lineIn, TL.lineOut - TL.lineIn)));
+
+// ---------- materials ----------
+const S = A.sweep; S.uSeamCol.value.set("#ffcf8a"); S.uWidth.value = .035;
+const conc = A.tex.concrete([9, 15], 7), concW = A.tex.concrete([9, 2.4], 9), concC = A.tex.concrete([9, 15], 13);
+const oak = A.tex.oak([2.2, 3.2], 3);
+for (const k of ["map", "roughnessMap", "normalMap"]) { oak[k].center.set(.5, .5); oak[k].rotation = Math.PI / 2; }
+const plaster = A.tex.plaster([6, 2], 5);
+const std = (o) => new THREE.MeshStandardMaterial(Object.assign({ envMapIntensity: .6 }, o));
+
+const mFloorRaw = A.planeSplit(std({ ...conc, color: "#b3aea6", roughness: 1, normalScale: new THREE.Vector2(.45, .45) }), "before", "z", "floorRaw");
+const mFloorFin = A.planeSplit(std({ ...oak, color: "#ffffff", color: "#efe6dc", roughness: .62, envMapIntensity: .55, normalScale: new THREE.Vector2(.35, .35) }), "after", "z", "floorFin");
+const mCeilRaw = A.planeSplit(std({ ...concC, color: "#a29d96", roughness: 1, normalScale: new THREE.Vector2(.5, .5) }), "before", "z", "ceilRaw");
+const mCeilFin = A.planeSplit(std({ color: "#f1eee8", roughness: .92, envMapIntensity: .4, emissive: "#f1e6d8", emissiveIntensity: .16 }), "after", "z", "ceilFin");
+const mShell = std({ ...concW, color: "#9a958e", roughness: 1 });                         // outer concrete shell (behind the studs)
+const mStud = std({ color: "#a7adb3", metalness: .85, roughness: .38, envMapIntensity: 1.2 });
+// boards: grey gypsum right behind the line, then painted 1.4 m behind it (studs → boards → paint)
+const mBoard = A.planeSplit(std({ ...plaster, color: "#ffffff", roughness: .9, envMapIntensity: .45, normalScale: new THREE.Vector2(.12, .12) }), "after", "z", "board");
+A.extraShader.board = (sh) => {
+  sh.fragmentShader = sh.fragmentShader.replace("#include <map_fragment>", `#include <map_fragment>
+    float pz = vSWP.z - (uPlane - 1.4) + sin(vSWP.y * 3.1 + vSWP.z * 2.0) * 0.06;     // paint front (roller: slightly wavy)
+    float joint = 1.0 + 0.10 * smoothstep(0.0, 0.02, abs(fract((vSWP.z + 12.0) / 1.25) - 0.5) - 0.475);   // filled (lighter) board joints every 1.25 m
+    vec3 gyps = vec3(0.80, 0.79, 0.76) * joint;
+    vec3 paint = vec3(0.93, 0.91, 0.87);
+    float pk = smoothstep(0.03, -0.03, pz);
+    diffuseColor.rgb = mix(gyps, paint, pk);`);
+};
+// back wall: concrete → deep blue accent, painted bottom-up by its own sweep (first stroke)
+const SB = A.makeSweep("#ffcf8a", .03);
+const mBackRaw = A.planeSplit(std({ ...concW, color: "#9a958e", roughness: 1 }), "before", "y", "backRaw", SB);
+const mBackFin = A.planeSplit(std({ color: "#163250", roughness: .88, envMapIntensity: .35 }), "after", "y", "backFin", SB);
+const mRawProp = (o) => A.planeSplit(std(o), "before", "z", "prop");
+const mLacq = std({ color: "#f3f1ec", roughness: .35, envMapIntensity: .8 });
+const mLeg = std({ color: "#1b1c1e", metalness: .7, roughness: .4 });
+const mOakSolid = std({ map: oak.map, roughnessMap: oak.roughnessMap, color: "#e9d8c2", roughness: .6 });
+
+// ---------- architecture ----------
+const box = (w, h, d, m, x, y, z, parent = scene) => { const b = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); b.position.set(x, y, z); b.castShadow = b.receiveShadow = true; parent.add(b); return b; };
+const plane = (w, h, m, p, r) => { const g = new THREE.PlaneGeometry(w, h, 1, 1); const o = new THREE.Mesh(g, m); o.position.set(...p); o.rotation.set(...r); o.receiveShadow = true; scene.add(o); return o; };
+const L = 14, ZC = -5;   // room length along z, centre z
+plane(8.3, L, mFloorRaw, [0, 0, ZC], [-Math.PI / 2, 0, 0]);
+plane(8.3, L, mFloorFin, [0, 0, ZC], [-Math.PI / 2, 0, 0]);
+plane(8.3, L, mCeilRaw, [0, 3.6, ZC], [Math.PI / 2, 0, 0]);
+plane(8.3, L, mCeilFin, [0, 3.6, ZC], [Math.PI / 2, 0, 0]);
+plane(L, 3.6, mShell, [-4.12, 1.8, ZC], [0, Math.PI / 2, 0]);
+plane(L, 3.6, mShell, [4.12, 1.8, ZC], [0, -Math.PI / 2, 0]);
+plane(8.3, 3.6, mBackRaw, [0, 1.8, -12], [0, 0, 0]);
+plane(8.3, 3.6, mBackFin, [0, 1.8, -11.99], [0, 0, 0]);
+// metal studs (CW 75) every 62.5 cm + U tracks, both walls
+const studs = [];
+for (const sx of [-1, 1]) for (let z = -11.95; z <= 2; z += .625) studs.push([sx * 4.0, 1.8, z]);
+const studGeo = new THREE.BoxGeometry(.075, 3.6, .05), iStud = new THREE.InstancedMesh(studGeo, mStud, studs.length);
+studs.forEach((p, i) => iStud.setMatrixAt(i, new THREE.Matrix4().makeTranslation(...p)));
+iStud.castShadow = iStud.receiveShadow = true; scene.add(iStud);
+for (const sx of [-1, 1]) for (const y of [.02, 3.58]) box(.075, .04, L, mStud, sx * 4.0, y, ZC);
+// boards (12.5 mm) cover the studs exactly up to the line
+plane(L, 3.6, mBoard, [-3.955, 1.8, ZC], [0, Math.PI / 2, 0]);
+plane(L, 3.6, mBoard, [3.955, 1.8, ZC], [0, -Math.PI / 2, 0]);
+
+// ---------- raw props (vanish exactly at the line) ----------
+const rnd = A.rng(42);
+const rawProps = [];   // hidden (incl. shadow) once the line has fully crossed them
+const pallet = new THREE.Group(); scene.add(pallet); pallet.userData.zmax = -6.05; rawProps.push(pallet);
+const mBoardStack = mRawProp({ color: "#cfccc4", roughness: .95 }), mPal = mRawProp({ color: "#8a6a48", roughness: 1 });
+box(1.25, .14, 1.0, mPal, -2.5, .07, -6.6, pallet);
+for (let i = 0; i < 9; i++) box(1.25, .0125, 1.0, mBoardStack, -2.5, .15 + i * .014, -6.6, pallet);
+const mBucket = mRawProp({ color: "#e8e6df", roughness: .6 });
+const bucket = new THREE.Mesh(new THREE.CylinderGeometry(.16, .14, .36, 24), mBucket); bucket.position.set(2.7, .18, -8.4); bucket.castShadow = true; scene.add(bucket); bucket.userData.zmax = -8.2; rawProps.push(bucket);
+// ladder
+const mLad = mRawProp({ color: "#b9bec4", metalness: .7, roughness: .4 });
+const ladder = new THREE.Group(); ladder.position.set(-3.2, 0, -9.6); ladder.rotation.y = .5; scene.add(ladder); ladder.userData.zmax = -9.1; rawProps.push(ladder);
+for (const s of [-.22, .22]) { const r = box(.04, 2.3, .06, mLad, s, 1.1, 0, ladder); r.rotation.x = .18; }
+for (let i = 0; i < 6; i++) { const r = box(.44, .03, .06, mLad, 0, .3 + i * .34, -.2 + i * .065 * .9, ladder); }
+// work lamp on tripod (cold), near the camera's start
+const lampPos = new THREE.Vector3(2.35, 1.75, -3.1);
+const mTri = mRawProp({ color: "#2b2d30", metalness: .6, roughness: .5 });
+const tri = new THREE.Group(); scene.add(tri); tri.userData.zmax = lampPos.z + .35; rawProps.push(tri);
+for (let i = 0; i < 3; i++) { const a = i * 2.094, leg = box(.03, 1.0, .03, mTri, lampPos.x + Math.cos(a) * .22, .45, lampPos.z + Math.sin(a) * .22, tri); leg.rotation.set(Math.sin(a) * .25, 0, -Math.cos(a) * .25); }
+box(.035, 1.35, .035, mTri, lampPos.x, 1.05, lampPos.z, tri);
+const mLampHead = mRawProp({ color: "#222", emissive: "#e9f0ff", emissiveIntensity: 0, roughness: .4 });
+const head = box(.34, .26, .1, mLampHead, lampPos.x, lampPos.y, lampPos.z, tri); head.rotation.y = -.9;
+const workLight = new THREE.PointLight("#dfe8ff", 0, 0, 2); workLight.position.copy(lampPos).add(new THREE.Vector3(-.12, 0, .1)); scene.add(workLight);
+// bare bulbs on cables (raw ceiling)
+const mBulb = mRawProp({ color: "#000", emissive: "#ffd7a3", emissiveIntensity: 9 }), mCable = mRawProp({ color: "#111", roughness: .7 });
+const bulbs = []; for (const z of [-10.4, -7.2, -4.0]) { const c = box(.01, .6, .01, mCable, .4, 3.3, z); const b = new THREE.Mesh(new THREE.SphereGeometry(.05, 16, 12), mBulb); b.position.set(.4, 2.98, z); scene.add(b); const l = new THREE.PointLight("#ffcf98", 0, 0, 2); l.position.set(.4, 2.9, z); scene.add(l); bulbs.push({ l, z }); c.userData.zmax = z + .05; b.userData.zmax = z + .06; rawProps.push(c, b); }
+// cable on the floor
+const cablePts = []; for (let i = 0; i <= 40; i++) { const u = i / 40; cablePts.push(new THREE.Vector3(2.35 + Math.sin(u * 7) * .5 - u * 1.4, .012, -3.1 - u * 6.5)); }
+const cable = new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(cablePts), 160, .012, 6), mRawProp({ color: "#d14a1f", roughness: .6 })); scene.add(cable);
+// dust in the raw air (vanishes behind the line)
+const NDu = 2200, dpos = new Float32Array(NDu * 3), dph = new Float32Array(NDu);
+for (let i = 0; i < NDu; i++) { dpos[i * 3] = (rnd() - .5) * 7.6; dpos[i * 3 + 1] = .1 + rnd() * 3.4; dpos[i * 3 + 2] = -11.8 + rnd() * 13.6; dph[i] = rnd() * 6.28; }
+const dg = new THREE.BufferGeometry(); dg.setAttribute("position", new THREE.BufferAttribute(dpos, 3)); dg.setAttribute("ph", new THREE.BufferAttribute(dph, 1));
+const mDust = new THREE.PointsMaterial({ color: "#d8d0c2", size: .008, sizeAttenuation: true, transparent: true, opacity: .5, depthWrite: false });
+const uTime = { value: 0 };
+A.planeSplit(mDust, "before", "z", "dust");
+A.extraShader.dust = (sh) => { sh.uniforms.uTime = uTime;
+  sh.fragmentShader = sh.fragmentShader.replace("#include <clipping_planes_fragment>", "#include <clipping_planes_fragment>\nif (length(gl_PointCoord - 0.5) > 0.5) discard;");
+  sh.vertexShader = sh.vertexShader.replace("#include <common>", "#include <common>\nattribute float ph; uniform float uTime;")
+    .replace("#include <begin_vertex>", "#include <begin_vertex>\ntransformed += vec3(sin(uTime * .7 + ph) * .05, uTime * .035 + sin(uTime * .5 + ph * 2.0) * .03, cos(uTime * .6 + ph) * .05);"); };
+scene.add(new THREE.Points(dg, mDust));
+
+// ---------- finished fit-out (rises behind the line) ----------
+const mProd = ["#2e4b6b", "#c9b79c", "#8c3b2f", "#e9e4da", "#3b3f45", "#b78d5a", "#6f7f6a"].map((c) => std({ color: c, roughness: .55 }));
+const fixtures = [];
+function shelfUnit(sx, zc) {
+  const g = new THREE.Group(); g.position.set(sx * 3.73, 0, zc); scene.add(g);
+  box(.04, 2.3, 2.0, mLacq, sx * .2, 1.15, 0, g);                      // back panel
+  box(.45, .1, 2.0, mOakSolid, 0, .05, 0, g);                          // plinth
+  const prods = [];
+  for (let k = 0; k < 4; k++) { const y = .5 + k * .5; box(.42, .03, 2.0, mOakSolid, 0, y, 0, g);
+    let z = -.9; while (z < .85) { const w = .14 + rnd() * .18, h = .16 + rnd() * .22; if (rnd() < .82) { const p = box(.26, h, w, mProd[(rnd() * mProd.length) | 0], -sx * .02, y + .015 + h / 2, z + w / 2, g); p.userData.y = p.position.y; prods.push(p); } z += w + .04; } }
+  fixtures.push({ g, z: zc + 1.0, prods, sy: 1 });
+}
+function table(zc) {
+  const g = new THREE.Group(); g.position.set(0, 0, zc); scene.add(g);
+  box(1.0, .06, 2.2, mOakSolid, 0, .87, 0, g); for (const lx of [-.42, .42]) for (const lz of [-.98, .98]) box(.05, .84, .05, mLeg, lx, .42, lz, g); box(.8, .04, 1.9, mOakSolid, 0, .3, 0, g);
+  const prods = []; for (let i = 0; i < 5; i++) { const h = .12 + rnd() * .2, p = box(.22, h, .22, mProd[(rnd() * mProd.length) | 0], (rnd() - .5) * .5, .9 + h / 2, -.8 + i * .4, g); p.userData.y = p.position.y; prods.push(p); }
+  fixtures.push({ g, z: zc + 1.1, prods });
+}
+for (const zc of [-10.3, -7.7, -5.1, -2.5]) { shelfUnit(-1, zc); shelfUnit(1, zc); }
+table(-8.6); table(-5.0);
+
+// ceiling light lines: segments switch on once the ceiling behind the line is closed
+const segs = []; for (const x of [-1.8, 1.8]) for (let z = -11.6; z < 1.9; z += 1.25) segs.push({ x, z: z + .6 });
+const mSeg = new THREE.MeshBasicMaterial({ color: "#ffffff" });
+const iSeg = new THREE.InstancedMesh(new THREE.BoxGeometry(.07, .03, 1.15), mSeg, segs.length);
+segs.forEach((s, i) => { iSeg.setMatrixAt(i, new THREE.Matrix4().makeTranslation(s.x, 3.585, s.z)); iSeg.setColorAt(i, new THREE.Color(0, 0, 0)); });
+scene.add(iSeg);
+const warm = []; for (const z of [-10.5, -7.2, -3.9, -.6]) for (const x of [-1.8, 1.8]) { const l = new THREE.SpotLight("#ffcc95", 0, 0, 1.05, .85, 2); l.position.set(x, 3.5, z); l.target.position.set(x * 1.25, 0, z); scene.add(l, l.target); warm.push({ l, z }); }
+
+// daylight through the shop window (key, the only shadow caster), plus a soft fill
+const sun = new THREE.DirectionalLight("#fff4e6", 1.5); sun.position.set(-3.5, 6.5, 9); sun.target.position.set(.5, 0, -7);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -8, right: 8, top: 9, bottom: -9, near: 1, far: 30 }); sun.shadow.bias = -.0003; sun.shadow.normalBias = .02; sun.shadow.radius = 4;
+scene.add(sun, sun.target);
+const hemi = new THREE.HemisphereLight("#cdd6e0", "#4a443e", .45); scene.add(hemi);
+
+// the section plane itself: a faint sheet of light in the air
+const mSheet = new THREE.ShaderMaterial({ transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide,
+  uniforms: { uA: { value: 0 } }, vertexShader: "varying vec2 vU; void main(){ vU = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+  fragmentShader: "varying vec2 vU; uniform float uA; void main(){ float e = smoothstep(0.0, .12, vU.x) * smoothstep(1.0, .88, vU.x) * smoothstep(0.0, .1, vU.y) * smoothstep(1.0, .9, vU.y); gl_FragColor = vec4(vec3(1.0, .82, .55) * uA * (.35 + .65 * e), 1.0); }" });
+const sheet = new THREE.Mesh(new THREE.PlaneGeometry(7.9, 3.55), mSheet); sheet.position.set(0, 1.8, 0); scene.add(sheet);
+
+// ---------- camera rail: already moving at frame 0, settles at the end ----------
+const rail = new A.CameraPath(camera, [
+  { t: 0, p: [-1.4, 1.05, -6.4], q: [3.4, 1.45, -11.2], fov: 64 },
+  { t: 2, p: [-1.55, 1.3, -4.0], q: [2.6, 1.4, -10.4] },
+  { t: 4, p: [-1.45, 1.75, -.6], q: [1.5, 1.25, -9.4] },
+  { t: 6, p: [-1.15, 2.0, 1.5], q: [1.1, 1.1, -8.6], fov: 60 },
+]);
+const camEase = (k) => .45 * k + .55 * A.out(k);
+
+const words = [...document.querySelectorAll("#claim .w")], shade = document.getElementById("shade");
+
+window.seek = async (t) => {
+  uTime.value = t;
+  const z = lineZ(t);
+  S.uPlane.value = z;
+  S.uSeam.value = A.smooth(A.prog(t, .45, .35)) * (1 - A.smooth(A.prog(t, 4.15, .35)));
+  // back wall: painted bottom-up 0.25–0.85 s
+  SB.uPlane.value = A.lerp(-.2, 3.8, A.inOut(A.prog(t, .25, .6)));
+  SB.uSeam.value = A.prog(t, .2, .1) * (1 - A.prog(t, .8, .15));
+  sheet.position.z = z; mSheet.uniforms.uA.value = .16 * S.uSeam.value;
+  sheet.visible = mSheet.uniforms.uA.value > .001;
+  // raw lighting: work lamp on until the line reaches it
+  const lampOn = 1 - A.smooth((z - (lampPos.z - .2)) / .25);
+  workLight.intensity = 26 * lampOn; mLampHead.emissiveIntensity = 14 * lampOn;
+  // fixtures rise once the line has fully passed them
+  for (const f of fixtures) {
+    const p = A.prog(z, f.z, 1.3);
+    f.g.visible = p > 0; f.g.scale.set(1, Math.max(.001, A.back(p, 1.2)), 1);
+    f.prods.forEach((o, i) => { const q = A.prog(z, f.z + .5 + i * .03, .9); o.visible = q > 0; o.scale.setScalar(Math.max(.001, A.back(q, 2))); });
+  }
+  // light lines: ceiling first, then light (0.8 m lag), LED switch-on with one flicker
+  segs.forEach((s, i) => { const k = A.prog(z, s.z + .8, .5), fl = k > 0 && k < .35 ? (Math.sin(k * 60) > 0 ? 1 : .25) : 1; const v = 7 * A.smooth(k) * fl; iSeg.setColorAt(i, new THREE.Color(v, v * .86, v * .66)); });
+  iSeg.instanceColor.needsUpdate = true;
+  warm.forEach((w) => { w.l.intensity = 30 * A.smooth(A.prog(z, w.z + 1.0, 1.2)); });
+  bulbs.forEach((b) => { const on = 1 - A.smooth(A.prog(z, b.z - .3, .3)); b.l.intensity = 5 * on; });
+  rawProps.forEach((o) => { o.visible = z < o.userData.zmax; });
+  rail.at(t, camEase);
+  // claim: word by word, rising 24 px; legibility gradient underneath
+  shade.style.opacity = A.smooth(A.prog(t, TL.claim - .1, .5));
+  words.forEach((w, i) => { const k = A.out(A.prog(t, TL.claim + i * .12, .45)); w.style.opacity = k; w.style.transform = `translateY(${(1 - k) * 24}px)`; });
+  post.render(scene, camera, t);
+};
+window.POSTINFO = post.info;
+</script></body></html>

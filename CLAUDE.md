@@ -12,6 +12,13 @@ Julia produces marketing, educational videos, motion graphics and advertising cr
 - **AI video model (Adriano, 2026-10-22):** generate every AI video with **Seedance 2.5** (best available model; presenter: omni-reference with start image + audio reference, 1080p). Do **not** use Wan. Validate with a short clip in final resolution and reuse it in the edit.
 - **UGC (presenter videos, added 2026-10-22):** `creative/ugc/`. UGC stays UGC (no effects); AI presenters are labelled «KI-generiert» and never pose as real AMS employees; craft details must be technically correct; every line is checked against the image under it, performance claims are never absolute, and every named feature is shown (pre-flight 6g). UGC serves the AMS creative direction: a memorable idea first, never a conventional construction video. Reference: `creative/references/ugc-ref-01/`.
 - **Motion graphics / video:** follow `.claude/skills/motion-graphics/SKILL.md` (engine in `motion/`).
+- **Audiovisual studio (2026-10-22):** Julia coordinates four subagents in `.claude/agents/`:
+  - `ams-creative-director` (brief first);
+  - `ams-3d-animation-engineer`;
+  - `ams-motion-design-engineer`;
+  - `ams-render-qc-engineer` (provisional spec).
+
+  Programmatic 3D pipeline: `motion/pipeline3d/`. Proven techniques: `creative/motion-lab/06-PROVEN-TECHNIQUES.md`. Environment and repo audit: `creative/motion-lab/07-STUDIO-AUDIT.md`. No film reaches Adriano without QC (objective + frame review).
 - **Julia environment:** run `bash scripts/setup-julia.sh` at session start if `julia` is missing.
 - All earlier marketing, educational-video and motion-graphics skills stay in force. New instructions add to them; they never replace them.
 
