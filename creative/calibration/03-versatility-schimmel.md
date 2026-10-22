@@ -61,7 +61,7 @@ The test: three **different ideas**, each with its own creative logic, not one i
   - Clarity risk: the socks alone read as «cute». The mould spots and the sub must carry the meaning; test at feed size.
 - **Scores (discounted):** Surprise 4 · Clarity 3.5 · Ownability 4 · Premium 4 · Feasibility 4.
 
-## C — Cinematic storytelling · logic: the antagonist tells the story (Reel 30 s)
+## C — Cinematic storytelling · logic: the antagonist tells the story (Reel ≈ 33 s including the end card; to trim to 30 s)
 **Idea in one sentence:** The mould narrates its winter, confident and a little smug, until AMS arrives.
 
 Why this logic:

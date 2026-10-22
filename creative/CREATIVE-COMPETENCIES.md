@@ -17,7 +17,7 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 ## Pre-flight check (before any credit is spent)
 1. **Objective → style:** is the style justified by the objective and the KPI?
 2. **Idea:** can it be said in one sentence? Would a stranger stop scrolling? Is there a 2nd-level cliché?
-2b. **Silent test (visual metaphors):** cover the headline. Does the image alone show the idea? If the metaphor only lives in the words, the image needs a stronger visual cue (exaggeration, a recognisable object in the wrong place, a familiar gesture). Hierarchy: within 1 s, is the key element (e.g. the mould) the first thing the eye finds?
+2b. **Silent test (an aid, not a law):** cover the headline. Does the image alone show the idea? If the metaphor only lives in the words, the image needs a stronger visual cue (exaggeration, a recognisable object in the wrong place, a familiar gesture). Hierarchy: within 1 s, is the key element (e.g. the mould) the first thing the eye finds? Some ideas work precisely because text and image combine unexpectedly; there, test the pair, not the image alone.
 3. **Claims, two kinds (calibrated 2026-10-22):**
    - **Contractual commitment:** a statement a client could hold AMS to, such as a date, a deadline, a duration, permanence of a result, a scope of services, or a number. It needs proof or a softer frame. Examples: «am geplanten Tag», «dauerhaft», «nie wieder», «alle Gewerke», «innert 24 Stunden» (B2B).
    - **Legitimate advertising expression:** figurative, evaluative or tonal language that no reasonable reader takes as a contract. Keep it. Examples: «Auf den Takt genau.», «Eine Handschrift.», «Die Kante macht den Meister.»
@@ -26,7 +26,9 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
 4. **Culture and season:** Swiss details (yellow post boxes, CHF, ss not ß); can AMS actually execute it in this season?
 5. **Composition plan:** where do the headline, subject, CTA and logo sit? Is a clean zone reserved for the logo, and which variant?
 6. **Brand:** official logo only; no invented colours; no boxes; brand name once per layout (logo *or* kicker).
+6a. **Truth in B2B:** communicate real benefits only. Never invent track record, references, numbers or capabilities (e.g. «Filiale 7», «five-city rollout»), even as placeholders in visuals. Confirmed facts only (claims register).
 6b. **Legibility:** sublines ≥ 40 px on 1080 wide; contrast measured (≥ 4.5:1), never judged by eye.
+6c. **Total duration:** add up every scene **including the end card**, and give each text its reading time (≈ 0.3 s per word + 0.5 s). The stated length must equal the sum.
 7. **Cost:** cheapest test first (layout on paper, composition, animatic) before generation.
 A piece that fails any point is fixed on paper, not with credits.
 

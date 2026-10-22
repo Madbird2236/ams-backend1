@@ -43,3 +43,7 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - Precision: never imply a surface treatment ends mould for good when moisture causes remain.
   - Calibrated claims rule: distinguish **contractual commitments** (need proof) from **legitimate advertising expressions** (keep). Excess caution kills good lines.
 - 2026-10-22 Service facts confirmed: night/weekend work in operating centres; all Swiss language regions; real rollout photos available (client permission per store). Real proof beats AI images in B2B.
+- 2026-10-22 Calibration 04 (retail ×3) **approved as concept exercise; versatility B2C + B2B complete.** A (Store-Manual vs execution) = strongest commercial concept. B (night guard) = exercise only: the link witness → service → client benefit is unclear. C (one detail through five cities) = storytelling language **kept in the repertoire**.
+  - B2B must show real benefits without inventing history or capabilities. Self-check found two cases in my own sketches: «Filiale 7» label and «Fünf Städte» implying a five-city track record.
+  - The silent test is an aid, not a law: some ideas live in the text–image pair.
+  - Always add up the total script length including the end card. Self-check: retail C was labelled 27 s but is 31 s (27 + 4 s card), and its 13-word card needs ≈ 4.4 s, not 4 s. Mould C was labelled 30 s, but with the card it is ≈ 33 s.

@@ -69,7 +69,7 @@ The emotional driver is **control from a distance**.
   - Culture: a Swiss centre (signage in German, CHF prices in neighbouring windows).
 - **Scores (discounted):** Surprise 4 · Clarity 4 · Ownability 3.5 · Premium 4 · Feasibility 4.
 
-## C — Cinematic storytelling · logic: one detail travels through Switzerland (match-cut journey, the client as protagonist)
+## C — Cinematic storytelling (31 s including a 4.5 s end card; corrected from «27 s») · logic: one detail travels through Switzerland (match-cut journey, the client as protagonist)
 **Idea in one sentence:** An expansion manager wonders whether five stores in three language regions can feel like one; one physical detail, matched from city to city, answers the question.
 
 | Time | Picture | Text / VO | Sound |
@@ -124,3 +124,11 @@ The emotional driver is **control from a distance**.
 - Scope discipline shaped the ideas: I avoided every metaphor that implies «we do everything» (puzzle, conductor, relay).
 - Answered 2026-10-22: night/weekend work in operating centres yes; Romandie and Ticino yes; real rollout photos yes.
   - A should use real photos instead of AI images, after checking each client's permission to show the store.
+
+
+## Correction after Adriano's review (2026-10-22)
+- **Duration:** C is 27 s plus the end card. The 13-word card needs ≈ 4.4 s, so the total is ≈ 31.5 s. Trim the card or the journey to land at 30 s.
+- **No invented history:**
+  - The «Filiale 7» label in A's sketch is replaced by «real project photo (with permission)».
+  - C's «Fünf Städte» may only be used if AMS has executed for one brand in five cities. Otherwise use the real number.
+- **B:** kept as an exercise. The witness → service → benefit chain is not clear enough for production.
