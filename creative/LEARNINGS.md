@@ -119,3 +119,8 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Look *along* a surface (grazing camera + raking light) to reveal material; depth of field turns perspective into depth.
 - Let the subject cross the frame (camera slower than the subject) instead of pinning it.
 - Headless Chromium blocks ES modules over file://: write post-processing passes as classic scripts (own bokeh pass from the depth buffer).
+
+## 2026-10-22 — FACE-1 (first hybrid talking-head explainer, 30 s, 439.8 credits)
+- Seedance 2.5 omni-reference with start image + audio reference re-voices the line itself: lip-sync is perfect, but it may **add words** (S2 repeated «hinter dem Schrank») → transcribe every clip with Whisper before editing.
+- Validate in the final resolution and reuse the validation clip: no wasted credits.
+- This environment cannot download from Higgsfield; the whole edit runs in the Higgsfield sandbox (Playwright + SwiftShader WebGL works there; ES modules need a local node_modules link for playwright).
