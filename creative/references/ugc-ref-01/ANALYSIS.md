@@ -45,3 +45,28 @@ Average shot length is about 3 s. The alternation is direct talk → work → de
 - One person, one tip, one proof shot. The value is the tip, not the effects.
 - Hide the hardest AI tasks (lip-sync, hands) in B-roll; show the face only where the message needs eye contact.
 - Credibility comes from **correct craft logic**. A wrong process order destroys it faster than any visual glitch.
+
+## Re-evaluation 2026-10-22 (after the failed test shot)
+New facts from Adriano's Higgsfield library (job c5065e57):
+- **Model:** Seedance 2.5, one single 15 s generation, 720p, native audio. Not stitched shots.
+- **The presenter is a character element named «Adriano dos Santos»**, built from Adriano's photo: a digital twin of the owner, not a fictional actor.
+- **Speech (transcribed):**
+  - «Why can you hear your neighbours through a new wall?»
+  - «No insulation inside, and the wall works like a drum.»
+  - «Full insulation and double boards, and the room goes quiet.»
+  - English with a light accent.
+- **Prompt logic:** «realistic smartphone-shot UGC with multiple camera angles, true-to-life, not a movie»; 5 shots described one by one: wide → side close-up → over-the-shoulder → top-down hands → low-angle turn to camera. Natural daylight, light handheld, normal speed, room tone, **no text in frame**.
+
+### Why it works (and my test did not)
+| Reference | My test shot 1 |
+|---|---|
+| Opens on a **lived problem as a question** («why can you hear your neighbours?») | Opened with a generic listicle line («Häufigster Fehler …») |
+| Opens **wide in the real situation**; the man is small, the room tells the story | Opened centred, chest-up, posed: a presenter, not a worker |
+| He **works** the whole time; he talks while doing; he turns to camera only for the payoff | He held the tape roll like a product and talked into the lens |
+| A **sensory metaphor** explains the cause («the wall works like a drum») | Plain instruction |
+| The payoff is a **feeling** («the room goes quiet») | The payoff was a rule |
+| 5 angles = a colleague filming = credible | One frontal angle = an ad |
+| **One generation** gives one light, one room, one sound world | An image → video pipeline per shot gives stiff, separate pieces |
+| A **real person** (the owner's twin) | A generic stock-looking «Swiss painter», with a postcard window and a flag |
+
+Still valid from the first analysis: the hair continuity error (shot 3), the inverted craft order (cut after fitting) and no subtitles.

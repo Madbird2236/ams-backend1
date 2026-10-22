@@ -69,3 +69,10 @@ Read before every new concept. Add an entry after every decision by Adriano.
   - tesa: pull once *angetrocknet*, ~45°, slowly. 3M ScotchBlue 2090: dry to the touch, 45°. Manufacturers differ in detail.
   - The cutter tip was trade practice, not manufacturer guidance, so it was dropped.
   - Lesson: verify craft tips against the manufacturer before scripting.
+- 2026-10-22 UGC test shot 1 **rejected by Adriano (direction, not technique):** it looked like a conventional ad with an artificial presenter.
+  - UGC must start in a situation (mistake, detail, question).
+  - The character is part of the story and works while talking.
+  - A relationship (someone filming) creates spontaneity.
+  - Imperfection is credibility.
+  - Generate one multi-shot clip (Seedance 2.5) instead of stitching posed shots.
+  - The reference's presenter is Adriano's own character element.
