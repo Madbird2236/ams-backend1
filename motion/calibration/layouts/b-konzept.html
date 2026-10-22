@@ -1,0 +1,30 @@
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../base.css">
+<style>
+.h{position:absolute;left:84px;top:110px;font-family:InterD;font-weight:700;font-size:100px;line-height:1.02;letter-spacing:-2.5px;color:#1E293B}
+.s{position:absolute;left:84px;top:340px;width:760px;font-family:InterT;font-size:40px;line-height:1.28;color:#3a3530}
+.pill{position:absolute;left:84px;top:1170px;background:#1E293B;color:#F6F2EA;font-family:InterT;font-weight:600;font-size:32px;padding:22px 40px;border-radius:999px}
+.sk{position:absolute;left:20px;top:20px;font-family:InterT;font-weight:600;font-size:22px;letter-spacing:3px;color:#fff;background:#0008;padding:6px 12px}
+</style></head><body><div id="stage" style="background:#ebe6de">
+<svg viewBox="0 0 1080 1350" width="1080" height="1350" style="position:absolute;inset:0">
+ <defs><linearGradient id="wl" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e2ddd4"/><stop offset="1" stop-color="#f1ede6"/></linearGradient>
+ <linearGradient id="wr" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#d6d0c6"/><stop offset="1" stop-color="#e6e1d8"/></linearGradient>
+ <pattern id="knit" width="22" height="18" patternUnits="userSpaceOnUse"><rect width="22" height="18" fill="#c7a58a"/><path d="M0,0 L11,14 L22,0" stroke="#a9876c" stroke-width="3" fill="none"/></pattern>
+ <pattern id="knit2" width="22" height="18" patternUnits="userSpaceOnUse"><rect width="22" height="18" fill="#9fb7c4"/><path d="M0,0 L11,14 L22,0" stroke="#7f98a6" stroke-width="3" fill="none"/></pattern></defs>
+ <!-- corner of two walls meeting the floor -->
+ <path d="M0,480 L560,560 L560,1120 L0,1240 Z" fill="url(#wl)"/>
+ <path d="M560,560 L1080,470 L1080,1250 L560,1120 Z" fill="url(#wr)"/>
+ <path d="M0,1240 L560,1120 L1080,1250 L1080,1350 L0,1350 Z" fill="#b99e80"/>
+ <line x1="560" y1="560" x2="560" y2="1120" stroke="#c9c2b6" stroke-width="2"/>
+ <!-- the wall wears wool socks: a knitted sleeve around the lower corner -->
+ <path d="M380,945 L560,915 L740,950 L740,1150 L560,1120 L380,1162 Z" fill="url(#knit)"/>
+ <path d="M380,945 L560,915 L740,950 L740,985 L560,950 L380,980 Z" fill="url(#knit2)"/>
+ <path d="M380,1010 L560,980 L740,1015 L740,1040 L560,1005 L380,1035 Z" fill="url(#knit2)" opacity=".9"/>
+ <g fill="#5b6650" opacity=".8"><circle cx="540" cy="850" r="7"/><circle cx="575" cy="875" r="5"/><circle cx="552" cy="895" r="9"/><circle cx="590" cy="835" r="4"/></g>
+</svg>
+<div class="h">Ihre Wand hat<br>kalte Füsse.</div>
+<div class="s">An kalten Stellen kondensiert Feuchtigkeit – dort wächst Schimmel. Wir sanieren fachgerecht.</div>
+<div class="pill">Begehung anfragen</div>
+<div style="position:absolute;left:84px;top:1272px" id="logo"></div>
+<div class="sk">B · KONZEPT · LAYOUT-SKIZZE</div>
+</div><script src="../lib.js"></script>
+<script>document.getElementById('logo').innerHTML=logoSVG(260,'#1E293B');window.COMP={width:1080,height:1350,fps:1,duration:1};window.seek=()=>{};</script></body></html>
