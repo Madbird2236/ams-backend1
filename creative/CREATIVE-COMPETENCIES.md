@@ -37,6 +37,8 @@ Scope: marketing and advertising only. Operations (Jarvis), CRM/data (AMS OS) an
    - **Maps and diagrams:** regions must be clearly distinguishable from each other and from the background; labels ≥ 28 px; the final composition keeps the map and the text apart.
 6e. **Facts in explainers:** every count and every «alle/allen» is checked. Switzerland has **four** national languages and language regions (German, French, Italian, Romansh). Never say «in allen Sprachregionen» unless all four are shown **and** confirmed. Geographic scope and working hours are claimed only as confirmed in the claims register, and never generalised beyond what was confirmed.
 6f. **Audio delivery:** normalise every deliverable with `motion/engine/loudnorm.sh` to −14 LUFS integrated (±1), true peak ≤ −1.5 dBTP. Measure before delivery so levels stay consistent between videos.
+6g. **Narration matches the image (permanent, Adriano 2026-10-22):** every spoken or written statement must be visible or true in the shot it plays over (e.g. «doppelt beplankt» needs two boards on screen). A divergence is fixed (re-cut, re-word or re-shoot) **before any publication**; a demo may show it only if the evaluation names it as an open defect.
+6h. **Technically better ≠ memorable:** post-production can fix order, continuity, rhythm and sound, but it cannot turn a conventional idea into a memorable one. Judge the idea first (point 2), the finish second.
 7. **Cost:** cheapest test first (layout on paper, composition, animatic) before generation.
 A piece that fails any point is fixed on paper, not with credits.
 

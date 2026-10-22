@@ -81,3 +81,4 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Many generation errors are fixable in the edit: re-order shots to the real craft sequence, punch in to hide continuity errors, leave one shot without text as a breathing pause.
 - Sound can carry the message: «es wird still» is stronger when the room tone actually falls into silence.
 - Limits of post: language of the speech, source resolution and what the image shows stay as generated. Check these before choosing post over a new generation.
+- Adriano's verdict (2026-10-22): valid as a post-production demo. Two permanent rules added to the pre-flight: 6g (narration must match the image before any publication) and 6h (technically better ≠ memorable; judge the idea first).
