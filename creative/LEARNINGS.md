@@ -97,3 +97,4 @@ Read before every new concept. Add an entry after every decision by Adriano.
 - Silence is a beat: it needs a clear trigger (one gesture) and ~0.8–1 s; any overlapping line kills it (v1 draft had «Und jetzt?» still running when the finger rose).
 - Open every reveal on the thing revealed (the edge), not on the character.
 - Temp TTS proves timing, not comic performance; test humour with real voices before production.
+- «Chef, wann?» v2 (Adriano's notes): gestures need silhouette, outline and size to read silent; a climax needs one uninterrupted movement and time without text; a closing line after the climax steals it (move series hooks to the caption). An animatic proves timing, not tactile satisfaction.
