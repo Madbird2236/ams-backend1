@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Camera, Images, Trash, CaretLeft, CaretRight, Check } from '@phosphor-icons/react'
+import { CaretLeft, CaretRight, Check } from '@phosphor-icons/react'
 import { db } from '../db'
 import { useInspection, useAssessment, usePhotos, touchInspection } from '../db/hooks'
 import { categoryById, TRADES, UNITS } from '../data/checklist'
@@ -9,27 +9,11 @@ import { Page, TopBar } from '../components/Layout'
 import { ChoiceGroup, Field, Section, conditionTone, priorityTone, interventionTone } from '../components/ui'
 import { emptyAssessment, suggestFromCondition } from '../lib/model'
 import { processPhoto } from '../lib/photos'
+import { kindOf, probeDuration } from '../lib/media'
+import { CaptureBar, MediaItem } from '../components/MediaCapture'
+import { Dictate } from '../components/Dictate'
 import { uid } from '../lib/ids'
-import { CONDITIONS, CONFIDENCES, INTERVENTIONS, PRIORITIES, type Assessment, type Condition, type Photo } from '../types'
-
-function PhotoThumb({ p, onDelete, onCaption }: { p: Photo; onDelete: () => void; onCaption: (c: string) => void }) {
-  const { t } = useT()
-  const [url, setUrl] = useState<string>('')
-  useEffect(() => {
-    const u = URL.createObjectURL(p.blob)
-    setUrl(u)
-    return () => URL.revokeObjectURL(u)
-  }, [p.blob])
-  return (
-    <figure className="overflow-hidden rounded-[var(--radius-card)] border border-border bg-raised">
-      <img src={url} alt={p.caption || ''} className="aspect-[4/3] w-full object-cover" />
-      <figcaption className="flex items-center gap-2 p-2">
-        <input className="input min-h-10 text-[14px]" placeholder={t('photo_caption')} defaultValue={p.caption} onBlur={(e) => onCaption(e.target.value)} aria-label={t('photo_caption')} />
-        <button type="button" onClick={onDelete} className="btn-ghost min-h-10 w-10 shrink-0 px-0 text-negative-ink" aria-label={t('delete_photo')}><Trash size={18} aria-hidden /></button>
-      </figcaption>
-    </figure>
-  )
-}
+import { CONDITIONS, CONFIDENCES, INTERVENTIONS, PRIORITIES, type Assessment, type Condition } from '../types'
 
 export default function ElementAssessment() {
   const { id, catId, zoneId, elementId } = useParams()
@@ -40,8 +24,6 @@ export default function ElementAssessment() {
   const cat = categoryById(catId ?? '')
   const [draft, setDraft] = useState<Assessment | null>(null)
   const photos = usePhotos(draft?.id)
-  const fileRef = useRef<HTMLInputElement>(null)
-  const camRef = useRef<HTMLInputElement>(null)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
 
@@ -76,23 +58,32 @@ export default function ElementAssessment() {
     else upd({ condition: c })
   }
 
-  const addPhotos = async (files: FileList | null) => {
+  const ensureSaved = async () => db.assessments.put({ ...draft, updatedAt: Date.now() })
+
+  const addBlob = async (blob: Blob, duration?: number) => {
+    const kind = kindOf(blob.type)
+    const stored = kind === 'photo' ? await processPhoto(blob as File) : blob
+    const dur = kind === 'photo' ? undefined : duration ?? (await probeDuration(blob))
+    await db.photos.add({ id: uid(), inspectionId: draft.inspectionId, assessmentId: draft.id, blob: stored, caption: '', createdAt: Date.now(), kind, mimeType: stored.type || blob.type, duration: dur })
+  }
+
+  const addFiles = async (files: FileList | null) => {
     if (!files?.length) return
     setBusy(true); setErr(null)
     try {
-      await db.assessments.put({ ...draft, updatedAt: Date.now() })
-      for (const f of Array.from(files)) {
-        const blob = await processPhoto(f)
-        await db.photos.add({ id: uid(), inspectionId: draft.inspectionId, assessmentId: draft.id, blob, caption: '', createdAt: Date.now() })
-      }
+      await ensureSaved()
+      for (const f of Array.from(files)) await addBlob(f)
       await touchInspection(draft.inspectionId)
     } catch {
       setErr(t('photo_too_large'))
     } finally {
       setBusy(false)
-      if (fileRef.current) fileRef.current.value = ''
-      if (camRef.current) camRef.current.value = ''
     }
+  }
+
+  const addAudio = async (blob: Blob, seconds: number) => {
+    setBusy(true); setErr(null)
+    try { await ensureSaved(); await addBlob(blob, seconds); await touchInspection(draft.inspectionId) } catch { setErr(t('photo_too_large')) } finally { setBusy(false) }
   }
 
   const clearAll = async () => {
@@ -122,27 +113,24 @@ export default function ElementAssessment() {
           <ChoiceGroup options={PRIORITIES} value={draft.priority} onChange={(v) => upd({ priority: v, suggested: false })} render={(p) => t(`prio.${p}`)} columns={1} toneFor={(p) => priorityTone[p]} />
         </Section>
 
-        <Section title={t('photos')} right={t('photos_count', { n: photos?.length ?? 0 })}>
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" disabled={busy} onClick={() => camRef.current?.click()} className="btn-primary min-h-12"><Camera size={20} aria-hidden /> {t('take_photo')}</button>
-            <button type="button" disabled={busy} onClick={() => fileRef.current?.click()} className="btn-secondary min-h-12"><Images size={20} aria-hidden /> {t('add_photo')}</button>
-            <input ref={camRef} type="file" accept="image/*" capture="environment" className="hidden" onChange={(e) => addPhotos(e.target.files)} />
-            <input ref={fileRef} type="file" accept="image/*" multiple className="hidden" onChange={(e) => addPhotos(e.target.files)} />
-          </div>
+        <Section title={t('media')} right={t('media_count', { p: (photos ?? []).filter((x) => (x.kind ?? 'photo') === 'photo').length, a: (photos ?? []).filter((x) => x.kind === 'audio').length, v: (photos ?? []).filter((x) => x.kind === 'video').length })}>
+          <CaptureBar busy={busy} onFiles={addFiles} onAudioBlob={addAudio} />
           {err && <p className="mt-2 text-[13px] text-negative" role="alert">{err}</p>}
           {photos && photos.length > 0 && (
             <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
               {photos.map((p) => (
-                <PhotoThumb key={p.id} p={p} onDelete={() => db.photos.delete(p.id)} onCaption={(c) => db.photos.update(p.id, { caption: c })} />
+                <MediaItem key={p.id} p={p} onDelete={() => db.photos.delete(p.id)} onCaption={(c) => db.photos.update(p.id, { caption: c })} />
               ))}
             </div>
           )}
         </Section>
 
-        <Section title={t('description')}>
+        <Section title={t('description')} right={<Dictate onText={(txt) => setDraft((d) => (d ? { ...d, description: (d.description ? d.description + ' ' : '') + txt } : d))} />}>
           <textarea className="input min-h-24" value={draft.description} onChange={(e) => upd({ description: e.target.value })} aria-label={t('description')} />
           <div className="mt-4">
-            <Field label={t('observations')}><textarea className="input min-h-20" value={draft.notes} onChange={(e) => upd({ notes: e.target.value })} /></Field>
+            <Field label={t('observations')} right={<Dictate onText={(txt) => setDraft((d) => (d ? { ...d, notes: (d.notes ? d.notes + ' ' : '') + txt } : d))} />}>
+              <textarea className="input min-h-20" value={draft.notes} onChange={(e) => upd({ notes: e.target.value })} />
+            </Field>
           </div>
         </Section>
 

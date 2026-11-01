@@ -117,6 +117,9 @@ export interface Assessment {
   updatedAt: number
 }
 
+export type MediaKind = 'photo' | 'audio' | 'video'
+
+/** A media record attached to an element assessment. Table is still called `photos` for compatibility. */
 export interface Photo {
   id: string
   inspectionId: string
@@ -124,7 +127,13 @@ export interface Photo {
   blob: Blob
   caption: string
   createdAt: number
+  /** defaults to 'photo' for records created before media support */
+  kind?: MediaKind
+  mimeType?: string
+  /** seconds, for audio/video */
+  duration?: number
 }
+export type Media = Photo
 
 export interface ExportBundle {
   app: 'ams-hotel-inspector'

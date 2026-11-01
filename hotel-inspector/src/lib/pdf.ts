@@ -281,11 +281,13 @@ export async function generatePdf(insp: Inspection, assessments: Assessment[], p
 
   // ---------- 6. Photos
   d.h1(`6. ${t('rep.6')}`)
-  if (!opts.includePhotos || photos.length === 0) {
+  const stills = photos.filter((p) => (p.kind ?? 'photo') === 'photo')
+  const clips = photos.filter((p) => (p.kind ?? 'photo') !== 'photo')
+  if (!opts.includePhotos || stills.length === 0) {
     d.para(t('rep_no_photos'), { color: GREY })
   } else {
     const byAss = new Map<string, Photo[]>()
-    for (const p of photos) byAss.set(p.assessmentId, [...(byAss.get(p.assessmentId) ?? []), p])
+    for (const p of stills) byAss.set(p.assessmentId, [...(byAss.get(p.assessmentId) ?? []), p])
     const ordered = sortByPriority(assessments.filter((a) => byAss.has(a.id)))
     const boxW = (CONTENT_W - 6) / 2
     const boxH = 58
@@ -320,6 +322,17 @@ export async function generatePdf(insp: Inspection, assessments: Assessment[], p
         d.y += boxH + 8
       }
     }
+  }
+
+  if (clips.length) {
+    d.h2(t('rep_media_refs'))
+    const byA = new Map<string, Photo[]>()
+    for (const c of clips) byA.set(c.assessmentId, [...(byA.get(c.assessmentId) ?? []), c])
+    d.bullets([...byA.entries()].flatMap(([aid, list]) => {
+      const a = assessments.find((x) => x.id === aid)
+      const where = a ? labelOf(insp, a, t) : '—'
+      return list.map((c, i) => `${where}: ${(c.kind === 'video' ? t('video_note') : t('audio_note'))} ${i + 1}${c.duration ? ` (${Math.floor(c.duration / 60)}:${String(c.duration % 60).padStart(2, '0')})` : ''}${c.caption ? ` — ${c.caption}` : ''}`)
+    }))
   }
 
   // ---------- 7–9

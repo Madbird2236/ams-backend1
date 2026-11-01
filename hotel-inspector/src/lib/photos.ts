@@ -1,5 +1,5 @@
 /** Resize + compress a captured image to keep IndexedDB and PDF sizes reasonable. */
-export async function processPhoto(file: File, maxEdge = 1600, quality = 0.8): Promise<Blob> {
+export async function processPhoto(file: Blob, maxEdge = 1600, quality = 0.8): Promise<Blob> {
   const bitmap = await loadImage(file)
   const scale = Math.min(1, maxEdge / Math.max(bitmap.width, bitmap.height))
   const w = Math.round(bitmap.width * scale)
@@ -15,7 +15,7 @@ export async function processPhoto(file: File, maxEdge = 1600, quality = 0.8): P
   return blob
 }
 
-async function loadImage(file: File): Promise<ImageBitmap | HTMLImageElement> {
+async function loadImage(file: Blob): Promise<ImageBitmap | HTMLImageElement> {
   if ('createImageBitmap' in window) {
     try {
       return await createImageBitmap(file, { imageOrientation: 'from-image' } as ImageBitmapOptions)

@@ -13,6 +13,11 @@ class AmsDb extends Dexie {
       assessments: 'id, inspectionId, [inspectionId+zoneId], [inspectionId+zoneId+elementId], zoneId',
       photos: 'id, inspectionId, assessmentId',
     })
+    this.version(2).stores({
+      inspections: 'id, updatedAt, createdAt',
+      assessments: 'id, inspectionId, [inspectionId+zoneId], [inspectionId+zoneId+elementId], zoneId',
+      photos: 'id, inspectionId, assessmentId, kind',
+    }).upgrade((tx) => tx.table('photos').toCollection().modify((p) => { if (!p.kind) { p.kind = 'photo'; p.mimeType = p.blob?.type || 'image/jpeg' } }))
   }
 }
 

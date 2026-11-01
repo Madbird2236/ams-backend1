@@ -45,7 +45,10 @@ export async function importBundle(bundle: ExportBundle): Promise<number> {
   const photos: Photo[] = []
   for (const p of bundle.photos) {
     const { dataUrl, ...rest } = p
-    photos.push({ ...rest, blob: await dataUrlToBlob(dataUrl) })
+    const blob = await dataUrlToBlob(dataUrl)
+    const mime = blob.type || rest.mimeType || 'image/jpeg'
+    const kind = rest.kind ?? (mime.startsWith('video/') ? 'video' : mime.startsWith('audio/') ? 'audio' : 'photo')
+    photos.push({ ...rest, kind, mimeType: mime, blob })
   }
   await db.transaction('rw', db.inspections, db.assessments, db.photos, async () => {
     const ids = bundle.inspections.map((i) => i.id)
