@@ -31,7 +31,10 @@ export const fmtDuration = (s: number | undefined): string => {
 
 export const isSecure = (): boolean => typeof window !== 'undefined' && (window.isSecureContext || location.hostname === 'localhost')
 
-export const canRecord = (): boolean => isSecure() && typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
+/** The claude.ai artifact frame refuses getUserMedia and speech recognition; the build flag routes capture through file inputs there. */
+export const inArtifactFrame = (): boolean => !!import.meta.env.VITE_ARTIFACT
+
+export const canRecord = (): boolean => !inArtifactFrame() && isSecure() && typeof MediaRecorder !== 'undefined' && !!navigator.mediaDevices?.getUserMedia
 
 type SR = { new (): SpeechRecognitionLike }
 interface SpeechRecognitionLike {
@@ -42,6 +45,6 @@ interface SpeechRecognitionLike {
 }
 export function speechRecognitionCtor(): SR | null {
   const w = window as unknown as { SpeechRecognition?: SR; webkitSpeechRecognition?: SR }
-  return isSecure() ? (w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null) : null
+  return isSecure() && !inArtifactFrame() ? (w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null) : null
 }
 export const speechLocale: Record<string, string> = { pt: 'pt-PT', de: 'de-CH', it: 'it-IT', en: 'en-GB' }

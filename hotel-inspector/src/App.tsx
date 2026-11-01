@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, HashRouter, Routes, Route } from 'react-router-dom'
 import Home from './pages/Home'
 import Reports from './pages/Reports'
 import InspectionLayout from './pages/InspectionLayout'
@@ -12,8 +12,10 @@ import ReportPage from './pages/ReportPage'
 import { UpdatePrompt } from './components/UpdatePrompt'
 
 export default function App() {
+  const Router = import.meta.env.VITE_ROUTER === 'hash' ? HashRouter : BrowserRouter
+  const basename = import.meta.env.VITE_ROUTER === 'hash' ? undefined : import.meta.env.BASE_URL.replace(/\/$/, '')
   return (
-    <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+    <Router basename={basename}>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/reports" element={<Reports />} />
@@ -29,6 +31,6 @@ export default function App() {
         <Route path="*" element={<Home />} />
       </Routes>
       <UpdatePrompt />
-    </BrowserRouter>
+    </Router>
   )
 }

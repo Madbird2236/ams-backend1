@@ -18,7 +18,17 @@ export async function buildBundle(inspectionIds?: string[]): Promise<ExportBundl
   return { app: 'ams-hotel-inspector', version: 1, exportedAt: Date.now(), inspections, assessments, photos }
 }
 
-export function downloadBlob(blob: Blob, filename: string) {
+type ClaudeRuntime = { use?: (name: string) => Promise<{ save?: (r: { filename: string; data: Blob }) => Promise<unknown> } | null> }
+
+/** Hands a generated file to the viewer. Inside the claude.ai artifact frame the page cannot start downloads itself, so it uses the `downloads` capability there. */
+export async function downloadBlob(blob: Blob, filename: string): Promise<void> {
+  const rt = (window as unknown as { claude?: ClaudeRuntime }).claude
+  if (rt?.use) {
+    try {
+      const dl = await rt.use('downloads')
+      if (dl?.save) { await dl.save({ filename, data: blob }); return }
+    } catch { /* viewer declined or unavailable: fall through to a plain download */ }
+  }
   const url = URL.createObjectURL(blob)
   const a = document.createElement('a')
   a.href = url
@@ -31,7 +41,7 @@ export function downloadBlob(blob: Blob, filename: string) {
 
 export async function exportJson(inspectionIds: string[] | undefined, filename: string) {
   const bundle = await buildBundle(inspectionIds)
-  downloadBlob(new Blob([JSON.stringify(bundle)], { type: 'application/json' }), `${filename}.json`)
+  await downloadBlob(new Blob([JSON.stringify(bundle)], { type: 'application/json' }), `${filename}.json`)
 }
 
 export function isBundle(x: unknown): x is ExportBundle {

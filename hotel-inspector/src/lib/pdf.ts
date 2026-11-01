@@ -8,6 +8,7 @@ import { CATEGORIES, categoryById } from '../data/checklist'
 import { fmtDate, fmtMoney, parseNum } from './ids'
 import { zoneLabel } from './model'
 import { blobToDataUrl, imageSize } from './photos'
+import { downloadBlob } from './exportImport'
 
 export interface PdfOptions { lang: Lang; includePhotos: boolean; includeBudget: boolean }
 
@@ -427,5 +428,5 @@ export async function generatePdf(insp: Inspection, assessments: Assessment[], p
   }
 
   const safe = hotelName.replace(/[^\p{L}\p{N}]+/gu, '-').replace(/^-|-$/g, '').slice(0, 40) || 'hotel'
-  doc.save(`${t('pdf_file_prefix')}-${safe}-${h.inspectionDate || 'draft'}.pdf`)
+  await downloadBlob(doc.output('blob'), `${t('pdf_file_prefix')}-${safe}-${h.inspectionDate || 'draft'}.pdf`)
 }
