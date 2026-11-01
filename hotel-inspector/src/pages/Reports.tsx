@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import { FilePdf, DownloadSimple, Copy } from '@phosphor-icons/react'
 import { useInspections, useAssessments, useInspectionPhotos } from '../db/hooks'
 import { useT } from '../i18n'
 import { Page, TopBar } from '../components/Layout'
@@ -23,17 +24,17 @@ function Row({ insp }: { insp: Inspection }) {
   }
 
   return (
-    <li className="card p-3">
+    <li className="px-4 py-3">
       <Link to={`/i/${insp.id}`} className="block">
-        <div className="font-semibold">{hotelDisplayName(insp.hotel, t('untitled_hotel'))}</div>
-        <div className="text-xs text-slate-500">{fmtDate(insp.hotel.inspectionDate, lang)} · {insp.hotel.client || '—'} · {assessments?.length ?? 0} {t('elements').toLowerCase()} · {t('photos_count', { n: photos?.length ?? 0 })}</div>
+        <div className="text-[15px] font-semibold">{hotelDisplayName(insp.hotel, t('untitled_hotel'))}</div>
+        <div className="num mt-0.5 text-[13px] text-muted">{fmtDate(insp.hotel.inspectionDate, lang)} · {insp.hotel.client || '—'} · {t('photos_count', { n: photos?.length ?? 0 })}</div>
       </Link>
-      <div className="mt-3 grid grid-cols-4 gap-2">
-        <button type="button" disabled={busy || !assessments} onClick={pdf} className="btn-primary col-span-2 py-2 text-sm">{busy ? t('generating') : t('export_pdf')}</button>
-        <button type="button" onClick={() => exportJson([insp.id], `${t('export_json_name')}-${insp.hotel.name || insp.id.slice(0, 6)}`)} className="btn-secondary py-2 text-xs" title={t('export_inspection')}>JSON</button>
-        <button type="button" onClick={() => duplicateInspection(insp.id, uid())} className="btn-secondary py-2 text-xs">{t('duplicate')}</button>
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        <button type="button" disabled={busy || !assessments} onClick={pdf} className="btn-primary min-h-10 px-3 text-[14px]"><FilePdf size={16} aria-hidden /> {busy ? t('generating') : t('export_pdf')}</button>
+        <button type="button" onClick={() => exportJson([insp.id], `${t('export_json_name')}-${insp.hotel.name || insp.id.slice(0, 6)}`)} className="btn-secondary min-h-10 px-3 text-[14px]" title={t('export_inspection')}><DownloadSimple size={16} aria-hidden /> JSON</button>
+        <button type="button" onClick={() => duplicateInspection(insp.id, uid())} className="btn-secondary min-h-10 px-3 text-[14px]"><Copy size={16} aria-hidden /> {t('duplicate')}</button>
+        <button type="button" onClick={() => confirm(t('delete_confirm')) && deleteInspection(insp.id)} className="btn-ghost ml-auto min-h-10 px-2 text-[14px] text-negative-ink">{t('delete_inspection')}</button>
       </div>
-      <button type="button" onClick={() => confirm(t('delete_confirm')) && deleteInspection(insp.id)} className="mt-2 w-full text-xs text-red-600 underline">{t('delete_inspection')}</button>
     </li>
   )
 }
@@ -46,7 +47,7 @@ export default function Reports() {
       <TopBar title={t('reports')} subtitle={t('company')} back="/" />
       <Page>
         {inspections && inspections.length === 0 ? <Empty text={t('no_inspections')} /> : (
-          <ul className="space-y-3">{inspections?.map((i) => <Row key={i.id} insp={i} />)}</ul>
+          <ul className="panel divide-y divide-rule">{inspections?.map((i) => <Row key={i.id} insp={i} />)}</ul>
         )}
       </Page>
     </div>

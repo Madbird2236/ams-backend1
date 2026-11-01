@@ -3,7 +3,8 @@ import type { Assessment, Inspection } from '../types'
 import { CATEGORIES } from '../data/checklist'
 import { useT } from '../i18n'
 import { Page } from '../components/Layout'
-import { ProgressBar } from '../components/ui'
+import { Track, Pill, Chevron } from '../components/ui'
+import { CategoryIcon } from '../components/CategoryIcon'
 import { isAssessed } from '../lib/model'
 
 type Ctx = { insp: Inspection; assessments: Assessment[] }
@@ -14,8 +15,8 @@ export default function Checklist() {
 
   return (
     <Page>
-      <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-600">{t('select_area')}</h2>
-      <div className="grid grid-cols-2 gap-3">
+      <h2 className="mb-3 text-[16px] font-semibold leading-6">{t('select_area')}</h2>
+      <ul className="panel divide-y divide-rule overflow-hidden">
         {CATEGORIES.map((c) => {
           const zones = insp.zones.filter((z) => z.categoryId === c.id)
           const total = zones.length * c.elements.length
@@ -24,28 +25,28 @@ export default function Checklist() {
           const p1 = catAss.filter((a) => a.priority === 'P1').length
           const done = catAss.length
           return (
-            <Link key={c.id} to={`/i/${insp.id}/c/${c.id}`} className="card flex min-h-32 flex-col justify-between p-3 hover:bg-slate-50 active:bg-slate-100">
-              <div className="flex items-start justify-between">
-                <span className="text-2xl">{c.icon}</span>
-                <span className="rounded-md bg-brand-900 px-1.5 py-0.5 text-[10px] font-bold text-white">{c.code}</span>
-              </div>
-              <div>
-                <div className="text-sm font-bold leading-tight">{t(`cat.${c.id}`)}</div>
-                <div className="mt-1 text-xs text-slate-500">
-                  {c.repeatable ? `${zones.length} ${t('zones').toLowerCase()} · ` : ''}{done}/{total}
-                </div>
-                <ProgressBar value={done} max={total} className="mt-2" />
-                {(p0 > 0 || p1 > 0) && (
-                  <div className="mt-2 flex gap-1">
-                    {p0 > 0 && <span className="chip bg-red-600 text-white">P0 ×{p0}</span>}
-                    {p1 > 0 && <span className="chip bg-orange-500 text-white">P1 ×{p1}</span>}
+            <li key={c.id}>
+              <Link to={`/i/${insp.id}/c/${c.id}`} className="row py-3">
+                <CategoryIcon id={c.id} size={22} className="text-muted shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2">
+                    <span className="truncate text-[15px] font-medium">{c.code}. {t(`cat.${c.id}`)}</span>
+                    {p0 > 0 && <Pill tone="alarm">P0 · {p0}</Pill>}
+                    {p1 > 0 && <Pill tone="negative">P1 · {p1}</Pill>}
                   </div>
-                )}
-              </div>
-            </Link>
+                  <div className="mt-1 flex items-center gap-3">
+                    <Track value={done} max={total} className="flex-1 max-w-40" />
+                    <span className="num shrink-0 whitespace-nowrap text-[13px] text-muted">
+                      {done}/{total}{c.repeatable ? ` · ${zones.length} ${t('zones').toLowerCase()}` : ''}
+                    </span>
+                  </div>
+                </div>
+                <Chevron />
+              </Link>
+            </li>
           )
         })}
-      </div>
+      </ul>
     </Page>
   )
 }

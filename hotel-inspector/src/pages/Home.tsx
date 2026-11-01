@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Plus, FileText, FilePdf, DownloadSimple, UploadSimple } from '@phosphor-icons/react'
 import { db, requestPersistentStorage } from '../db'
 import { useInspections } from '../db/hooks'
 import { useT } from '../i18n'
 import { Brand, Page } from '../components/Layout'
-import { LangSwitcher, Empty } from '../components/ui'
+import { LangSwitcher, Empty, Pill, Chevron } from '../components/ui'
 import { newInspection, hotelDisplayName } from '../lib/model'
 import { fmtDate } from '../lib/ids'
 import { exportJson, importBundle, isBundle } from '../lib/exportImport'
@@ -41,75 +42,74 @@ export default function Home() {
     }
   }
 
-  const drafts = (inspections ?? []).filter((i) => i.status === 'draft')
-  const lastDraft = drafts[0]
+  const lastDraft = (inspections ?? []).find((i) => i.status === 'draft')
+  const hasAny = !!inspections?.length
 
   return (
     <div className="flex min-h-full flex-col">
-      <header className="bg-brand-900 text-white safe-top">
-        <div className="mx-auto flex max-w-3xl items-center justify-between px-4 py-5">
-          <Brand light />
+      <header className="safe-top">
+        <div className="mx-auto flex h-16 max-w-3xl items-center justify-between px-4">
+          <Brand />
           <LangSwitcher />
         </div>
       </header>
       <Page>
-        <div className="grid grid-cols-2 gap-3">
-          <button type="button" onClick={create} className="btn-gold col-span-2 h-20 text-lg">
-            <span className="text-2xl">＋</span> {t('new_inspection')}
+        {/* Title row: the screen's noun and its one job */}
+        <div className="mb-4 flex items-center justify-between gap-3">
+          <h1 className="text-[24px] font-semibold leading-8">{t('recent_inspections')}</h1>
+          <button type="button" onClick={create} className="btn-primary shrink-0">
+            <Plus size={18} weight="bold" aria-hidden /> {t('new_inspection')}
           </button>
-          <button type="button" disabled={!lastDraft} onClick={() => lastDraft && nav(`/i/${lastDraft.id}/checklist`)} className="btn-primary h-20 flex-col gap-1 text-sm">
-            <span className="text-xl">▶</span> {t('continue_inspection')}
-          </button>
-          <Link to="/reports" className="btn-primary h-20 flex-col gap-1 text-sm">
-            <span className="text-xl">📑</span> {t('reports')}
-          </Link>
-          <button type="button" disabled={!inspections?.length} onClick={() => nav('/reports')} className="btn-secondary h-16 flex-col gap-0.5 text-sm">
-            <span className="text-lg">⬇</span> {t('export_pdf')}
-          </button>
-          <div className="grid grid-cols-2 gap-2">
-            <button type="button" disabled={!inspections?.length} onClick={() => exportJson(undefined, `${t('export_json_name')}-${new Date().toISOString().slice(0, 10)}`)} className="btn-secondary h-16 flex-col gap-0.5 px-2 text-xs">
-              <span className="text-lg">💾</span> {t('backup')}
-            </button>
-            <button type="button" onClick={() => fileRef.current?.click()} className="btn-secondary h-16 flex-col gap-0.5 px-2 text-xs">
-              <span className="text-lg">📥</span> {t('import_backup')}
-            </button>
-            <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => onImport(e.target.files?.[0])} />
-          </div>
         </div>
 
-        {msg && <div className="mt-3 rounded-xl border border-gold-500 bg-amber-50 p-3 text-sm text-slate-800">{msg}</div>}
+        {lastDraft && (
+          <Link to={`/i/${lastDraft.id}/checklist`} className="panel row mb-4 justify-between border-accent/60 bg-accent-soft/40">
+            <div className="min-w-0">
+              <div className="text-[13px] text-muted">{t('continue_inspection')}</div>
+              <div className="truncate text-[15px] font-semibold">{hotelDisplayName(lastDraft.hotel, t('untitled_hotel'))}</div>
+            </div>
+            <Chevron />
+          </Link>
+        )}
 
-        <section className="mt-6">
-          <h2 className="mb-2 text-sm font-bold uppercase tracking-wide text-slate-600">{t('recent_inspections')}</h2>
-          {inspections === undefined ? null : inspections.length === 0 ? (
-            <Empty text={t('no_inspections')} />
-          ) : (
-            <ul className="space-y-2">
-              {inspections.map((i) => (
-                <li key={i.id}>
-                  <Link to={`/i/${i.id}`} className="card flex items-center gap-3 p-3 hover:bg-slate-50 active:bg-slate-100">
-                    <div className={`h-10 w-1.5 rounded-full ${i.status === 'completed' ? 'bg-emerald-500' : 'bg-gold-500'}`} />
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate font-semibold">{hotelDisplayName(i.hotel, t('untitled_hotel'))}</div>
-                      <div className="truncate text-xs text-slate-500">
-                        {[i.hotel.address, i.hotel.region, i.hotel.country].filter(Boolean).join(', ') || '—'}
-                      </div>
-                      <div className="text-xs text-slate-400">
-                        {t('updated')}: {fmtDate(i.updatedAt, lang)} · {i.status === 'completed' ? t('status_completed') : t('status_draft')}
-                      </div>
+        {inspections === undefined ? null : inspections.length === 0 ? (
+          <Empty text={t('no_inspections')} action={<button type="button" onClick={create} className="btn-secondary"><Plus size={16} aria-hidden /> {t('new_inspection')}</button>} />
+        ) : (
+          <ul className="panel divide-y divide-rule overflow-hidden">
+            {inspections.map((i) => (
+              <li key={i.id}>
+                <Link to={`/i/${i.id}`} className="row py-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="truncate text-[15px] font-semibold">{hotelDisplayName(i.hotel, t('untitled_hotel'))}</span>
+                      <Pill tone={i.status === 'completed' ? 'positive' : 'neutral'}>{i.status === 'completed' ? t('status_completed') : t('status_draft')}</Pill>
                     </div>
-                    <span className="text-slate-400">›</span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+                    <div className="mt-0.5 truncate text-[13px] text-muted">
+                      {[i.hotel.address, i.hotel.region, i.hotel.country].filter(Boolean).join(', ') || '—'}
+                    </div>
+                  </div>
+                  <span className="num text-[13px] text-muted">{fmtDate(i.hotel.inspectionDate || i.updatedAt, lang)}</span>
+                  <Chevron />
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
 
-        <footer className="mt-8 space-y-1 text-center text-xs text-slate-400">
+        {msg && <p className="mt-4 rounded-[var(--radius-card)] border border-warning-border bg-warning-bg px-3 py-2 text-[13px] text-warning" role="status">{msg}</p>}
+
+        <div className="mt-6 grid grid-cols-2 gap-2">
+          <Link to="/reports" className="btn-secondary"><FileText size={18} aria-hidden /> {t('reports')}</Link>
+          <button type="button" disabled={!hasAny} onClick={() => nav('/reports')} className="btn-secondary"><FilePdf size={18} aria-hidden /> {t('export_pdf')}</button>
+          <button type="button" disabled={!hasAny} onClick={() => exportJson(undefined, `${t('export_json_name')}-${new Date().toISOString().slice(0, 10)}`)} className="btn-secondary"><DownloadSimple size={18} aria-hidden /> {t('backup')}</button>
+          <button type="button" onClick={() => fileRef.current?.click()} className="btn-secondary"><UploadSimple size={18} aria-hidden /> {t('import_backup')}</button>
+          <input ref={fileRef} type="file" accept="application/json,.json" className="hidden" onChange={(e) => onImport(e.target.files?.[0])} />
+        </div>
+
+        <footer className="mt-8 space-y-1 text-[12px] leading-4 text-muted">
           <p>{t('storage_notice')}</p>
-          {persisted !== null && <p className={persisted ? 'text-emerald-600' : 'text-amber-600'}>{persisted ? t('storage_persisted') : t('storage_not_persisted')}</p>}
-          <p>{t('company')} · <a className="underline" href={t('website')} target="_blank" rel="noreferrer">ams.swiss</a></p>
+          {persisted !== null && <p className={persisted ? 'text-positive' : 'text-warning'}>{persisted ? t('storage_persisted') : t('storage_not_persisted')}</p>}
+          <p>{t('company')} · <a className="underline underline-offset-2" href={t('website')} target="_blank" rel="noreferrer">ams.swiss</a></p>
         </footer>
       </Page>
     </div>

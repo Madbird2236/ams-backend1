@@ -6,9 +6,9 @@ export function UpdatePrompt() {
   const { needRefresh: [needRefresh], updateServiceWorker } = useRegisterSW()
   if (!needRefresh) return null
   return (
-    <div className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-md rounded-xl border border-gold-500 bg-white p-3 shadow-lg">
-      <p className="text-sm">{t('update_available')}</p>
-      <button type="button" className="btn-primary mt-2 w-full py-2 text-sm" onClick={() => updateServiceWorker(true)}>{t('reload')}</button>
+    <div role="status" className="fixed inset-x-4 bottom-4 z-50 mx-auto flex max-w-md items-center justify-between gap-3 rounded-[var(--radius-card)] border border-border bg-surface p-3 shadow-[0_8px_24px_rgba(20,20,20,0.12)]">
+      <p className="text-[14px]">{t('update_available')}</p>
+      <button type="button" className="btn-primary min-h-10 shrink-0 px-3 text-[14px]" onClick={() => updateServiceWorker(true)}>{t('reload')}</button>
     </div>
   )
 }

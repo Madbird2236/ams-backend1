@@ -11,7 +11,7 @@ export default function InspectionLayout() {
   const assessments = useAssessments(id)
 
   if (insp === undefined) return null
-  if (insp === null) return <div className="p-6 text-center text-slate-500">Not found. <a href="/" className="underline">{t('home')}</a></div>
+  if (insp === null) return <div className="p-6 text-center text-muted">Not found. <a href="/" className="underline">{t('home')}</a></div>
 
   const slots = allSlots(insp)
   const byKey = new Map((assessments ?? []).map((a) => [`${a.zoneId}|${a.elementId}`, a]))
@@ -29,20 +29,13 @@ export default function InspectionLayout() {
     <div className="flex min-h-full flex-col">
       <TopBar
         title={hotelDisplayName(insp.hotel, t('untitled_hotel'))}
-        subtitle={`${t('progress')}: ${assessed}/${slots.length} · ${insp.status === 'completed' ? t('status_completed') : t('status_draft')}`}
+        subtitle={`${t('progress')} ${assessed}/${slots.length} · ${insp.status === 'completed' ? t('status_completed') : t('status_draft')}`}
         back="/"
       />
-      <nav className="sticky top-[60px] z-10 border-b border-slate-200 bg-white/95 backdrop-blur">
+      <nav className="sticky top-14 z-10 border-b border-border bg-ground" aria-label="Sections">
         <div className="mx-auto flex max-w-3xl overflow-x-auto">
           {tabs.map((tab) => (
-            <NavLink
-              key={tab.to}
-              to={tab.to}
-              end={tab.end}
-              className={({ isActive }) => `flex-1 whitespace-nowrap px-3 py-3 text-center text-sm font-semibold ${isActive ? 'border-b-2 border-gold-500 text-brand-900' : 'text-slate-500'}`}
-            >
-              {tab.label}
-            </NavLink>
+            <NavLink key={tab.to} to={tab.to} end={tab.end} className="tab">{tab.label}</NavLink>
           ))}
         </div>
       </nav>

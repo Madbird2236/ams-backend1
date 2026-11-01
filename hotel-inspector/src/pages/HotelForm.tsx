@@ -52,69 +52,64 @@ export default function HotelForm() {
   const renderText = (f: (typeof TEXT_FIELDS)[number]) => {
     const unknown = h.unknownFields.includes(f.key)
     return (
-      <Field
-        key={f.key}
-        label={t(f.label)}
-        right={f.unknownable ? (
-          <button type="button" onClick={() => toggleUnknown(f.key)} className={`chip ${unknown ? 'bg-slate-700 text-white' : 'bg-slate-100 text-slate-600'}`}>
-            {t('mark_unknown')}
-          </button>
-        ) : undefined}
-      >
-        <input
-          className="input disabled:bg-slate-100 disabled:text-slate-400"
-          type={f.type ?? 'text'}
-          inputMode={f.type === 'number' ? 'numeric' : undefined}
-          value={unknown ? '' : (h[f.key] as string)}
-          placeholder={unknown ? t('unknown') : ''}
-          disabled={unknown}
-          onChange={(e) => set({ [f.key]: e.target.value } as Partial<HotelInfo>)}
-        />
+      <Field key={f.key} label={t(f.label)}>
+        <div className="flex gap-2">
+          <input
+            className="input"
+            type={f.type ?? 'text'}
+            inputMode={f.type === 'number' ? 'numeric' : undefined}
+            value={unknown ? '' : (h[f.key] as string)}
+            placeholder={unknown ? t('unknown') : ''}
+            disabled={unknown}
+            autoComplete="off"
+            onChange={(e) => set({ [f.key]: e.target.value } as Partial<HotelInfo>)}
+          />
+          {f.unknownable && (
+            <button type="button" onClick={() => toggleUnknown(f.key)} aria-pressed={unknown}
+              className={`press shrink-0 rounded-[var(--radius-control)] border px-3 min-h-11 text-[13px] font-medium ${unknown ? 'border-ink bg-ink text-white' : 'border-control bg-surface text-muted'}`}>
+              {t('mark_unknown')}
+            </button>
+          )}
+        </div>
       </Field>
     )
   }
 
   return (
-    <Page className="space-y-4">
+    <Page className="space-y-5">
       <Section title={t('h_section_identity')}>
-        <div className="grid gap-3 sm:grid-cols-2">{TEXT_FIELDS.filter((f) => f.section === 'identity').map(renderText)}</div>
-        {isItaly && <p className="mt-3 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900">{t('italy_notice')}</p>}
+        <div className="grid gap-4 sm:grid-cols-2">{TEXT_FIELDS.filter((f) => f.section === 'identity').map(renderText)}</div>
+        {isItaly && <p className="mt-4 rounded-[var(--radius-card)] border border-warning-border bg-warning-bg px-3 py-2 text-[13px] leading-[18px] text-warning">{t('italy_notice')}</p>}
       </Section>
       <Section title={t('h_section_building')}>
-        <div className="grid grid-cols-2 gap-3">{TEXT_FIELDS.filter((f) => f.section === 'building').map(renderText)}</div>
+        <div className="grid gap-4 sm:grid-cols-2">{TEXT_FIELDS.filter((f) => f.section === 'building').map(renderText)}</div>
       </Section>
-      <Section title={t('h_section_facilities')}>
-        <div className="space-y-3">
+      <Section title={t('h_section_facilities')} flush>
+        <ul className="divide-y divide-rule">
           {FLAGS.map((f) => (
-            <div key={f.key} className="flex items-center justify-between gap-3">
-              <span className="text-sm font-medium">{t(f.label)}</span>
-              <div className="inline-flex rounded-xl border border-slate-200 p-1">
+            <li key={f.key} className="flex min-h-14 items-center justify-between gap-3 px-4 py-2">
+              <span className="text-[15px]">{t(f.label)}</span>
+              <div className="inline-flex rounded-[var(--radius-control)] border border-control p-0.5" role="group" aria-label={t(f.label)}>
                 {(['yes', 'no', 'unknown'] as YesNoUnknown[]).map((v) => (
-                  <button
-                    key={v}
-                    type="button"
-                    onClick={() => set({ [f.key]: v } as Partial<HotelInfo>)}
-                    className={`rounded-lg px-3 py-2 text-xs font-bold ${h[f.key] === v ? (v === 'yes' ? 'bg-emerald-600 text-white' : v === 'no' ? 'bg-slate-700 text-white' : 'bg-slate-400 text-white') : 'text-slate-600'}`}
-                  >
+                  <button key={v} type="button" onClick={() => set({ [f.key]: v } as Partial<HotelInfo>)} aria-pressed={h[f.key] === v}
+                    className={`press rounded-[4px] px-3 min-h-9 text-[13px] font-medium ${h[f.key] === v ? 'bg-ink text-white' : 'text-muted'}`}>
                     {t(v)}
                   </button>
                 ))}
               </div>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </Section>
       <Section title={t('h_notes')}>
-        <textarea className="input min-h-24" value={h.notes} onChange={(e) => set({ notes: e.target.value })} />
+        <textarea className="input min-h-24" value={h.notes} onChange={(e) => set({ notes: e.target.value })} aria-label={t('h_notes')} />
       </Section>
-      <div className="flex gap-2">
-        {insp.status === 'draft' ? (
-          <button type="button" className="btn-secondary flex-1" onClick={() => patchInspection(insp.id, { status: 'completed' })}>{t('mark_completed')}</button>
-        ) : (
-          <button type="button" className="btn-secondary flex-1" onClick={() => patchInspection(insp.id, { status: 'draft' })}>{t('reopen')}</button>
-        )}
-      </div>
-      <p className="text-center text-xs text-slate-400">{t('saved')} ✓ — {t('storage_notice')}</p>
+      {insp.status === 'draft' ? (
+        <button type="button" className="btn-secondary w-full" onClick={() => patchInspection(insp.id, { status: 'completed' })}>{t('mark_completed')}</button>
+      ) : (
+        <button type="button" className="btn-secondary w-full" onClick={() => patchInspection(insp.id, { status: 'draft' })}>{t('reopen')}</button>
+      )}
+      <p className="text-center text-[12px] text-muted">{t('saved')} · {t('storage_notice')}</p>
     </Page>
   )
 }

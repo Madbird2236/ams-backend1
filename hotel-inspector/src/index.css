@@ -1,34 +1,126 @@
 @import "tailwindcss";
+@import "@fontsource-variable/schibsted-grotesk";
 
+/*
+  AMS Hotel Inspector — design tokens (Operate mode, light, phone-first).
+  One grotesk, one radius family (tight: 8 / 6 / 4), borders OR tone steps (never shadows on cards),
+  colour on data and status only; the brand navy is the near-black primary, gold is the single data accent.
+*/
 @theme {
-  --color-brand-50: #f6f7f9;
-  --color-brand-100: #e9ecf1;
-  --color-brand-700: #1e293b;
-  --color-brand-800: #15202f;
-  --color-brand-900: #0f172a;
-  --color-gold-400: #d6b77e;
-  --color-gold-500: #c7a76b;
-  --color-gold-600: #a98a52;
+  --font-sans: "Schibsted Grotesk Variable", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --color-ground: #f6f6f4;
+  --color-surface: #ffffff;
+  --color-raised: #f2f2ef;
+  --color-active: #e9e9e5;
+  --color-border: #e4e4df;
+  --color-rule: #eeeeea;
+  --color-control: #cbcbc4;
+
+  --color-ink: #141414;
+  --color-muted: #5c5f5a;
+  --color-faint: #6b6b6b;
+
+  --color-primary: #15202f;
+  --color-primary-hover: #1e2c3f;
+  --color-accent: #a98a52;
+  --color-accent-soft: #f3ecdd;
+
+  --color-positive: #247b50;
+  --color-positive-bg: #dcfae5;
+  --color-positive-ink: #04250e;
+  --color-negative: #c4242a;
+  --color-negative-bg: #ffedea;
+  --color-negative-ink: #831c1e;
+  --color-warning: #92400e;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-info: #1e4e8c;
+  --color-info-bg: #e8f0fa;
+  --color-info-ink: #0f2f5a;
+
+  --radius-card: 8px;
+  --radius-control: 6px;
+  --radius-chip: 4px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
 html, body, #root { height: 100%; }
-body { -webkit-tap-highlight-color: transparent; overscroll-behavior-y: none; }
+html { background: var(--color-ground); }
+body {
+  background: var(--color-ground);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 20px;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 
-.safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 0.75rem); }
+/* Browser surfaces carry the design too */
+::selection { background: var(--color-accent-soft); color: var(--color-ink); }
+:root { accent-color: var(--color-primary); caret-color: var(--color-primary); }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-control); }
+button, input, select, textarea { font: inherit; }
+h1, h2, h3 { text-wrap: balance; }
+p { text-wrap: pretty; }
+
+.num { font-variant-numeric: tabular-nums; }
+.safe-bottom { padding-bottom: calc(env(safe-area-inset-bottom) + 1rem); }
 .safe-top { padding-top: env(safe-area-inset-top); }
 
-.btn { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none; }
-.btn-primary { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none bg-brand-900 text-white hover:bg-brand-800 shadow-sm; }
-.btn-gold { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none bg-gold-500 text-brand-900 hover:bg-gold-400 shadow-sm; }
-.btn-secondary { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none bg-white text-brand-900 border border-slate-200 hover:bg-slate-50 shadow-sm; }
-.btn-ghost { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none bg-transparent text-slate-700 hover:bg-slate-100; }
-.btn-danger { @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-3 text-base font-semibold transition active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none select-none bg-red-50 text-red-700 border border-red-200 hover:bg-red-100; }
+/* Pressables: feedback in 160ms, strong ease-out, hover only on fine pointers */
+@utility press {
+  transition: transform 160ms var(--ease-out), background-color 160ms ease, border-color 160ms ease, color 160ms ease;
+  &:active { transform: scale(0.97); }
+  @media (prefers-reduced-motion: reduce) { transition: none; &:active { transform: none; } }
+}
 
-.card { @apply bg-white rounded-2xl border border-slate-200 shadow-sm; }
-.label { @apply block text-xs font-semibold uppercase tracking-wide text-slate-500 mb-1; }
-.input { @apply w-full rounded-xl border border-slate-300 bg-white px-3 py-3 text-base text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-gold-500; }
-.chip { @apply inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold; }
+/* Buttons: one shape (6px), one height (44px) */
+@utility btn {
+  @apply press inline-flex min-h-11 items-center justify-center gap-2 rounded-[var(--radius-control)] px-4 text-[15px] font-medium select-none disabled:opacity-40 disabled:pointer-events-none;
+}
+.btn-primary { @apply btn bg-primary text-white; }
+.btn-secondary { @apply btn bg-surface text-ink border border-control; }
+.btn-ghost { @apply btn bg-transparent text-ink; }
+.btn-danger { @apply btn bg-surface text-negative-ink border border-control; }
+@media (hover: hover) and (pointer: fine) {
+  .btn-primary:hover { background: var(--color-primary-hover); }
+  .btn-secondary:hover, .btn-ghost:hover, .btn-danger:hover { background: var(--color-raised); }
+  .row:hover { background: var(--color-raised); }
+}
 
-.choice { @apply flex items-center justify-center text-center rounded-xl border-2 px-3 py-3 text-sm font-semibold transition select-none active:scale-[0.98]; }
-.choice-off { @apply border-slate-200 bg-white text-slate-700 hover:border-slate-300; }
-.choice-on { @apply border-brand-900 bg-brand-900 text-white; }
+/* Surfaces: a 1px border, no shadow */
+.panel { @apply bg-surface border border-border rounded-[var(--radius-card)]; }
+.row { @apply press flex items-center gap-3 px-3 min-h-14 bg-surface; }
+
+.label { @apply block text-[13px] leading-4 text-muted mb-1.5; }
+.input { @apply w-full min-h-11 rounded-[var(--radius-control)] border border-control bg-surface px-3 py-2.5 text-[15px] leading-5 text-ink placeholder:text-faint focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary; }
+.input:disabled { background: var(--color-raised); color: var(--color-faint); }
+
+/* Pills: pale tint, dark text of the same hue, 11-12px, never squeezed */
+.pill { @apply inline-flex items-center rounded-[var(--radius-chip)] px-1.5 h-5 text-[12px] font-medium whitespace-nowrap shrink-0; }
+
+/* Choice buttons (segmented selections): unselected white + control border; selected = tint + same-hue text + 1.5px border */
+.choice { @apply press flex min-h-12 items-center justify-center text-center rounded-[var(--radius-control)] border border-control bg-surface px-3 py-2 text-[14px] leading-[18px] font-medium text-ink select-none; }
+.choice[aria-pressed="true"] { box-shadow: inset 0 0 0 1.5px var(--choice-ring, var(--color-ink)); border-color: var(--choice-ring, var(--color-ink)); background: var(--choice-bg, var(--color-active)); color: var(--choice-ink, var(--color-ink)); }
+.choice-alarm[aria-pressed="true"] { --choice-bg: var(--color-negative); --choice-ink: #fff; --choice-ring: var(--color-negative); }
+.choice-positive { --choice-bg: var(--color-positive-bg); --choice-ink: var(--color-positive-ink); --choice-ring: var(--color-positive); }
+.choice-warning { --choice-bg: var(--color-warning-bg); --choice-ink: var(--color-warning); --choice-ring: #d9a400; }
+.choice-negative { --choice-bg: var(--color-negative-bg); --choice-ink: var(--color-negative-ink); --choice-ring: var(--color-negative); }
+.choice-info { --choice-bg: var(--color-info-bg); --choice-ink: var(--color-info-ink); --choice-ring: var(--color-info); }
+.choice-neutral { --choice-bg: var(--color-active); --choice-ink: var(--color-ink); --choice-ring: var(--color-ink); }
+
+/* Tabs: ink label + 2px rule on the active one; the rule slides (transform only) */
+.tab { @apply press relative flex-1 whitespace-nowrap px-3 py-3 text-center text-[14px] font-medium text-muted; }
+.tab[aria-current="page"] { color: var(--color-ink); }
+.tab[aria-current="page"]::after { content: ""; position: absolute; left: 12px; right: 12px; bottom: -1px; height: 2px; background: var(--color-ink); }
+
+/* Thin progress track: grey track, gold data */
+.track { @apply h-0.5 w-full bg-active overflow-hidden; }
+.track > i { display: block; height: 100%; background: var(--color-accent); transition: width 240ms var(--ease-out); }
+@media (prefers-reduced-motion: reduce) { .track > i { transition: none; } }

@@ -15,7 +15,8 @@ const NAVY: [number, number, number] = [15, 23, 42]
 const GOLD: [number, number, number] = [199, 167, 107]
 const GREY: [number, number, number] = [100, 116, 139]
 const LIGHT: [number, number, number] = [241, 245, 249]
-const PRIO_COLORS: Record<string, [number, number, number]> = { P0: [220, 38, 38], P1: [249, 115, 22], P2: [245, 158, 11], P3: [56, 189, 248] }
+const PRIO_FILL: Record<string, [number, number, number]> = { P0: [196, 36, 42], P1: [255, 237, 234], P2: [255, 251, 235], P3: [232, 240, 250] }
+const PRIO_INK: Record<string, [number, number, number]> = { P0: [255, 255, 255], P1: [131, 28, 30], P2: [146, 64, 14], P3: [15, 47, 90] }
 
 const PAGE_W = 210
 const PAGE_H = 297
@@ -77,8 +78,7 @@ class Doc {
       body,
       margin: { left: M, right: M, top: M + 8, bottom: M + 8 },
       styles: { font: 'helvetica', fontSize: 8, cellPadding: 1.8, textColor: [30, 41, 59], lineColor: [226, 232, 240], lineWidth: 0.2, overflow: 'linebreak' },
-      headStyles: { fillColor: NAVY, textColor: 255, fontStyle: 'bold' },
-      alternateRowStyles: { fillColor: [248, 250, 252] },
+      headStyles: { fillColor: [255, 255, 255], textColor: GREY, fontStyle: 'normal', lineWidth: { bottom: 0.5 }, lineColor: [20, 20, 20] },
       columnStyles: colStyles as never,
       didParseCell: didParseCell as never,
     })
@@ -223,9 +223,9 @@ export async function generatePdf(insp: Inspection, assessments: Assessment[], p
   )
 
   const prioCell = (data: { section: string; column: { index: number }; cell: { raw: unknown; styles: { fillColor?: unknown; textColor?: unknown; fontStyle?: string } } }) => {
-    if (data.section === 'body' && data.column.index === 0 && typeof data.cell.raw === 'string' && PRIO_COLORS[data.cell.raw]) {
-      data.cell.styles.fillColor = PRIO_COLORS[data.cell.raw]
-      data.cell.styles.textColor = data.cell.raw === 'P2' ? [15, 23, 42] : 255
+    if (data.section === 'body' && data.column.index === 0 && typeof data.cell.raw === 'string' && PRIO_FILL[data.cell.raw]) {
+      data.cell.styles.fillColor = PRIO_FILL[data.cell.raw]
+      data.cell.styles.textColor = PRIO_INK[data.cell.raw]
       data.cell.styles.fontStyle = 'bold'
     }
   }
@@ -269,9 +269,9 @@ export async function generatePdf(insp: Inspection, assessments: Assessment[], p
         rows,
         { 0: { cellWidth: 34 }, 1: { cellWidth: 28 }, 2: { cellWidth: 30 }, 3: { cellWidth: 18, halign: 'center' }, 4: { cellWidth: 20 }, 5: { cellWidth: 'auto' } },
         (data) => {
-          if (data.section === 'body' && data.column.index === 3 && typeof data.cell.raw === 'string' && PRIO_COLORS[data.cell.raw]) {
-            data.cell.styles.fillColor = PRIO_COLORS[data.cell.raw]
-            data.cell.styles.textColor = data.cell.raw === 'P2' ? [15, 23, 42] : 255
+          if (data.section === 'body' && data.column.index === 3 && typeof data.cell.raw === 'string' && PRIO_FILL[data.cell.raw]) {
+            data.cell.styles.fillColor = PRIO_FILL[data.cell.raw]
+            data.cell.styles.textColor = PRIO_INK[data.cell.raw]
             data.cell.styles.fontStyle = 'bold'
           }
         },

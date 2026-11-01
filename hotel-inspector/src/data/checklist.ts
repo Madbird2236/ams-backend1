@@ -10,35 +10,35 @@ export interface CategoryDef {
 
 export const CATEGORIES: CategoryDef[] = [
   {
-    id: 'structure', code: 'A', repeatable: false, icon: '🏗️',
+    id: 'structure', code: 'A', repeatable: false, icon: 'structure',
     elements: ['foundations', 'columns_beams', 'slabs', 'cracks', 'deformations', 'settlement', 'structural_risks'],
   },
   {
-    id: 'exterior', code: 'B', repeatable: false, icon: '🏢',
+    id: 'exterior', code: 'B', repeatable: false, icon: 'exterior',
     elements: ['facade', 'ext_paint', 'render', 'thermal_insulation', 'roof', 'gutters', 'waterproofing', 'ext_windows', 'ext_doors', 'balconies'],
   },
   {
-    id: 'rooms', code: 'C', repeatable: true, icon: '🛏️',
+    id: 'rooms', code: 'C', repeatable: true, icon: 'rooms',
     elements: ['walls', 'ceilings', 'floors', 'doors', 'windows', 'paint', 'lighting', 'sockets', 'heating', 'air_conditioning', 'ventilation', 'acoustic_insulation', 'furniture'],
   },
   {
-    id: 'bathrooms', code: 'D', repeatable: true, icon: '🚿',
+    id: 'bathrooms', code: 'D', repeatable: true, icon: 'bathrooms',
     elements: ['bath_waterproofing', 'tiles', 'claddings', 'showers', 'toilets', 'washbasins', 'taps', 'pipes', 'bath_ventilation', 'silicone', 'humidity'],
   },
   {
-    id: 'technical', code: 'E', repeatable: false, icon: '⚡',
+    id: 'technical', code: 'E', repeatable: false, icon: 'technical',
     elements: ['electrical', 'switchboards', 'cabling', 'water_distribution', 'sewage', 'hot_water', 'boilers', 'heat_pumps', 'hvac', 'mech_ventilation', 'elevators', 'control_systems'],
   },
   {
-    id: 'safety', code: 'F', repeatable: false, icon: '🧯',
+    id: 'safety', code: 'F', repeatable: false, icon: 'safety',
     elements: ['emergency_exits', 'fire_doors', 'alarms', 'fire_detectors', 'emergency_lighting', 'extinguishers', 'evacuation', 'accessibility'],
   },
   {
-    id: 'common', code: 'G', repeatable: false, icon: '🏛️',
+    id: 'common', code: 'G', repeatable: false, icon: 'common',
     elements: ['reception', 'corridors', 'stairs', 'restaurant', 'kitchen', 'laundry', 'tech_rooms', 'basement', 'outdoor_areas', 'parking'],
   },
   {
-    id: 'documentation', code: 'H', repeatable: false, icon: '📄',
+    id: 'documentation', code: 'H', repeatable: false, icon: 'documentation',
     elements: ['approved_plans', 'use_permits', 'installation_certs', 'fire_docs', 'energy_docs', 'maintenance_records', 'accessibility_docs', 'urban_compliance'],
   },
 ]

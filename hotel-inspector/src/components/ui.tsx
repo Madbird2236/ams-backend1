@@ -1,13 +1,12 @@
 import type { ReactNode } from 'react'
-import type { Condition, Intervention, Priority } from '../types'
+import type { Condition, Intervention, Lang, Priority } from '../types'
 import { useT, LANGS, LANG_NAMES } from '../i18n'
-import type { Lang } from '../types'
 
 export function Field({ label, hint, children, right }: { label: string; hint?: string; children: ReactNode; right?: ReactNode }) {
   return (
     <div>
-      <div className="flex items-center justify-between">
-        <span className="label">{label}{hint && <span className="ml-1 font-normal normal-case text-slate-400">({hint})</span>}</span>
+      <div className="flex items-end justify-between gap-2">
+        <span className="label">{label}{hint && <span className="text-faint"> · {hint}</span>}</span>
         {right}
       </div>
       {children}
@@ -15,24 +14,43 @@ export function Field({ label, hint, children, right }: { label: string; hint?: 
   )
 }
 
+/** Semantic tone per value, used by choice groups and pills. */
+export type Tone = 'positive' | 'neutral' | 'warning' | 'negative' | 'info' | 'alarm'
+
+export const conditionTone: Record<Condition, Tone> = {
+  good: 'positive', light_wear: 'neutral', needs_repair: 'warning', needs_replacement: 'negative', not_verified: 'neutral',
+}
+export const priorityTone: Record<Priority, Tone> = { P0: 'alarm', P1: 'negative', P2: 'warning', P3: 'info' }
+export const interventionTone: Record<Intervention, Tone> = {
+  required: 'negative', recommended: 'warning', optional: 'info', none: 'positive', specialist: 'neutral',
+}
+
+const pillTone: Record<Tone, string> = {
+  positive: 'bg-positive-bg text-positive-ink',
+  neutral: 'bg-active text-ink',
+  warning: 'bg-warning-bg text-warning border border-warning-border',
+  negative: 'bg-negative-bg text-negative-ink',
+  info: 'bg-info-bg text-info-ink',
+  alarm: 'bg-negative text-white',
+}
+
+export function Pill({ tone = 'neutral', children, className = '' }: { tone?: Tone; children: ReactNode; className?: string }) {
+  return <span className={`pill ${pillTone[tone]} ${className}`}>{children}</span>
+}
+
 export function ChoiceGroup<T extends string>({
-  options, value, onChange, render, columns = 2, colorFor,
+  options, value, onChange, render, columns = 2, toneFor,
 }: {
-  options: T[]; value: T | null; onChange: (v: T | null) => void; render: (v: T) => string; columns?: number; colorFor?: (v: T) => string
+  options: T[]; value: T | null; onChange: (v: T | null) => void; render: (v: T) => string; columns?: 1 | 2 | 3; toneFor?: (v: T) => Tone
 }) {
+  const cols = { 1: 'grid-cols-1', 2: 'grid-cols-2', 3: 'grid-cols-3' }[columns]
   return (
-    <div className={`grid gap-2 ${columns === 1 ? 'grid-cols-1' : columns === 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+    <div className={`grid gap-2 ${cols}`} role="group">
       {options.map((o) => {
         const on = value === o
-        const color = colorFor?.(o)
+        const tone = toneFor?.(o) ?? 'neutral'
         return (
-          <button
-            type="button"
-            key={o}
-            onClick={() => onChange(on ? null : o)}
-            className={`choice ${on ? (color ?? 'choice-on') : 'choice-off'}`}
-            aria-pressed={on}
-          >
+          <button type="button" key={o} onClick={() => onChange(on ? null : o)} aria-pressed={on} className={`choice choice-${tone === 'alarm' ? 'alarm' : tone}`}>
             {render(o)}
           </button>
         )
@@ -41,107 +59,73 @@ export function ChoiceGroup<T extends string>({
   )
 }
 
-export const conditionColor: Record<Condition, string> = {
-  good: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-  light_wear: 'bg-lime-100 text-lime-800 border-lime-200',
-  needs_repair: 'bg-amber-100 text-amber-800 border-amber-200',
-  needs_replacement: 'bg-red-100 text-red-800 border-red-200',
-  not_verified: 'bg-slate-200 text-slate-700 border-slate-300',
-}
-export const conditionOn: Record<Condition, string> = {
-  good: 'border-emerald-600 bg-emerald-600 text-white',
-  light_wear: 'border-lime-600 bg-lime-600 text-white',
-  needs_repair: 'border-amber-500 bg-amber-500 text-white',
-  needs_replacement: 'border-red-600 bg-red-600 text-white',
-  not_verified: 'border-slate-500 bg-slate-500 text-white',
-}
-export const priorityColor: Record<Priority, string> = {
-  P0: 'bg-red-600 text-white',
-  P1: 'bg-orange-500 text-white',
-  P2: 'bg-amber-400 text-slate-900',
-  P3: 'bg-sky-200 text-sky-900',
-}
-export const priorityOn: Record<Priority, string> = {
-  P0: 'border-red-600 bg-red-600 text-white',
-  P1: 'border-orange-500 bg-orange-500 text-white',
-  P2: 'border-amber-400 bg-amber-400 text-slate-900',
-  P3: 'border-sky-500 bg-sky-500 text-white',
-}
-export const interventionColor: Record<Intervention, string> = {
-  required: 'bg-red-50 text-red-700 border border-red-200',
-  recommended: 'bg-amber-50 text-amber-800 border border-amber-200',
-  optional: 'bg-sky-50 text-sky-800 border border-sky-200',
-  none: 'bg-emerald-50 text-emerald-800 border border-emerald-200',
-  specialist: 'bg-violet-50 text-violet-800 border border-violet-200',
-}
-
-export function PriorityBadge({ p }: { p: Priority | null }) {
+export function PriorityPill({ p }: { p: Priority | null }) {
   if (!p) return null
-  return <span className={`chip ${priorityColor[p]}`}>{p}</span>
+  return <Pill tone={priorityTone[p]}>{p}</Pill>
 }
 
-export function ConditionChip({ c }: { c: Condition | null }) {
+export function ConditionPill({ c }: { c: Condition | null }) {
   const { t } = useT()
-  if (!c) return <span className="chip bg-slate-100 text-slate-500">{t('not_assessed')}</span>
-  return <span className={`chip border ${conditionColor[c]}`}>{t(`cond.${c}`)}</span>
+  if (!c) return <span className="text-[13px] text-faint">{t('not_assessed')}</span>
+  return <Pill tone={conditionTone[c]}>{t(`cond.${c}`)}</Pill>
 }
 
-export function ProgressBar({ value, max, className = '' }: { value: number; max: number; className?: string }) {
+export function Track({ value, max, className = '' }: { value: number; max: number; className?: string }) {
   const p = max === 0 ? 0 : Math.round((value / max) * 100)
-  return (
-    <div className={`h-2 w-full overflow-hidden rounded-full bg-slate-200 ${className}`}>
-      <div className="h-full rounded-full bg-gold-500 transition-all" style={{ width: `${p}%` }} />
-    </div>
-  )
+  return <div className={`track ${className}`} role="progressbar" aria-valuenow={value} aria-valuemax={max}><i style={{ width: `${p}%` }} /></div>
 }
 
-export function LangSwitcher({ compact = false }: { compact?: boolean }) {
+export function LangSwitcher() {
   const { lang, setLang } = useT()
   return (
-    <div className="inline-flex rounded-xl border border-slate-200 bg-white p-1 shadow-sm">
+    <div className="inline-flex rounded-[var(--radius-control)] border border-control bg-surface p-0.5" role="group" aria-label="Language">
       {LANGS.map((l: Lang) => (
-        <button
-          key={l}
-          type="button"
-          onClick={() => setLang(l)}
-          className={`rounded-lg px-2.5 py-1.5 text-xs font-bold uppercase transition ${lang === l ? 'bg-brand-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
-          title={LANG_NAMES[l]}
-        >
-          {compact ? l : l.toUpperCase()}
+        <button key={l} type="button" onClick={() => setLang(l)} aria-pressed={lang === l} title={LANG_NAMES[l]}
+          className={`press rounded-[4px] px-2.5 min-h-9 text-[12px] font-semibold uppercase ${lang === l ? 'bg-ink text-white' : 'text-muted'}`}>
+          {l}
         </button>
       ))}
     </div>
   )
 }
 
-export function Section({ title, children, right }: { title: string; children: ReactNode; right?: ReactNode }) {
+/** A titled block. Title is sentence case 16/600; content sits on a bordered panel. */
+export function Section({ title, children, right, flush = false }: { title: string; children: ReactNode; right?: ReactNode; flush?: boolean }) {
   return (
-    <section className="card p-4">
-      <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-sm font-bold uppercase tracking-wide text-slate-700">{title}</h2>
-        {right}
+    <section>
+      <div className="mb-2 flex items-baseline justify-between gap-3 px-0.5">
+        <h2 className="text-[16px] font-semibold leading-6">{title}</h2>
+        {right && <div className="text-[13px] text-muted num">{right}</div>}
       </div>
-      {children}
+      <div className={`panel ${flush ? 'overflow-hidden' : 'p-4'}`}>{children}</div>
     </section>
   )
 }
 
-export function Stat({ label, value, tone = 'default' }: { label: string; value: ReactNode; tone?: 'default' | 'danger' | 'warn' | 'ok' | 'muted' }) {
-  const tones = {
-    default: 'bg-white border-slate-200 text-slate-900',
-    danger: 'bg-red-50 border-red-200 text-red-800',
-    warn: 'bg-amber-50 border-amber-200 text-amber-900',
-    ok: 'bg-emerald-50 border-emerald-200 text-emerald-900',
-    muted: 'bg-slate-50 border-slate-200 text-slate-600',
-  }
+/** KPI strip: one container split by hairlines, label over value, value 24/400 in ink. Colour only when the number is bad. */
+export function KpiStrip({ items }: { items: Array<{ label: string; value: ReactNode; bad?: boolean }> }) {
+  const cols = items.length === 4 ? 'grid-cols-2 sm:grid-cols-4' : items.length === 3 ? 'grid-cols-3' : 'grid-cols-2'
   return (
-    <div className={`rounded-xl border p-3 ${tones[tone]}`}>
-      <div className="text-2xl font-extrabold leading-none">{value}</div>
-      <div className="mt-1 text-xs font-medium opacity-80">{label}</div>
+    <div className={`panel grid ${cols} overflow-hidden`}>
+      {items.map((it, i) => (
+        <div key={i} className={`px-4 py-3 ${i > 0 ? 'border-l border-rule' : ''} ${items.length === 4 && i >= 2 ? 'border-t border-rule sm:border-t-0' : ''} ${items.length === 4 && i === 2 ? 'border-l-0 sm:border-l' : ''}`}>
+          <div className="text-[13px] leading-4 text-muted">{it.label}</div>
+          <div className={`num mt-1 text-[24px] leading-7 font-normal ${it.bad ? 'text-negative' : 'text-ink'}`}>{it.value}</div>
+        </div>
+      ))}
     </div>
   )
 }
 
-export function Empty({ text }: { text: string }) {
-  return <p className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4 text-center text-sm text-slate-500">{text}</p>
+export function Empty({ text, action }: { text: string; action?: ReactNode }) {
+  return (
+    <div className="rounded-[var(--radius-card)] border border-dashed border-control px-4 py-5 text-center text-[14px] text-muted">
+      <p>{text}</p>
+      {action && <div className="mt-3">{action}</div>}
+    </div>
+  )
+}
+
+export function Chevron() {
+  return <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-faint shrink-0" aria-hidden><path d="M6 3l5 5-5 5" /></svg>
 }
